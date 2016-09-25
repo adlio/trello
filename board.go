@@ -1,0 +1,66 @@
+package trello
+
+import (
+	"fmt"
+)
+
+type Board struct {
+	client         *Client
+	ID             string `json:"id"`
+	Name           string `json:"name"`
+	Desc           string `json:"desc"`
+	Closed         bool   `json:"closed"`
+	IdOrganization string `json:"idOrganization"`
+	Pinned         bool   `json:"pinned"`
+	Url            string `json:"url"`
+	ShortUrl       string `json:"shortUrl"`
+	Prefs          struct {
+		PermissionLevel       string            `json:"permissionLevel"`
+		Voting                string            `json:"voting"`
+		Comments              string            `json:"comments"`
+		Invitations           string            `json:"invitations"`
+		SelfJoin              bool              `json:"selfjoin"`
+		CardCovers            bool              `json:"cardCovers"`
+		CardAging             string            `json:"cardAging"`
+		CalendarFeedEnabled   bool              `json:"calendarFeedEnabled"`
+		Background            string            `json:"background"`
+		BackgroundColor       string            `json:"backgroundColor"`
+		BackgroundImage       string            `json:"backgroundImage"`
+		BackgroundImageScaled []BackgroundImage `json:"backgroundImageScaled"`
+		BackgroundTile        bool              `json:"backgroundTile"`
+		BackgroundBrightness  string            `json:"backgroundBrightness"`
+		CanBePublic           bool              `json:"canBePublic"`
+		CanBeOrg              bool              `json:"canBeOrg"`
+		CanBePrivate          bool              `json:"canBePrivate"`
+		CanInvite             bool              `json:"canInvite"`
+	} `json:"prefs"`
+	LabelNames struct {
+		Black  string `json:"black",omitempty`
+		Blue   string `json:"blue",omitempty`
+		Green  string `json:"green",omitempty`
+		Lime   string `json:"lime",omitempty`
+		Orange string `json:"orange",omitempty`
+		Pink   string `json:"pink",omitempty`
+		Purple string `json:"purple",omitempty`
+		Red    string `json:"red",omitempty`
+		Sky    string `json:"sky",omitempty`
+		Yellow string `json:"yellow",omitempty`
+	} `json:"labelNames"`
+}
+
+type BackgroundImage struct {
+	width  int    `json:"width"`
+	height int    `json:"height"`
+	url    string `json:"url"`
+}
+
+/**
+ * Board retrieves a Trello board by its ID.
+ */
+func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err error) {
+	path := fmt.Sprintf("boards/%s", boardID)
+	board = &Board{}
+	err = c.Get(path, args, board)
+	board.client = c
+	return
+}

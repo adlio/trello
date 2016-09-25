@@ -1,0 +1,25 @@
+package trello
+
+type Checklist struct {
+	ID         string      `json:"id"`
+	Name       string      `json:"name"`
+	IDBoard    string      `json:"idBoard,omitempty"`
+	IDCard     string      `json:"idCard,omitempty"`
+	Pos        int         `json:"pos,omitempty"`
+	CheckItems []CheckItem `json:"checkItems,omitempty"`
+}
+
+type CheckItem struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	State       string `json:"state"`
+	IDChecklist string `json:"idChecklist,omitempty"`
+	Pos         int    `json:"pos,omitempty"`
+}
+
+// Manifestation of CheckItem when it appears in CheckItemStates
+// on a Card.
+type CheckItemState struct {
+	IDCheckItem string `json:"idCheckItem"`
+	State       string `json:"state"`
+}
