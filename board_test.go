@@ -24,6 +24,37 @@ func TestGetBoard(t *testing.T) {
 	if board.LabelNames.Green != "Participate!" {
 		t.Errorf("Expected Green label 'Participate!'. Got '%s'", board.LabelNames.Green)
 	}
+}
+
+func TestGetBoards(t *testing.T) {
+	c := NewClient("user", "pass")
+
+	memberResponse := mockResponse("members", "api-example.json")
+	boardsResponse := mockResponse("boards", "member-boards-example.json")
+
+	c.BaseURL = memberResponse.URL
+	member, err := c.GetMember("4ee7df1", Defaults)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	c.BaseURL = boardsResponse.URL
+	boards, err := member.GetBoards(Defaults)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(boards) != 2 {
+		t.Errorf("Expected 2 boards. Got %d", len(boards))
+	}
+
+	if boards[0].Name != "Example Board" {
+		t.Errorf("Name of first board incorrect. Got: '%s'", boards[0].Name)
+	}
+
+	if boards[1].Name != "Public Board" {
+		t.Errorf("Name of second board incorrect. Got: '%s'", boards[1].Name)
+	}
 
 }
 

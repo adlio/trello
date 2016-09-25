@@ -59,8 +59,18 @@ type BackgroundImage struct {
  */
 func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err error) {
 	path := fmt.Sprintf("boards/%s", boardID)
-	board = &Board{}
-	err = c.Get(path, args, board)
-	board.client = c
+	err = c.Get(path, args, &board)
+	if board != nil {
+		board.client = c
+	}
+	return
+}
+
+func (m *Member) GetBoards(args Arguments) (boards []*Board, err error) {
+	path := fmt.Sprintf("members/%s/boards", m.ID)
+	err = m.client.Get(path, args, &boards)
+	for i := range boards {
+		boards[i].client = m.client
+	}
 	return
 }

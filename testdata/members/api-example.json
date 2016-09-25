@@ -1,0 +1,14 @@
+{
+    "id": "4ee7df1be582acdec80000ae",
+    "username": "bobtester",
+    "fullName": "Bob Tester",
+    "url": "https://trello.com/bobtester",
+    "organizations": [],
+    "boards": [{
+        "name": "Example Board",
+        "id": "4eea4ffc91e31d1746000046"
+    }, {
+        "name": "Public Board",
+        "id": "4ee7e707e582acdec800051a"
+    }]
+}

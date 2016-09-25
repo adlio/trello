@@ -1,0 +1,131 @@
+[{
+    "id": "4eea4ffc91e31d1746000046",
+    "closed": false,
+    "dateLastActivity": null,
+    "dateLastView": null,
+    "desc": "This board is used in the API examples",
+    "descData": null,
+    "idOrganization": "4efe2c2f2e1efe7a4c0002c9",
+    "invitations": [],
+    "invited": false,
+    "labelNames": {
+        "green": "",
+        "yellow": "",
+        "orange": "",
+        "red": "",
+        "purple": "",
+        "blue": "",
+        "sky": "",
+        "lime": "",
+        "pink": "",
+        "black": ""
+    },
+    "memberships": [{
+        "id": "4eea4ffc91e31d174600004d",
+        "idMember": "4ee7deffe582acdec80000ac",
+        "memberType": "admin",
+        "unconfirmed": false
+    }, {
+        "id": "4eea507991e31d17460000fc",
+        "idMember": "4ee7df1be582acdec80000ae",
+        "memberType": "normal",
+        "unconfirmed": false
+    }, {
+        "id": "4eea50bc91e31d174600016d",
+        "idMember": "4ee7df74e582acdec80000b6",
+        "memberType": "normal",
+        "unconfirmed": false
+    }],
+    "name": "Example Board",
+    "pinned": false,
+    "powerUps": [],
+    "prefs": {
+        "permissionLevel": "public",
+        "voting": "members",
+        "comments": "members",
+        "invitations": "members",
+        "selfJoin": true,
+        "cardCovers": true,
+        "calendarFeedEnabled": false,
+        "background": "blue",
+        "backgroundColor": "#0079BF",
+        "backgroundImage": null,
+        "backgroundImageScaled": null,
+        "backgroundTile": false,
+        "backgroundBrightness": "unknown",
+        "canBePublic": true,
+        "canBeOrg": true,
+        "canBePrivate": true,
+        "canInvite": true
+    },
+    "shortLink": "OXiBYZoj",
+    "shortUrl": "https://trello.com/b/OXiBYZoj",
+    "starred": null,
+    "subscribed": null,
+    "url": "https://trello.com/b/OXiBYZoj/example-board"
+}, {
+    "id": "4ee7e707e582acdec800051a",
+    "closed": false,
+    "dateLastActivity": null,
+    "dateLastView": null,
+    "desc": "A board that everyone can see",
+    "descData": null,
+    "idOrganization": "",
+    "invitations": [],
+    "invited": false,
+    "labelNames": {
+        "green": "",
+        "yellow": "",
+        "orange": "",
+        "red": "",
+        "purple": "",
+        "blue": "",
+        "sky": "",
+        "lime": "",
+        "pink": "",
+        "black": ""
+    },
+    "memberships": [{
+        "id": "4ee7e707e582acdec8000521",
+        "idMember": "4ee7df3ce582acdec80000b2",
+        "memberType": "admin",
+        "unconfirmed": false
+    }, {
+        "id": "4ee7e72fe582acdec8000573",
+        "idMember": "4ee7df1be582acdec80000ae",
+        "memberType": "normal",
+        "unconfirmed": false
+    }, {
+        "id": "514c5f9cb569140000000016",
+        "idMember": "514c5f9cb569140000000014",
+        "memberType": "normal",
+        "unconfirmed": false
+    }],
+    "name": "Public Board",
+    "pinned": false,
+    "powerUps": [],
+    "prefs": {
+        "permissionLevel": "public",
+        "voting": "public",
+        "comments": "public",
+        "invitations": "members",
+        "selfJoin": true,
+        "cardCovers": true,
+        "calendarFeedEnabled": false,
+        "background": "blue",
+        "backgroundColor": "#0079BF",
+        "backgroundImage": null,
+        "backgroundImageScaled": null,
+        "backgroundTile": false,
+        "backgroundBrightness": "unknown",
+        "canBePublic": true,
+        "canBeOrg": true,
+        "canBePrivate": true,
+        "canInvite": true
+    },
+    "shortLink": "IwLRbh3F",
+    "shortUrl": "https://trello.com/b/IwLRbh3F",
+    "starred": null,
+    "subscribed": null,
+    "url": "https://trello.com/b/IwLRbh3F/public-board"
+}]
