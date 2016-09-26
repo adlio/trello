@@ -23,7 +23,7 @@ type SearchTerm struct {
 func (c *Client) SearchCards(query string, args Arguments) (cards []*Card, err error) {
 	args["query"] = query
 	args["modelTypes"] = "cards"
-	res := &SearchResult{}
+	res := SearchResult{}
 	err = c.Get("search", args, &res)
 	cards = res.Cards
 	return
@@ -32,26 +32,14 @@ func (c *Client) SearchCards(query string, args Arguments) (cards []*Card, err e
 func (c *Client) SearchBoards(query string, args Arguments) (boards []*Board, err error) {
 	args["query"] = query
 	args["modelTypes"] = "boards"
-	res := &SearchResult{}
+	res := SearchResult{}
 	err = c.Get("search", args, &res)
 	boards = res.Boards
 	return
 }
 
-func (c *Client) SearchActions(query string, args Arguments) (actions []*Action, err error) {
-	args["query"] = query
-	args["modelTypes"] = "actions"
-	res := &SearchResult{}
-	err = c.Get("search", args, &res)
-	actions = res.Actions
-	return
-}
-
 func (c *Client) SearchMembers(query string, args Arguments) (members []*Member, err error) {
 	args["query"] = query
-	args["modelTypes"] = "members"
-	res := &SearchResult{}
-	err = c.Get("search", args, &res)
-	members = res.Members
+	err = c.Get("search/members", args, &members)
 	return
 }

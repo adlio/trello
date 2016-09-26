@@ -1,0 +1,24 @@
+{
+  "options": {
+    "terms": [
+      {
+        "text": "Search"
+      },
+      {
+        "text": "Term"
+      }
+    ],
+    "modifiers": [],
+    "modelTypes": [
+      "boards"
+    ],
+    "partial": false
+  },
+  "boards": [
+    {
+      "id": "1234567890",
+      "name": "Example Board",
+      "idOrganization": "12345678098"
+    }
+  ]
+}

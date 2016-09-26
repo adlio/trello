@@ -1,0 +1,49 @@
+[
+  {
+    "id": "4d68153781bb57af1e013581",
+    "username": "spolsky",
+    "avatarHash": "2ceebc8d38af302487b8410b2e55bf40",
+    "initials": "JS",
+    "fullName": "Joel Spolsky",
+    "email": null,
+    "idBoards": [
+      "544add055a6d0b62dc75b1d9",
+      "562287286b4706ed2657eb0c",
+      "504f9488bc351ac46c1672e4",
+      "55e9accfca3078cf91e7a387"
+    ],
+    "idOrganizations": [
+      "4ee269e0c9feba4446044c2f",
+      "538627f73cbb44d1bfbb58f0"
+    ],
+    "confirmed": true,
+    "similarity": 0,
+    "active": true
+  },
+  {
+    "id": "57c9bf4476027dfa0258d7be",
+    "username": "tacospolsky",
+    "avatarHash": null,
+    "initials": "TS",
+    "fullName": "Taco Spolsky",
+    "email": null,
+    "idBoards": [],
+    "idOrganizations": [],
+    "confirmed": true,
+    "similarity": 0,
+    "active": true
+  },
+  {
+    "id": "4e6a7930f2b5d10aba0063a0",
+    "username": "spolskytrello",
+    "avatarHash": null,
+    "initials": "JS",
+    "fullName": "Joel Spolsky",
+    "email": null,
+    "idBoards": [],
+    "idOrganizations": [],
+    "confirmed": true,
+    "similarity": 0,
+    "active": false
+  }
+]

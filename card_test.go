@@ -31,7 +31,7 @@ func TestGetCardsInList(t *testing.T) {
 // Utility function to get a simple response from Client.GetCard()
 //
 func testCard(t *testing.T) *Card {
-	c := NewClient("user", "pass")
+	c := testClient()
 	c.BaseURL = mockResponse("cards", "card-api-example.json").URL
 	card, err := c.GetCard("4eea503", Defaults)
 	if err != nil {
