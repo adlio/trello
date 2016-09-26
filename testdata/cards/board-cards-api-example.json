@@ -1,0 +1,26 @@
+[{
+  "id": "4eea503791e31d1746000080",
+  "name": "Finish my awesome application",
+  "idList": "4eea4ffc91e31d174600004a",
+  "url": "https://trello.com/c/XlG8S7ll/3-finish-my-awesome-application"
+}, {
+  "id": "4eea503d91e31d174600008f",
+  "name": "Learn about the Trello API",
+  "idList": "4eea4ffc91e31d174600004b",
+  "url": "https://trello.com/c/Y9eWwKiQ/4-learn-about-the-trello-api"
+}, {
+  "id": "4eea522c91e31d174600027e",
+  "name": "Figure out how to read a user's board list",
+  "idList": "4eea4ffc91e31d174600004b",
+  "url": "https://trello.com/c/RUbgIc74/6-figure-out-how-to-read-a-user-s-board-list"
+}, {
+  "id": "4eea501f91e31d1746000062",
+  "name": "Get a key to use in my API requests",
+  "idList": "4eea4ffc91e31d174600004c",
+  "url": "https://trello.com/c/RruF3Yv1/1-get-a-key-to-use-in-my-api-requests"
+}, {
+  "id": "4eea502b91e31d1746000071",
+  "name": "Find out where the Trello API documentation is",
+  "idList": "4eea4ffc91e31d174600004c",
+  "url": "https://trello.com/c/WOpDiqbn/2-find-out-where-the-trello-api-documentation-is"
+}]
