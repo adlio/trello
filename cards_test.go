@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestGetBoardCards(t *testing.T) {
+func TestGetCardsOnBoard(t *testing.T) {
 	c := NewClient("user", "pass")
 	boardResponse := mockResponse("boards", "cI66RoQS.json")
 	cardsResponse := mockResponse("cards", "board-cards-api-example.json")
