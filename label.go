@@ -2,6 +2,7 @@
 //
 // Use of this source code is governed by an MIT licese.
 // Details in the LICENSE file.
+
 package trello
 
 type Label struct {
