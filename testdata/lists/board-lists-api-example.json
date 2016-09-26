@@ -1,0 +1,28 @@
+[{
+  "id": "4eea4ffc91e31d174600004a",
+  "name": "To Do Soon",
+  "cards": [{
+    "id": "4eea503791e31d1746000080",
+    "name": "Finish my awesome application"
+  }]
+}, {
+  "id": "4eea4ffc91e31d174600004b",
+  "name": "Doing",
+  "cards": [{
+    "id": "4eea503d91e31d174600008f",
+    "name": "Learn about the Trello API"
+  }, {
+    "id": "4eea522c91e31d174600027e",
+    "name": "Figure out how to read a user's board list"
+  }]
+}, {
+  "id": "4eea4ffc91e31d174600004c",
+  "name": "Done",
+  "cards": [{
+    "id": "4eea501f91e31d1746000062",
+    "name": "Get a key to use in my API requests"
+  }, {
+    "id": "4eea502b91e31d1746000071",
+    "name": "Find out where the Trello API documentation is"
+  }]
+}]

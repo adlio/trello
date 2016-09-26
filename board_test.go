@@ -4,19 +4,19 @@ import (
 	"testing"
 )
 
-func TestGetBoard(t *testing.T) {
+func testBoard(t *testing.T) *Board {
 	c := NewClient("user", "pass")
-	m := mockResponse("boards", "cI66RoQS.json")
-	c.BaseURL = m.URL
-
-	board, err := c.GetBoard("cI66RoQS", Defaults)
+	boardResponse := mockResponse("boards", "cI66RoQS.json")
+	c.BaseURL = boardResponse.URL
+	board, err := c.GetBoard("cIRoQS", Defaults)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if board == nil {
-		t.Error("Board retrieved from c.GetBoard() shouldn't be nil")
-	}
+	return board
+}
 
+func TestGetBoard(t *testing.T) {
+	board := testBoard(t)
 	if board.Name != "Trello Public API" {
 		t.Errorf("Incorrect board name '%s'", board.Name)
 	}

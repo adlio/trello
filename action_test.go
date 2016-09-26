@@ -5,18 +5,8 @@ import (
 )
 
 func TestGetActionsOnBoard(t *testing.T) {
-	c := NewClient("user", "pass")
-
-	boardResponse := mockResponse("boards", "cI66RoQS.json")
-	actionsResponse := mockResponse("actions", "board-actions-api-example.json")
-
-	c.BaseURL = boardResponse.URL
-	board, err := c.GetBoard("cIRoQS", Defaults)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	c.BaseURL = actionsResponse.URL
+	board := testBoard(t)
+	board.client.BaseURL = mockResponse("actions", "board-actions-api-example.json").URL
 	actions, err := board.GetActions(Defaults)
 	if err != nil {
 		t.Fatal(err)
