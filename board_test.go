@@ -5,8 +5,8 @@ import (
 )
 
 func TestGetBoard(t *testing.T) {
-	m := mockResponse("boards", "cI66RoQS.json")
 	c := NewClient("user", "pass")
+	m := mockResponse("boards", "cI66RoQS.json")
 	c.BaseURL = m.URL
 
 	board, err := c.GetBoard("cI66RoQS", Defaults)
