@@ -67,3 +67,59 @@ if err != nil {
   // Handle error
 }
 ```
+
+## Get Trello Cards on a Board
+
+```Go
+board, err := trello.GetBoard("bOaRdID", trello.Defaults)
+if err != nil {
+  // Handle error
+}
+
+cards, err := board.GetCards(trello.Defaults)
+if err != nil {
+  // Handle error
+}
+```
+
+## Get Trello Cards on a List
+
+```Go
+list, err := trello.GetList("lIsTID", trello.Defaults)
+if err != nil {
+  // Handle error
+}
+
+cards, err := list.GetCards(trello.Defaults)
+if err != nil {
+  // Handle error
+}
+```
+
+## Get Actions on a Board
+
+```Go
+board, err := trello.GetBoard("bOaRdID", trello.Defaults)
+if err != nil {
+  // Handle error
+}
+
+actions, err := board.GetActions(trello.Defaults)
+if err != nil {
+  // Handle error
+}
+```
+
+## Get Actions on a Card
+
+```Go
+card, err := trello.GetCard("cArDID", trello.Defaults)
+if err != nil {
+  // Handle error
+}
+
+actions, err := card.GetActions(trello.Defaults)
+if err != nil {
+  // Handle error
+}
+```
