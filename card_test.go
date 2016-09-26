@@ -5,23 +5,26 @@ import (
 )
 
 func TestGetCardsOnBoard(t *testing.T) {
-	c := NewClient("user", "pass")
-	boardResponse := mockResponse("boards", "cI66RoQS.json")
-	cardsResponse := mockResponse("cards", "board-cards-api-example.json")
-
-	c.BaseURL = boardResponse.URL
-	board, err := c.GetBoard("cI66RoQs", Defaults)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	c.BaseURL = cardsResponse.URL
+	board := testBoard(t)
+	board.client.BaseURL = mockResponse("cards", "board-cards-api-example.json").URL
 	cards, err := board.GetCards(Defaults)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(cards) != 5 {
 		t.Errorf("Expected 5 cards, got %d", len(cards))
+	}
+}
+
+func TestGetCardsInList(t *testing.T) {
+	list := testList(t)
+	list.client.BaseURL = mockResponse("cards", "list-cards-api-example.json").URL
+	cards, err := list.GetCards(Defaults)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cards) != 1 {
+		t.Errorf("Expected 1 cards, got %d", len(cards))
 	}
 }
 
