@@ -24,3 +24,15 @@ func TestGetCardsOnBoard(t *testing.T) {
 		t.Errorf("Expected 5 cards, got %d", len(cards))
 	}
 }
+
+// Utility function to get a simple response from Client.GetCard()
+//
+func testCard(t *testing.T) *Card {
+	c := NewClient("user", "pass")
+	c.BaseURL = mockResponse("cards", "card-api-example.json").URL
+	card, err := c.GetCard("4eea503", Defaults)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return card
+}

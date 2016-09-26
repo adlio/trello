@@ -15,10 +15,12 @@ type List struct {
 	Cards   []Card  `json:"cards,omitempty"`
 }
 
-func (c *Client) GetList(listID string, args Arguments) (list List, err error) {
+func (c *Client) GetList(listID string, args Arguments) (list *List, err error) {
 	path := fmt.Sprintf("lists/%s", listID)
 	err = c.Get(path, args, &list)
-	list.client = c
+	if list != nil {
+		list.client = c
+	}
 	return
 }
 

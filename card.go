@@ -64,6 +64,15 @@ type Card struct {
 	Labels []*Label `json:"labels,omitempty"`
 }
 
+func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) {
+	path := fmt.Sprintf("cards/%s", cardID)
+	err = c.Get(path, args, &card)
+	if card != nil {
+		card.client = c
+	}
+	return
+}
+
 /**
  * Retrieves all Cards on a Board
  */
