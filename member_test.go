@@ -18,7 +18,20 @@ func TestGetMembersOnBoard(t *testing.T) {
 	}
 
 	if len(members) != 3 {
-		t.Errorf("Expected 3 member, got %d", len(members))
+		t.Errorf("Expected 3 members, got %d", len(members))
+	}
+}
+
+func TestGetMembersInOrganization(t *testing.T) {
+	organization := testOrganization(t)
+	organization.client.BaseURL = mockResponse("members", "trelloapps.json").URL
+	members, err := organization.GetMembers(Defaults)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(members) != 7 {
+		t.Errorf("Expected 3 members, got %d", len(members))
 	}
 }
 

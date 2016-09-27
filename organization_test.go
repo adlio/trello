@@ -10,14 +10,18 @@ import (
 )
 
 func TestGetOrganization(t *testing.T) {
+	organization := testOrganization(t)
+	if organization.DisplayName != "Culture Foundry" {
+		t.Errorf("Expected name 'Culture Foundry'. Got '%s'.", organization.DisplayName)
+	}
+}
+
+func testOrganization(t *testing.T) *Organization {
 	client := testClient()
 	client.BaseURL = mockResponse("organizations", "culturefoundry.json").URL
 	organization, err := client.GetOrganization("culturefoundry", Defaults)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if organization.DisplayName != "Culture Foundry" {
-		t.Errorf("Expected name 'Culture Foundry'. Got '%s'.", organization.DisplayName)
-	}
+	return organization
 }
