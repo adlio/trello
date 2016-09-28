@@ -15,7 +15,7 @@ func TestGetWithBadURL(t *testing.T) {
 	c.BaseURL = "gopher://test"
 	err := c.Get("members", Defaults, &target)
 	if err == nil {
-		t.Fatal("Get() should fali with a bad URL")
+		t.Fatal("Get() should fail with a bad URL")
 	}
 }
 
