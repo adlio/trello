@@ -19,7 +19,7 @@ func TestGetList(t *testing.T) {
 func TestGetListsOnBoard(t *testing.T) {
 	board := testBoard(t)
 	board.client.BaseURL = mockResponse("lists", "board-lists-api-example.json").URL
-	lists, err := board.GetLists(Defaults)
+	lists, err := board.GetLists(Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestGetListsOnBoard(t *testing.T) {
 func testList(t *testing.T) *List {
 	c := testClient()
 	c.BaseURL = mockResponse("lists", "list-api-example.json").URL
-	list, err := c.GetList("4eea4ff", Defaults)
+	list, err := c.GetList("4eea4ff", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}

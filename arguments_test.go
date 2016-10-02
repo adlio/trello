@@ -10,7 +10,7 @@ import (
 )
 
 func TestDefaultArguments(t *testing.T) {
-	args := Defaults
+	args := Defaults()
 	queryString := args.ToURLValues().Encode()
 	if queryString != "" {
 		t.Errorf("Query string should be blank for default Trello arguments. Got '%s' instead.", queryString)

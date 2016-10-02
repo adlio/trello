@@ -11,7 +11,9 @@ import (
 
 type Arguments map[string]string
 
-var Defaults = make(Arguments)
+func Defaults() Arguments {
+	return make(Arguments)
+}
 
 func (args Arguments) ToURLValues() url.Values {
 	v := url.Values{}

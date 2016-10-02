@@ -12,7 +12,7 @@ import (
 func TestGetMembersOnBoard(t *testing.T) {
 	board := testBoard(t)
 	board.client.BaseURL = mockResponse("members", "board-members-api-example.json").URL
-	members, err := board.GetMembers(Defaults)
+	members, err := board.GetMembers(Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func TestGetMembersOnBoard(t *testing.T) {
 func TestGetMembersInOrganization(t *testing.T) {
 	organization := testOrganization(t)
 	organization.client.BaseURL = mockResponse("members", "trelloapps.json").URL
-	members, err := organization.GetMembers(Defaults)
+	members, err := organization.GetMembers(Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestGetMembersInOrganization(t *testing.T) {
 func TestGetMembersOnCard(t *testing.T) {
 	card := testCard(t)
 	card.client.BaseURL = mockResponse("members", "card-members-api-example.json").URL
-	members, err := card.GetMembers(Defaults)
+	members, err := card.GetMembers(Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}

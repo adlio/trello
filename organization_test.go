@@ -19,7 +19,7 @@ func TestGetOrganization(t *testing.T) {
 func testOrganization(t *testing.T) *Organization {
 	client := testClient()
 	client.BaseURL = mockResponse("organizations", "culturefoundry.json").URL
-	organization, err := client.GetOrganization("culturefoundry", Defaults)
+	organization, err := client.GetOrganization("culturefoundry", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}

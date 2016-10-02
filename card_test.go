@@ -12,7 +12,7 @@ import (
 func TestGetCardsOnBoard(t *testing.T) {
 	board := testBoard(t)
 	board.client.BaseURL = mockResponse("cards", "board-cards-api-example.json").URL
-	cards, err := board.GetCards(Defaults)
+	cards, err := board.GetCards(Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,7 +24,7 @@ func TestGetCardsOnBoard(t *testing.T) {
 func TestGetCardsInList(t *testing.T) {
 	list := testList(t)
 	list.client.BaseURL = mockResponse("cards", "list-cards-api-example.json").URL
-	cards, err := list.GetCards(Defaults)
+	cards, err := list.GetCards(Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func TestGetCardsInList(t *testing.T) {
 func testCard(t *testing.T) *Card {
 	c := testClient()
 	c.BaseURL = mockResponse("cards", "card-api-example.json").URL
-	card, err := c.GetCard("4eea503", Defaults)
+	card, err := c.GetCard("4eea503", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}

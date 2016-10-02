@@ -13,7 +13,7 @@ func testBoard(t *testing.T) *Board {
 	c := testClient()
 	boardResponse := mockResponse("boards", "cI66RoQS.json")
 	c.BaseURL = boardResponse.URL
-	board, err := c.GetBoard("cIRoQS", Defaults)
+	board, err := c.GetBoard("cIRoQS", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,13 +35,13 @@ func TestGetBoards(t *testing.T) {
 	c := testClient()
 
 	c.BaseURL = mockResponse("members", "api-example.json").URL
-	member, err := c.GetMember("4ee7df1", Defaults)
+	member, err := c.GetMember("4ee7df1", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	c.BaseURL = mockResponse("boards", "member-boards-example.json").URL
-	boards, err := member.GetBoards(Defaults)
+	boards, err := member.GetBoards(Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func TestGetUnauthorizedBoard(t *testing.T) {
 	c := testClient()
 	c.BaseURL = mockErrorResponse(401).URL
 
-	_, err := c.GetBoard("boardid", Defaults)
+	_, err := c.GetBoard("boardid", Defaults())
 	if err == nil {
 		t.Error("GetBoard() should have failed")
 	}

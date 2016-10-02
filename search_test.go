@@ -12,7 +12,7 @@ import (
 func TestSearchCards(t *testing.T) {
 	c := testClient()
 	c.BaseURL = mockResponse("search", "cards-api-example-response.json").URL
-	cards, err := c.SearchCards("testQuery", Defaults)
+	cards, err := c.SearchCards("testQuery", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -24,7 +24,7 @@ func TestSearchCards(t *testing.T) {
 func TestSearchBoards(t *testing.T) {
 	c := testClient()
 	c.BaseURL = mockResponse("search", "boards-api-example-response.json").URL
-	boards, err := c.SearchBoards("testQuery", Defaults)
+	boards, err := c.SearchBoards("testQuery", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func TestSearchBoards(t *testing.T) {
 func TestSearchMembers(t *testing.T) {
 	c := testClient()
 	c.BaseURL = mockResponse("search", "members-api-example-response.json").URL
-	members, err := c.SearchMembers("testQuery", Defaults)
+	members, err := c.SearchMembers("testQuery", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}
