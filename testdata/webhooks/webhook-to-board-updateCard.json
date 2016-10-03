@@ -1,0 +1,83 @@
+{  
+  "model":{  
+    "id":"57f039fbc0f98772398d289d",
+    "name":"Test Board for Go Package",
+    "desc":"",
+    "descData":null,
+    "closed":false,
+    "idOrganization":null,
+    "pinned":false,
+    "url":"https://trello.com/b/QB4oHV5k/test-board-for-go-package",
+    "shortUrl":"https://trello.com/b/QB4oHV5k",
+    "prefs":{  
+      "permissionLevel":"public",
+      "voting":"disabled",
+      "comments":"members",
+      "invitations":"members",
+      "selfJoin":false,
+      "cardCovers":true,
+      "cardAging":"regular",
+      "calendarFeedEnabled":false,
+      "background":"blue",
+      "backgroundImage":null,
+      "backgroundImageScaled":null,
+      "backgroundTile":false,
+      "backgroundBrightness":"dark",
+      "backgroundColor":"#0079BF",
+      "canBePublic":true,
+      "canBeOrg":true,
+      "canBePrivate":true,
+      "canInvite":true
+    },
+    "labelNames":{  
+      "green":"",
+      "yellow":"",
+      "orange":"",
+      "red":"",
+      "purple":"",
+      "blue":"",
+      "sky":"",
+      "lime":"",
+      "pink":"",
+      "black":""
+    }
+  },
+  "action":{  
+    "id":"57f1c03da9f6a0a4bf851f89",
+    "idMemberCreator":"4f0b777fd1e39cca3f217850",
+    "data":{  
+      "listAfter":{  
+        "name":"Doing",
+        "id":"57f03a09ace084808ff59272"
+      },
+      "listBefore":{  
+        "name":"Code Review",
+        "id":"57f03a0e9d3013ae8f30f9a2"
+      },
+      "board":{  
+        "shortLink":"QB4oHV5k",
+        "name":"Test Board for Go Package",
+        "id":"57f039fbc0f98772398d289d"
+      },
+      "card":{  
+        "shortLink":"zsXNFTzb",
+        "idShort":6,
+        "name":"Finished Card",
+        "id":"57f0752fe7074732b13358df",
+        "idList":"57f03a09ace084808ff59272"
+      },
+      "old":{  
+        "idList":"57f03a0e9d3013ae8f30f9a2"
+      }
+    },
+    "type":"updateCard",
+    "date":"2016-10-03T02:19:41.007Z",
+    "memberCreator":{  
+      "id":"4f0b777fd1e39cca3f217850",
+      "avatarHash":"7118bd3bff810a24d163e2719ce0849c",
+      "fullName":"Aaron Longwell",
+      "initials":"ADL",
+      "username":"cfadl"
+    }
+  }
+}

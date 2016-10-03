@@ -11,12 +11,7 @@ import (
 )
 
 func TestGetToken(t *testing.T) {
-	client := testClient()
-	client.BaseURL = mockResponse("tokens", "token.json").URL
-	token, err := client.GetToken("tOkenId", Defaults())
-	if err != nil {
-		t.Error(err)
-	}
+	token := testToken(t)
 
 	if token.Identifier != "Name of Application" {
 		t.Errorf("Expected 'Name of Application' blah, got '%s'.", token.Identifier)
@@ -52,4 +47,14 @@ func TestGetExpiringToken(t *testing.T) {
 	if token.DateExpires.Format(time.Kitchen) != "4:25AM" {
 		t.Errorf("Expected 4:25AM expiration time. Got %s.", token.DateExpires.Format(time.Kitchen))
 	}
+}
+
+func testToken(t *testing.T) *Token {
+	client := testClient()
+	client.BaseURL = mockResponse("tokens", "token.json").URL
+	token, err := client.GetToken("tOkenId", Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+	return token
 }

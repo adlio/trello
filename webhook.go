@@ -15,6 +15,7 @@ type Webhook struct {
 	IDModel     string `json:"idModel"`
 	Description string `json:"description"`
 	CallbackURL string `json:"callbackURL"`
+	Active      bool   `json:"active"`
 }
 
 func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook, err error) {
@@ -23,5 +24,11 @@ func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook,
 	if webhook != nil {
 		webhook.client = c
 	}
+	return
+}
+
+func (t *Token) GetWebhooks(args Arguments) (webhooks []*Webhook, err error) {
+	path := fmt.Sprintf("tokens/%s/webhooks", t.ID)
+	err = t.client.Get(path, args, &webhooks)
 	return
 }
