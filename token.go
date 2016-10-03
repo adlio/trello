@@ -14,7 +14,7 @@ type Token struct {
 	client      *Client
 	ID          string       `json:"id"`
 	DateCreated time.Time    `json:"dateCreated"`
-	DateExpires time.Time    `json:"dateExpires"`
+	DateExpires *time.Time   `json:"dateExpires"`
 	IDMember    string       `json:"idMember"`
 	Identifier  string       `json:"identifier"`
 	Permissions []Permission `json:"permissions"`

@@ -1,0 +1,27 @@
+{
+  "id": "expiring-token-id",
+  "identifier": "Name of Application",
+  "idMember": "token-user-id",
+  "dateCreated": "2016-08-13T03:25:47.075Z",
+  "dateExpires": "2016-08-13T04:25:47.075Z",
+  "permissions": [
+    {
+      "idModel": "token-user-id",
+      "modelType": "Member",
+      "read": true,
+      "write": true
+    },
+    {
+      "idModel": "*",
+      "modelType": "Board",
+      "read": true,
+      "write": true
+    },
+    {
+      "idModel": "*",
+      "modelType": "Organization",
+      "read": true,
+      "write": true
+    }
+  ]
+}
