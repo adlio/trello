@@ -1,0 +1,38 @@
+[
+  {
+    "id": "57f50c552b96e3fffe588aaf",
+    "idMemberCreator": "4f0b777fd1e39cca3f217850",
+    "data": {
+      "cardSource": {
+        "shortLink": "RL6cxUAI",
+        "idShort": 138,
+        "name": "DAM: Reports - Add a comparison feature so you can compare multiple dates on one screen",
+        "id": "57914873fd2de1a10f3cb422"
+      },
+      "board": {
+        "shortLink": "QB4oHV5k",
+        "name": "Test Board for Go Package",
+        "id": "57f039fbc0f98772398d289d"
+      },
+      "list": {
+        "name": "Backlog",
+        "id": "57f03a00ac2b96516c50d0dd"
+      },
+      "card": {
+        "shortLink": "I39m6O6Y",
+        "idShort": 7,
+        "name": "Experimental Test Card from Another Board",
+        "id": "57f50c552b96e3fffe588aad"
+      }
+    },
+    "type": "copyCard",
+    "date": "2016-10-05T14:21:09.780Z",
+    "memberCreator": {
+      "id": "4f0b777fd1e39cca3f217850",
+      "avatarHash": "7118bd3bff810a24d163e2719ce0849c",
+      "fullName": "Aaron Longwell",
+      "initials": "ADL",
+      "username": "cfadl"
+    }
+  }
+]

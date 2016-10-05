@@ -1,0 +1,38 @@
+{
+  "id": "57f5118667db8839dab68698",
+  "badges": {
+    "votes": 0,
+    "viewingMemberVoted": false,
+    "subscribed": false,
+    "fogbugz": "",
+    "checkItems": 0,
+    "checkItemsChecked": 0,
+    "comments": 0,
+    "attachments": 0,
+    "description": true,
+    "due": null
+  },
+  "checkItemStates": [],
+  "closed": false,
+  "dateLastActivity": "2016-10-05T14:43:18.610Z",
+  "desc": "This is its description",
+  "descData": {
+    "emoji": {}
+  },
+  "due": null,
+  "email": null,
+  "idBoard": "57f039fbc0f98772398d289d",
+  "idChecklists": [],
+  "idLabels": [],
+  "idList": "57f03a06b5ff33a63c8be316",
+  "idMembers": [],
+  "idShort": 8,
+  "idAttachmentCover": null,
+  "manualCoverAttachment": false,
+  "labels": [],
+  "name": "Test Card POSTed to list",
+  "pos": 32768,
+  "shortUrl": "https://trello.com/c/Nz9LWf8C",
+  "url": "https://trello.com/c/Nz9LWf8C/8-test-card-posted-to-list",
+  "stickers": []
+}

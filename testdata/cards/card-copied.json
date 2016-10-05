@@ -1,0 +1,38 @@
+{
+  "id": "57f51bfdf89aa46423770980",
+  "badges": {
+    "votes": 0,
+    "viewingMemberVoted": false,
+    "subscribed": false,
+    "fogbugz": "",
+    "checkItems": 0,
+    "checkItemsChecked": 0,
+    "comments": 0,
+    "attachments": 0,
+    "description": false,
+    "due": null
+  },
+  "checkItemStates": [],
+  "closed": false,
+  "dateLastActivity": "2016-10-05T15:27:57.697Z",
+  "desc": "",
+  "descData": {
+    "emoji": {}
+  },
+  "due": null,
+  "email": null,
+  "idBoard": "57f039fbc0f98772398d289d",
+  "idChecklists": [],
+  "idLabels": [],
+  "idList": "57f03a022cd45c863ca581f1",
+  "idMembers": [],
+  "idShort": 11,
+  "idAttachmentCover": null,
+  "manualCoverAttachment": false,
+  "labels": [],
+  "name": "Copied Card Source",
+  "pos": 16384,
+  "shortUrl": "https://trello.com/c/zvZFJ3B3",
+  "url": "https://trello.com/c/zvZFJ3B3/11-copied-card-source",
+  "stickers": []
+}

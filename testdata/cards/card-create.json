@@ -1,0 +1,38 @@
+{
+  "id": "57f5183c691585658d408681",
+  "badges": {
+    "votes": 0,
+    "viewingMemberVoted": false,
+    "subscribed": false,
+    "fogbugz": "",
+    "checkItems": 0,
+    "checkItemsChecked": 0,
+    "comments": 0,
+    "attachments": 0,
+    "description": true,
+    "due": null
+  },
+  "checkItemStates": [],
+  "closed": false,
+  "dateLastActivity": "2016-10-05T15:11:56.325Z",
+  "desc": "What its about",
+  "descData": {
+    "emoji": {}
+  },
+  "due": null,
+  "email": null,
+  "idBoard": "57f039fbc0f98772398d289d",
+  "idChecklists": [],
+  "idLabels": [],
+  "idList": "57f03a06b5ff33a63c8be316",
+  "idMembers": [],
+  "idShort": 9,
+  "idAttachmentCover": null,
+  "manualCoverAttachment": false,
+  "labels": [],
+  "name": "Test Card Create",
+  "pos": 8192,
+  "shortUrl": "https://trello.com/c/j9UEXfyh",
+  "url": "https://trello.com/c/j9UEXfyh/9-test-card-create",
+  "stickers": []
+}
