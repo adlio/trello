@@ -83,6 +83,7 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	if err != nil {
 		return errors.Wrapf(err, "Invalid POST request %s", url)
 	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
