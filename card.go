@@ -7,7 +7,11 @@ package trello
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 type Card struct {
@@ -17,13 +21,13 @@ type Card struct {
 	ID               string     `json:"id"`
 	IDShort          int        `json:"idShort"`
 	Name             string     `json:"name"`
-	Pos              float32    `json:"pos"`
+	Pos              float64    `json:"pos"`
 	Email            string     `json:"email"`
 	ShortLink        string     `json:"shortLink"`
 	ShortUrl         string     `json:"shortUrl"`
 	Url              string     `json:"url"`
 	Desc             string     `json:"desc"`
-	Due              string     `json:"due"`
+	Due              *time.Time `json:"due"`
 	Closed           bool       `json:"closed"`
 	Subscribed       bool       `json:"subscribed"`
 	DateLastActivity *time.Time `json:"dateLastActivity"`
@@ -67,6 +71,87 @@ type Card struct {
 
 	// Labels
 	Labels []*Label `json:"labels,omitempty"`
+}
+
+func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
+	path := "cards"
+	args := Arguments{
+		"name":      card.Name,
+		"desc":      card.Desc,
+		"pos":       strconv.FormatFloat(card.Pos, 'g', -1, 64),
+		"idList":    card.IDList,
+		"idMembers": strings.Join(card.IDMembers, ","),
+	}
+	if card.Due != nil {
+		args["due"] = card.Due.Format(time.RFC3339)
+	}
+	// Allow overriding the creation position with 'top' or 'botttom'
+	if pos, ok := extraArgs["pos"]; ok {
+		args["pos"] = pos
+	}
+	err := c.Post(path, args, &card)
+	if err == nil {
+		card.client = c
+	}
+	return err
+}
+
+func (l *List) AddCard(card *Card, extraArgs Arguments) error {
+	path := fmt.Sprintf("lists/%s/cards", l.ID)
+	args := Arguments{
+		"name":      card.Name,
+		"desc":      card.Desc,
+		"idMembers": strings.Join(card.IDMembers, ","),
+	}
+	if card.Due != nil {
+		args["due"] = card.Due.Format(time.RFC3339)
+	}
+	// Allow overwriting the creation position with 'top' or 'bottom'
+	if pos, ok := extraArgs["pos"]; ok {
+		args["pos"] = pos
+	}
+	err := l.client.Post(path, args, &card)
+	if err == nil {
+		card.client = l.client
+	} else {
+		err = errors.Wrapf(err, "Error adding card to list %s", l.ID)
+	}
+	return err
+}
+
+// Try these Arguments
+//
+// 	Arguments["keepFromSource"] = "all"
+//  Arguments["keepFromSource"] = "none"
+// 	Arguments["keepFromSource"] = "attachments,checklists,comments"
+//
+func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
+	path := "cards"
+	args["idList"] = listID
+	args["idCardSource"] = c.ID
+	newCard := Card{}
+	err := c.client.Post(path, args, &newCard)
+	if err == nil {
+		newCard.client = c.client
+	} else {
+		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
+	}
+	return &newCard, err
+}
+
+func (b *Board) ContainsCopyOfCard(cardID string, args Arguments) (bool, error) {
+	args["filter"] = "copyCard"
+	actions, err := b.GetActions(args)
+	if err != nil {
+		err := errors.Wrapf(err, "GetCards() failed inside ContainsCopyOf() for board '%s' and card '%s'.", b.ID, cardID)
+		return false, err
+	}
+	for _, action := range actions {
+		if action.Data != nil && action.Data.CardSource != nil && action.Data.CardSource.ID == cardID {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) {
