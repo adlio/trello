@@ -23,6 +23,7 @@ type ActionData struct {
 	Text           string    `json:"text,omitempty"`
 	List           *List     `json:"list,omitempty"`
 	Card           *Card     `json:"card,omitempty"`
+	CardSource     *Card     `json:"cardSource,omitempty"`
 	Board          *Board    `json:"board,omitempty"`
 	Old            *Card     `json:"old,omitempty"`
 	ListBefore     *List     `json:"listBefore,omitempty"`
