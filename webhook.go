@@ -18,6 +18,16 @@ type Webhook struct {
 	Active      bool   `json:"active"`
 }
 
+func (c *Client) CreateWebhook(webhook *Webhook) error {
+	path := "webhooks"
+	args := Arguments{"idModel": webhook.IDModel, "description": webhook.Description, "callbackURL": webhook.CallbackURL}
+	err := c.Post(path, args, webhook)
+	if err == nil {
+		webhook.client = c
+	}
+	return err
+}
+
 func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook, err error) {
 	path := fmt.Sprintf("webhooks/%s", webhookID)
 	err = c.Get(path, args, &webhook)

@@ -9,6 +9,28 @@ import (
 	"testing"
 )
 
+func TestCreateWebhook(t *testing.T) {
+	client := testClient()
+	client.BaseURL = mockResponse("webhooks", "webhook-create.json").URL
+	wh := Webhook{IDModel: "test", Description: "Webhook name", CallbackURL: "http://example.com/test"}
+	err := client.CreateWebhook(&wh)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if wh.ID != "57f1c02b618bc5da74ad3874" {
+		t.Errorf("Unexecpedted resultant Webhook ID: '%s'.", wh.ID)
+	}
+
+	if wh.Active != true {
+		t.Error("Expected resulting webhook to be active.")
+	}
+
+	if wh.Description == "webhook name" {
+		t.Errorf("Webhook description should have been retrieved from the server. Got '%s'.", wh.Description)
+	}
+}
+
 func TestGetWebhook(t *testing.T) {
 	client := testClient()
 	client.BaseURL = mockResponse("webhooks", "webhook.json").URL
