@@ -8,6 +8,7 @@ package trello
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -56,6 +57,10 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 		return errors.Wrapf(err, "HTTP request failure on %s", url)
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		body, err := ioutil.ReadAll(resp.Body)
+		return errors.Errorf("HTTP request failure on %s: %s %s", url, string(body), err)
+	}
 
 	decoder := json.NewDecoder(resp.Body)
 	err = decoder.Decode(target)

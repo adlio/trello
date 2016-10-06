@@ -21,7 +21,9 @@ type Member struct {
 func (c *Client) GetMember(memberID string, args Arguments) (member *Member, err error) {
 	path := fmt.Sprintf("members/%s", memberID)
 	err = c.Get(path, args, &member)
-	member.client = c
+	if err == nil {
+		member.client = c
+	}
 	return
 }
 
