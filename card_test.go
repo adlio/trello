@@ -10,6 +10,18 @@ import (
 	"time"
 )
 
+func TestCardCreatedAt(t *testing.T) {
+	c := Card{}
+	c.ID = "4d5ea62fd76aa1136000000c"
+	ts := c.CreatedAt()
+	if ts.IsZero() {
+		t.Error("Time shouldn't be zero.")
+	}
+	if ts.Unix() != 1298048559 {
+		t.Errorf("Incorrect CreatedAt() time: '%s'.", ts.Format(time.RFC3339))
+	}
+}
+
 func TestGetCardsOnBoard(t *testing.T) {
 	board := testBoard(t)
 	board.client.BaseURL = mockResponse("cards", "board-cards-api-example.json").URL

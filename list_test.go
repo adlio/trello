@@ -7,7 +7,19 @@ package trello
 
 import (
 	"testing"
+	"time"
 )
+
+func TestListCreatedAt(t *testing.T) {
+	l := List{ID: "4d5ea62fd76aa1136000000c"}
+	ts := l.CreatedAt()
+	if ts.IsZero() {
+		t.Error("Time shouldn't be zero.")
+	}
+	if ts.Unix() != 1298048559 {
+		t.Errorf("Incorrect CreatedAt() time: '%s'.", ts.Format(time.RFC3339))
+	}
+}
 
 func TestGetList(t *testing.T) {
 	list := testList(t)

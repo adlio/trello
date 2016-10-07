@@ -7,6 +7,7 @@ package trello
 
 import (
 	"fmt"
+	"time"
 )
 
 type Board struct {
@@ -57,6 +58,15 @@ type BackgroundImage struct {
 	width  int    `json:"width"`
 	height int    `json:"height"`
 	url    string `json:"url"`
+}
+
+func (b *Board) CreatedAt() time.Time {
+	t, err := IDToTime(b.ID)
+	if err != nil {
+		return time.Time{}
+	} else {
+		return t
+	}
 }
 
 /**

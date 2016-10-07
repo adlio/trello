@@ -7,17 +7,18 @@ package trello
 
 import (
 	"testing"
+	"time"
 )
 
-func testBoard(t *testing.T) *Board {
-	c := testClient()
-	boardResponse := mockResponse("boards", "cI66RoQS.json")
-	c.BaseURL = boardResponse.URL
-	board, err := c.GetBoard("cIRoQS", Defaults())
-	if err != nil {
-		t.Fatal(err)
+func TestBoardCreatedAt(t *testing.T) {
+	b := Board{ID: "4d5ea62fd76aa1136000000c"}
+	ts := b.CreatedAt()
+	if ts.IsZero() {
+		t.Error("Time shouldn't be zero.")
 	}
-	return board
+	if ts.Unix() != 1298048559 {
+		t.Errorf("Incorrect CreatedAt() time: '%s'.", ts.Format(time.RFC3339))
+	}
 }
 
 func TestGetBoard(t *testing.T) {
@@ -68,4 +69,15 @@ func TestGetUnauthorizedBoard(t *testing.T) {
 	if err == nil {
 		t.Error("GetBoard() should have failed")
 	}
+}
+
+func testBoard(t *testing.T) *Board {
+	c := testClient()
+	boardResponse := mockResponse("boards", "cI66RoQS.json")
+	c.BaseURL = boardResponse.URL
+	board, err := c.GetBoard("cIRoQS", Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return board
 }

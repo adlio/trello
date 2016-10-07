@@ -73,6 +73,15 @@ type Card struct {
 	Labels []*Label `json:"labels,omitempty"`
 }
 
+func (c *Card) CreatedAt() time.Time {
+	t, err := IDToTime(c.ID)
+	if err != nil {
+		return time.Time{}
+	} else {
+		return t
+	}
+}
+
 func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 	path := "cards"
 	args := Arguments{

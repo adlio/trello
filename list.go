@@ -7,6 +7,7 @@ package trello
 
 import (
 	"fmt"
+	"time"
 )
 
 type List struct {
@@ -18,6 +19,15 @@ type List struct {
 	Pos     float32 `json:"pos,omitempty"`
 	Board   *Board  `json:"board,omitempty"`
 	Cards   []Card  `json:"cards,omitempty"`
+}
+
+func (l *List) CreatedAt() time.Time {
+	t, err := IDToTime(l.ID)
+	if err != nil {
+		return time.Time{}
+	} else {
+		return t
+	}
 }
 
 func (c *Client) GetList(listID string, args Arguments) (list *List, err error) {
