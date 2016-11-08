@@ -34,7 +34,7 @@ which can be used when you desire the default Trello arguments. Internally,
 `trello.Defaults` is an empty map, which translates to an empty query string.
 
 ```Go
-board, err := trello.GetBoard("bOaRdID", trello.Defaults)
+board, err := client.GetBoard("bOaRdID", trello.Defaults)
 if err != nil {
   // Handle error
 }
