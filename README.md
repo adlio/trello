@@ -29,12 +29,12 @@ client := trello.NewClient(appKey, token)
 
 All API requests accept a trello.Arguments object. This object is a simple
 `map[string]string`, converted to query string arguments in the API call.
-Trello has sane defaults on API calls. We have a `trello.Defaults` object
+Trello has sane defaults on API calls. We have a `rello.Defaults` object
 which can be used when you desire the default Trello arguments. Internally,
-`trello.Defaults` is an empty map, which translates to an empty query string.
+`trello.Defaults()` is an empty map, which translates to an empty query string.
 
 ```Go
-board, err := client.GetBoard("bOaRdID", trello.Defaults)
+board, err := client.GetBoard("bOaRdID", trello.Defaults())
 if err != nil {
   // Handle error
 }
@@ -46,12 +46,12 @@ Boards can be retrieved directly by their ID (see example above), or by asking
 for all boards for a member:
 
 ```Go
-member, err := client.GetMember("usernameOrId", trello.Defaults)
+member, err := client.GetMember("usernameOrId", trello.Defaults())
 if err != nil {
   // Handle error
 }
 
-boards, err := member.GetBoards(trello.Defaults)
+boards, err := member.GetBoards(trello.Defaults())
 if err != nil {
   // Handle error
 }
@@ -60,12 +60,12 @@ if err != nil {
 ## Get Trello Lists on a Board
 
 ```Go
-board, err := client.GetBoard("bOaRdID", trello.Defaults)
+board, err := client.GetBoard("bOaRdID", trello.Defaults())
 if err != nil {
   // Handle error
 }
 
-lists, err := board.GetLists(trello.Defaults)
+lists, err := board.GetLists(trello.Defaults())
 if err != nil {
   // Handle error
 }
@@ -74,12 +74,12 @@ if err != nil {
 ## Get Trello Cards on a Board
 
 ```Go
-board, err := client.GetBoard("bOaRdID", trello.Defaults)
+board, err := client.GetBoard("bOaRdID", trello.Defaults())
 if err != nil {
   // Handle error
 }
 
-cards, err := board.GetCards(trello.Defaults)
+cards, err := board.GetCards(trello.Defaults())
 if err != nil {
   // Handle error
 }
@@ -88,12 +88,12 @@ if err != nil {
 ## Get Trello Cards on a List
 
 ```Go
-list, err := client.GetList("lIsTID", trello.Defaults)
+list, err := client.GetList("lIsTID", trello.Defaults())
 if err != nil {
   // Handle error
 }
 
-cards, err := list.GetCards(trello.Defaults)
+cards, err := list.GetCards(trello.Defaults())
 if err != nil {
   // Handle error
 }
@@ -102,12 +102,12 @@ if err != nil {
 ## Get Actions on a Board
 
 ```Go
-board, err := client.GetBoard("bOaRdID", trello.Defaults)
+board, err := client.GetBoard("bOaRdID", trello.Defaults())
 if err != nil {
   // Handle error
 }
 
-actions, err := board.GetActions(trello.Defaults)
+actions, err := board.GetActions(trello.Defaults())
 if err != nil {
   // Handle error
 }
@@ -116,12 +116,12 @@ if err != nil {
 ## Get Actions on a Card
 
 ```Go
-card, err := client.GetCard("cArDID", trello.Defaults)
+card, err := client.GetCard("cArDID", trello.Defaults())
 if err != nil {
   // Handle error
 }
 
-actions, err := card.GetActions(trello.Defaults)
+actions, err := card.GetActions(trello.Defaults())
 if err != nil {
   // Handle error
 }
