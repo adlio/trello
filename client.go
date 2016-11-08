@@ -6,6 +6,7 @@
 package trello
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -96,10 +97,15 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	}
 	defer resp.Body.Close()
 
-	decoder := json.NewDecoder(resp.Body)
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errors.Wrapf(err, "HTTP Read error on response for %s", url)
+	}
+
+	decoder := json.NewDecoder(bytes.NewBuffer(b))
 	err = decoder.Decode(target)
 	if err != nil {
-		return errors.Wrapf(err, "JSON decode failed on %s", url)
+		return errors.Wrapf(err, "JSON decode failed on %s:\n%s", url, string(b))
 	}
 
 	return nil

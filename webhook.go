@@ -75,6 +75,9 @@ func (t *Token) GetWebhooks(args Arguments) (webhooks []*Webhook, err error) {
 }
 
 func GetBoardWebhookRequest(r *http.Request) (whr *BoardWebhookRequest, err error) {
+	if r.Method == "HEAD" {
+		return &BoardWebhookRequest{}, nil
+	}
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&whr)
 	if err != nil {
@@ -84,6 +87,9 @@ func GetBoardWebhookRequest(r *http.Request) (whr *BoardWebhookRequest, err erro
 }
 
 func GetListWebhookRequest(r *http.Request) (whr *ListWebhookRequest, err error) {
+	if r.Method == "HEAD" {
+		return &ListWebhookRequest{}, nil
+	}
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&whr)
 	if err != nil {
@@ -93,6 +99,9 @@ func GetListWebhookRequest(r *http.Request) (whr *ListWebhookRequest, err error)
 }
 
 func GetCardWebhookRequest(r *http.Request) (whr *CardWebhookRequest, err error) {
+	if r.Method == "HEAD" {
+		return &CardWebhookRequest{}, nil
+	}
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&whr)
 	if err != nil {
