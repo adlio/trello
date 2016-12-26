@@ -143,6 +143,32 @@ func TestCopyCardToList(t *testing.T) {
 	}
 }
 
+func TestGetParentCard(t *testing.T) {
+	c := testCard(t)
+	c.client.BaseURL = mockDynamicPathResponse().URL
+
+	parent, err := c.GetParentCard(Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+	if parent == nil {
+		t.Errorf("Problem")
+	}
+}
+
+func TestGetAncestorCards(t *testing.T) {
+	c := testCard(t)
+	c.client.BaseURL = mockDynamicPathResponse().URL
+
+	ancestors, err := c.GetAncestorCards(Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+	if len(ancestors) != 1 {
+		t.Errorf("Expected 1 ancestor, got %d", len(ancestors))
+	}
+}
+
 // Utility function to get a simple response from Client.GetCard()
 //
 func testCard(t *testing.T) *Card {

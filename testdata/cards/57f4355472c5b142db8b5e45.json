@@ -1,0 +1,39 @@
+{
+  "id": "57f4355472c5b142db8b5e45",
+  "badges": {
+    "votes": 0,
+    "viewingMemberVoted": false,
+    "subscribed": false,
+    "fogbugz": "",
+    "checkItems": 0,
+    "checkItemsChecked": 0,
+    "comments": 0,
+    "attachments": 0,
+    "description": true,
+    "due": null,
+    "dueComplete": false
+  },
+  "checkItemStates": [],
+  "closed": false,
+  "dateLastActivity": "2016-10-27T15:50:53.820Z",
+  "desc": "Create the Aqueduct search page at /aqueduct/search. Belmont or Saratoga can be used as a model.",
+  "descData": {
+    "emoji": {}
+  },
+  "due": null,
+  "dueComplete": false,
+  "email": null,
+  "idBoard": "56a7b22c77068aebc51db583",
+  "idChecklists": [],
+  "idLabels": [],
+  "idList": "56a7b23e061f6dd12c891e7d",
+  "idMembers": [],
+  "idShort": 259,
+  "idAttachmentCover": null,
+  "manualCoverAttachment": false,
+  "labels": [],
+  "name": "NYRA: Aqueduct Search Page",
+  "pos": 557056,
+  "shortUrl": "https://trello.com/c/G0y0X56p",
+  "url": "https://trello.com/c/G0y0X56p/259-nyra-aqueduct-search-page"
+}

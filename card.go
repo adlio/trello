@@ -54,6 +54,9 @@ type Card struct {
 		Due                *time.Time `json:"due,omitempty"`
 	} `json:"badges"`
 
+	// Actions
+	Actions []*Action `json:"actions,omitempty"`
+
 	// Checklists
 	IDCheckLists    []string          `json:"idCheckLists"`
 	Checklists      []*Checklist      `json:"checklists,omitempty"`
@@ -146,6 +149,42 @@ func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
 	}
 	return &newCard, err
+}
+
+// If this Card was created from a copy of another Card, this func retrieves
+// the originating Card. Returns an error only when a low-level failure occurred.
+// If this Card has no parent, nil, nil is returned.
+//
+func (c *Card) GetParentCard(args Arguments) (*Card, error) {
+	actions, err := c.GetActions(Arguments{"filter": "copyCard"})
+	if err != nil {
+		err = errors.Wrapf(err, "ParentCard() failed to GetActions() for card '%s'", c.ID)
+		return nil, err
+	}
+	if len(actions) == 0 {
+		return nil, nil
+	}
+	for _, action := range actions {
+		if action.Data.CardSource.ID != c.ID {
+			card, err := c.client.GetCard(action.Data.CardSource.ID, args)
+			return card, err
+		}
+	}
+	return nil, nil
+}
+
+func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
+	parent := c
+	for parent != nil {
+		if parent != c {
+			ancestors = append(ancestors, parent)
+		}
+		parent, err = parent.GetParentCard(args)
+		if err != nil {
+			return
+		}
+	}
+	return
 }
 
 func (b *Board) ContainsCopyOfCard(cardID string, args Arguments) (bool, error) {

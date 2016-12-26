@@ -1,0 +1,38 @@
+[
+  {
+    "id": "57f435876e53b4ee01fa566b",
+    "idMemberCreator": "4f0b777fd1e39cca3f217850",
+    "data": {
+      "cardSource": {
+        "shortLink": "G0y0X56p",
+        "idShort": 259,
+        "name": "NYRA: Aqueduct Search Page",
+        "id": "57f4355472c5b142db8b5e45"
+      },
+      "board": {
+        "shortLink": "vI6jGZ07",
+        "name": "DEV Board",
+        "id": "57a222e039f90823ff39b5b3"
+      },
+      "list": {
+        "name": "Backlog",
+        "id": "57a222e9e9efae8b4eafba22"
+      },
+      "card": {
+        "shortLink": "AHSSezVs",
+        "idShort": 685,
+        "name": "NYRA: Aqueduct Search Page",
+        "id": "57f435876e53b4ee01fa566a"
+      }
+    },
+    "type": "copyCard",
+    "date": "2016-10-04T23:04:39.407Z",
+    "memberCreator": {
+      "id": "4f0b777fd1e39cca3f217850",
+      "avatarHash": "7118bd3bff810a24d163e2719ce0849c",
+      "fullName": "Aaron Longwell",
+      "initials": "ADL",
+      "username": "cfadl"
+    }
+  }
+]
