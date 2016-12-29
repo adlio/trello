@@ -34,19 +34,19 @@ type ActionData struct {
 	Checklist *Checklist `json:"checklist"`
 }
 
-func (b *Board) GetActions(args Arguments) (actions []*Action, err error) {
+func (b *Board) GetActions(args Arguments) (actions ActionCollection, err error) {
 	path := fmt.Sprintf("boards/%s/actions", b.ID)
 	err = b.client.Get(path, args, &actions)
 	return
 }
 
-func (l *List) GetActions(args Arguments) (actions []*Action, err error) {
+func (l *List) GetActions(args Arguments) (actions ActionCollection, err error) {
 	path := fmt.Sprintf("lists/%s/actions", l.ID)
 	err = l.client.Get(path, args, &actions)
 	return
 }
 
-func (c *Card) GetActions(args Arguments) (actions []*Action, err error) {
+func (c *Card) GetActions(args Arguments) (actions ActionCollection, err error) {
 	path := fmt.Sprintf("cards/%s/actions", c.ID)
 	err = c.client.Get(path, args, &actions)
 	return
@@ -60,15 +60,51 @@ func (c *Card) GetActions(args Arguments) (actions []*Action, err error) {
 // This function is just an alias for:
 //   card.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed", "limit": "1000"})
 //
-func (c *Card) GetListChangeActions() (actions []*Action, err error) {
-	path := fmt.Sprintf("cards/%s/actions", c.ID)
+func (c *Card) GetListChangeActions() (actions ActionCollection, err error) {
+	return c.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed"})
+}
 
-	args := Arguments{
-		"filter": "createCard,copyCard,updateCard:idList,updateCard:closed",
-		"limit":  "1000",
+// DidCreateCard() returns true if this action created a card, false otherwise.
+func (a *Action) DidCreateCard() bool {
+	switch a.Type {
+	case "createCard", "emailCard", "copyCard", "convertToCardFromCheckItem":
+		return true
+	case "moveCardToBoard":
+		return true // Unsure about this one
+	default:
+		return false
 	}
-	err = c.client.Get(path, args, &actions)
-	return
+}
+
+func (a *Action) DidArchiveCard() bool {
+	return a.Type == "updateCard" && a.Data.Card != nil && a.Data.Card.Closed
+}
+
+func (a *Action) DidUnarchiveCard() bool {
+	return a.Type == "updateCard" && a.Data.Old != nil && a.Data.Old.Closed
+}
+
+// Returns true if this action created the card (in which case it caused it to enter its
+// first list), archived the card (in which case it caused it to leave its last List),
+// or was an updateCard action involving a change to the list. This is supporting
+// functionality for ListDuration.
+//
+func (a *Action) DidChangeListForCard() bool {
+	if a.DidCreateCard() {
+		return true
+	}
+	if a.DidArchiveCard() {
+		return true
+	}
+	if a.DidUnarchiveCard() {
+		return true
+	}
+	if a.Type == "updateCard" {
+		if a.Data.ListAfter != nil {
+			return true
+		}
+	}
+	return false
 }
 
 // ListAfterAction calculates which List the card ended up in after this action
@@ -78,14 +114,12 @@ func (c *Card) GetListChangeActions() (actions []*Action, err error) {
 //
 func ListAfterAction(a *Action) *List {
 	switch a.Type {
-	case "copyCard":
-		return a.Data.List
-	case "createCard":
+	case "createCard", "copyCard", "emailCard", "convertToCardFromCheckItem":
 		return a.Data.List
 	case "updateCard":
-		if a.Data.Card != nil && a.Data.Card.Closed {
+		if a.DidArchiveCard() {
 			return nil
-		} else if a.Data.Old != nil && a.Data.Old.Closed {
+		} else if a.DidUnarchiveCard() {
 			return a.Data.List
 		}
 		if a.Data.ListAfter != nil {
