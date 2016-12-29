@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -18,22 +19,31 @@ import (
 const DEFAULT_BASEURL = "https://api.trello.com/1"
 
 type Client struct {
-	client  *http.Client
-	BaseURL string
-	Key     string
-	Token   string
+	client   *http.Client
+	BaseURL  string
+	Key      string
+	Token    string
+	throttle <-chan time.Time
 }
 
 func NewClient(key, token string) *Client {
 	return &Client{
-		client:  http.DefaultClient,
-		BaseURL: DEFAULT_BASEURL,
-		Key:     key,
-		Token:   token,
+		client:   http.DefaultClient,
+		BaseURL:  DEFAULT_BASEURL,
+		Key:      key,
+		Token:    token,
+		throttle: time.Tick(time.Second / 9), // Actually 10/second, but we're extra cautious
 	}
 }
 
+func (c *Client) Throttle() {
+	<-c.throttle
+}
+
 func (c *Client) Get(path string, args Arguments, target interface{}) error {
+
+	// Trello prohibits more than 10 seconds/second per token
+	c.Throttle()
 
 	params := args.ToURLValues()
 
@@ -59,8 +69,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		body, err := ioutil.ReadAll(resp.Body)
-		return errors.Errorf("HTTP request failure on %s: %s %s", url, string(body), err)
+		return makeHttpClientError(url, resp)
 	}
 
 	decoder := json.NewDecoder(resp.Body)
@@ -73,6 +82,10 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 }
 
 func (c *Client) Post(path string, args Arguments, target interface{}) error {
+
+	// Trello prohibits more than 10 seconds/second per token
+	c.Throttle()
+
 	params := args.ToURLValues()
 	if c.Key != "" {
 		params.Set("key", c.Key)
