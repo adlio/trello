@@ -24,6 +24,7 @@ type Client struct {
 	Key      string
 	Token    string
 	throttle <-chan time.Time
+	testMode bool
 }
 
 func NewClient(key, token string) *Client {
@@ -33,11 +34,14 @@ func NewClient(key, token string) *Client {
 		Key:      key,
 		Token:    token,
 		throttle: time.Tick(time.Second / 9), // Actually 10/second, but we're extra cautious
+		testMode: false,
 	}
 }
 
 func (c *Client) Throttle() {
-	<-c.throttle
+	if !c.testMode {
+		<-c.throttle
+	}
 }
 
 func (c *Client) Get(path string, args Arguments, target interface{}) error {

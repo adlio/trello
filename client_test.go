@@ -21,5 +21,6 @@ func TestGetWithBadURL(t *testing.T) {
 
 func testClient() *Client {
 	c := NewClient("user", "pass")
+	c.testMode = true
 	return c
 }
