@@ -13,6 +13,9 @@ import (
 )
 
 func IDToTime(id string) (t time.Time, err error) {
+	if id == "" {
+		return time.Time{}, nil
+	}
 	ts, err := strconv.ParseUint(id[:8], 16, 64)
 	if err != nil {
 		err = errors.Wrapf(err, "ID '%s' failed to convert to timestamp.", id)
