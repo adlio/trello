@@ -20,15 +20,27 @@ func (l *ListDuration) AddDuration(d time.Duration) {
 	l.TimesInList++
 }
 
+// Analytzes a Cards actions to figure out how long it was in each List
 func (c *Card) GetListDurations() (durations []*ListDuration, err error) {
 
-	// Get all actions which affected the Card's List
-	actions, err := c.GetListChangeActions()
-	if err != nil {
-		err = errors.Wrap(err, "GetListChangeActions() call failed.")
-		return
+	var actions ActionCollection
+	if len(c.Actions) == 0 {
+		// Get all actions which affected the Card's List
+		c.client.Logger.Debugf("GetListDurations() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
+		actions, err = c.GetListChangeActions()
+		if err != nil {
+			err = errors.Wrap(err, "GetListChangeActions() call failed.")
+			return
+		}
+	} else {
+		actions = c.Actions.FilterToListChangeActions()
 	}
-	sort.Sort(ByActionDate(actions))
+
+	return actions.GetListDurations()
+}
+
+func (actions ActionCollection) GetListDurations() (durations []*ListDuration, err error) {
+	sort.Sort(actions)
 
 	var prevTime time.Time
 	var prevList *List
