@@ -55,7 +55,7 @@ type Card struct {
 	} `json:"badges"`
 
 	// Actions
-	Actions []*Action `json:"actions,omitempty"`
+	Actions ActionCollection `json:"actions,omitempty"`
 
 	// Checklists
 	IDCheckLists    []string          `json:"idCheckLists"`
@@ -153,23 +153,30 @@ func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 
 // If this Card was created from a copy of another Card, this func retrieves
 // the originating Card. Returns an error only when a low-level failure occurred.
-// If this Card has no parent, nil, nil is returned.
+// If this Card has no parent, a nil card and nil error are returned. In other words, the
+// non-existence of a parent is not treated as an error.
 //
 func (c *Card) GetParentCard(args Arguments) (*Card, error) {
-	actions, err := c.GetActions(Arguments{"filter": "copyCard,createCard"})
-	if err != nil {
-		err = errors.Wrapf(err, "ParentCard() failed to GetActions() for card '%s'", c.ID)
-		return nil, err
-	}
-	if len(actions) == 0 {
-		return nil, nil
-	}
-	for _, action := range actions {
-		if action.Data.CardSource != nil && action.Data.CardSource.ID != c.ID {
-			card, err := c.client.GetCard(action.Data.CardSource.ID, args)
-			return card, err
+
+	// Hopefully the card came pre-loaded with Actions including the card creation
+	action := c.Actions.FirstCardCreateAction()
+
+	if action == nil {
+		// No luck. Go get copyCard actions for this card.
+		c.client.Logger.Debugf("Creation action wasn't supplied before GetParentCard() on '%s'. Getting copyCard actions.", c.ID)
+		actions, err := c.GetActions(Arguments{"filter": "copyCard"})
+		if err != nil {
+			err = errors.Wrapf(err, "GetParentCard() failed to GetActions() for card '%s'", c.ID)
+			return nil, err
 		}
+		action = actions.FirstCardCreateAction()
 	}
+
+	if action != nil && action.Data != nil && action.Data.CardSource != nil {
+		card, err := c.client.GetCard(action.Data.CardSource.ID, args)
+		return card, err
+	}
+
 	return nil, nil
 }
 
@@ -178,13 +185,15 @@ func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
 	// Get the first parent
 	parent, err := c.GetParentCard(args)
 	if IsNotFound(err) || IsPermissionDenied(err) {
+		c.client.Logger.Debugf("Can't get details about the parent of card '%s' due to lack of permissions or card deleted.", c.ID)
 		return ancestors, nil
 	}
 
 	for parent != nil {
 		ancestors = append(ancestors, parent)
 		parent, err = parent.GetParentCard(args)
-		if IsNotFound(err) && !IsPermissionDenied(err) {
+		if IsNotFound(err) || IsPermissionDenied(err) {
+			c.client.Logger.Debugf("Can't get details about the parent of card '%s' due to lack of permissions or card deleted.", c.ID)
 			return ancestors, nil
 		} else if err != nil {
 			return ancestors, err
@@ -207,15 +216,24 @@ func (c *Card) GetOriginatingCard(args Arguments) (*Card, error) {
 }
 
 func (c *Card) CreatorMemberID() (string, error) {
-	if len(c.Actions) > 0 {
-		if c.Actions[0].IDMemberCreator != "" {
-			return c.Actions[0].IDMemberCreator, nil
+
+	var actions ActionCollection
+	var err error
+
+	if len(c.Actions) == 0 {
+		c.client.Logger.Debugf("CreatorMemberID() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
+		actions, err = c.GetActions(Defaults())
+		if err != nil {
+			err = errors.Wrapf(err, "GetActions() call failed.")
 		}
+	} else {
+		actions = c.Actions.FilterToCardCreationActions()
 	}
 
-	actions, err := c.GetActions(Arguments{"filter": "emailCard,createCard,copyCard,moveCardToBoard,convertToCardFromCheckItem"})
 	if len(actions) > 0 {
-		return actions[0].IDMemberCreator, err
+		if actions[0].IDMemberCreator != "" {
+			return actions[0].IDMemberCreator, err
+		}
 	}
 
 	return "", errors.Wrapf(err, "No Actions on card '%s' could be used to find its creator.", c.ID)
