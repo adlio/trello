@@ -24,7 +24,7 @@ func TestCardCreatedAt(t *testing.T) {
 
 func TestGetCardsOnBoard(t *testing.T) {
 	board := testBoard(t)
-	board.client.BaseURL = mockResponse("cards", "board-cards-api-example.json").URL
+	board.client.BaseURL = mockDynamicPathResponse().URL
 	cards, err := board.GetCards(Defaults())
 	if err != nil {
 		t.Fatal(err)

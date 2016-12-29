@@ -156,7 +156,7 @@ func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 // If this Card has no parent, nil, nil is returned.
 //
 func (c *Card) GetParentCard(args Arguments) (*Card, error) {
-	actions, err := c.GetActions(Arguments{"filter": "copyCard"})
+	actions, err := c.GetActions(Arguments{"filter": "copyCard,createCard"})
 	if err != nil {
 		err = errors.Wrapf(err, "ParentCard() failed to GetActions() for card '%s'", c.ID)
 		return nil, err
@@ -165,7 +165,7 @@ func (c *Card) GetParentCard(args Arguments) (*Card, error) {
 		return nil, nil
 	}
 	for _, action := range actions {
-		if action.Data.CardSource.ID != c.ID {
+		if action.Data.CardSource != nil && action.Data.CardSource.ID != c.ID {
 			card, err := c.client.GetCard(action.Data.CardSource.ID, args)
 			return card, err
 		}
@@ -174,17 +174,51 @@ func (c *Card) GetParentCard(args Arguments) (*Card, error) {
 }
 
 func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
-	parent := c
+
+	// Get the first parent
+	parent, err := c.GetParentCard(args)
+	if IsNotFound(err) || IsPermissionDenied(err) {
+		return ancestors, nil
+	}
+
 	for parent != nil {
-		if parent != c {
-			ancestors = append(ancestors, parent)
-		}
+		ancestors = append(ancestors, parent)
 		parent, err = parent.GetParentCard(args)
-		if err != nil {
-			return
+		if IsNotFound(err) && !IsPermissionDenied(err) {
+			return ancestors, nil
+		} else if err != nil {
+			return ancestors, err
 		}
 	}
-	return
+
+	return ancestors, err
+}
+
+func (c *Card) GetOriginatingCard(args Arguments) (*Card, error) {
+	ancestors, err := c.GetAncestorCards(args)
+	if err != nil {
+		return c, err
+	}
+	if len(ancestors) > 0 {
+		return ancestors[len(ancestors)-1], nil
+	} else {
+		return c, nil
+	}
+}
+
+func (c *Card) CreatorMemberID() (string, error) {
+	if len(c.Actions) > 0 {
+		if c.Actions[0].IDMemberCreator != "" {
+			return c.Actions[0].IDMemberCreator, nil
+		}
+	}
+
+	actions, err := c.GetActions(Arguments{"filter": "emailCard,createCard,copyCard,moveCardToBoard,convertToCardFromCheckItem"})
+	if len(actions) > 0 {
+		return actions[0].IDMemberCreator, err
+	}
+
+	return "", errors.Wrapf(err, "No Actions on card '%s' could be used to find its creator.", c.ID)
 }
 
 func (b *Board) ContainsCopyOfCard(cardID string, args Arguments) (bool, error) {
@@ -213,13 +247,33 @@ func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) 
 
 /**
  * Retrieves all Cards on a Board
+ *
+ * If before
  */
 func (b *Board) GetCards(args Arguments) (cards []*Card, err error) {
 	path := fmt.Sprintf("boards/%s/cards", b.ID)
+
 	err = b.client.Get(path, args, &cards)
+
+	// Naive implementation would return here. To make sure we get all cards, we begin
+	if len(cards) > 0 {
+		moreCards := true
+		for moreCards == true {
+			nextCardBatch := make([]*Card, 0)
+			args["before"] = EarliestCardID(cards)
+			err = b.client.Get(path, args, &nextCardBatch)
+			if len(nextCardBatch) > 0 {
+				cards = append(cards, nextCardBatch...)
+			} else {
+				moreCards = false
+			}
+		}
+	}
+
 	for i := range cards {
 		cards[i].client = b.client
 	}
+
 	return
 }
 
@@ -233,4 +287,17 @@ func (l *List) GetCards(args Arguments) (cards []*Card, err error) {
 		cards[i].client = l.client
 	}
 	return
+}
+
+func EarliestCardID(cards []*Card) string {
+	if len(cards) == 0 {
+		return ""
+	}
+	earliest := cards[0].ID
+	for _, card := range cards {
+		if card.ID < earliest {
+			earliest = card.ID
+		}
+	}
+	return earliest
 }

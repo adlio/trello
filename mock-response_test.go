@@ -6,6 +6,7 @@
 package trello
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -35,11 +36,16 @@ func mockDynamicPathResponse() *httptest.Server {
 		// Build the path for the dynamic request
 		parts := []string{".", "testdata"}
 		parts = append(parts, strings.Split(strings.TrimPrefix(r.URL.Path, "/"), "/")...)
+		queryStringPart := strings.Replace(r.URL.RawQuery, "key=user&token=pass", "", -1)
+		if queryStringPart != "" {
+			parts[len(parts)-1] = fmt.Sprintf("%s-%x", parts[len(parts)-1], md5.Sum([]byte(queryStringPart)))
+		}
 		parts[len(parts)-1] = parts[len(parts)-1] + ".json"
+
 		filename := filepath.Join(parts...)
 
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
-			http.Error(rw, fmt.Sprintf("%s doesn't exist. Create it with the mock you'd like to use.", filename), http.StatusNotFound)
+			http.Error(rw, fmt.Sprintf("%s doesn't exist. Create it with the mock you'd like to use.\n Args were: %s", filename, queryStringPart), http.StatusNotFound)
 			return
 		}
 
