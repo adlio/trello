@@ -47,17 +47,19 @@ func (actions ActionCollection) GetListDurations() (durations []*ListDuration, e
 
 	durs := make(map[string]*ListDuration)
 	for _, action := range actions {
-		if prevList != nil {
-			duration := action.Date.Sub(prevTime)
-			_, durExists := durs[prevList.ID]
-			if !durExists {
-				durs[prevList.ID] = &ListDuration{ListID: prevList.ID, ListName: prevList.Name, Duration: duration, TimesInList: 1, FirstEntered: prevTime}
-			} else {
-				durs[prevList.ID].AddDuration(duration)
+		if action.DidChangeListForCard() {
+			if prevList != nil {
+				duration := action.Date.Sub(prevTime)
+				_, durExists := durs[prevList.ID]
+				if !durExists {
+					durs[prevList.ID] = &ListDuration{ListID: prevList.ID, ListName: prevList.Name, Duration: duration, TimesInList: 1, FirstEntered: prevTime}
+				} else {
+					durs[prevList.ID].AddDuration(duration)
+				}
 			}
+			prevList = ListAfterAction(action)
+			prevTime = action.Date
 		}
-		prevList = ListAfterAction(action)
-		prevTime = action.Date
 	}
 
 	if prevList != nil {
