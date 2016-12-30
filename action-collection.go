@@ -45,3 +45,13 @@ func (c ActionCollection) FilterToListChangeActions() ActionCollection {
 	}
 	return newSlice
 }
+
+func (c ActionCollection) FilterToCardMembershipChangeActions() ActionCollection {
+	newSlice := make(ActionCollection, 0, len(c))
+	for _, action := range c {
+		if action.DidChangeCardMembership() || action.DidArchiveCard() || action.DidUnarchiveCard() {
+			newSlice = append(newSlice, action)
+		}
+	}
+	return newSlice
+}
