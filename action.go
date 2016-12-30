@@ -17,6 +17,7 @@ type Action struct {
 	Date            time.Time   `json:"date"`
 	Data            *ActionData `json:"data,omitempty"`
 	MemberCreator   *Member     `json:"memberCreator,omitempty"`
+	Member          *Member     `json:"member,omitempty"`
 }
 
 type ActionData struct {
@@ -64,6 +65,12 @@ func (c *Card) GetListChangeActions() (actions ActionCollection, err error) {
 	return c.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed"})
 }
 
+func (c *Card) GetMembershipChangeActions() (actions ActionCollection, err error) {
+	// We include updateCard:closed as if the member is implicitly removed from the card when it's closed.
+	// This allows us to "close out" the duration length.
+	return c.GetActions(Arguments{"filter": "addMemberToCard,removeMemberFromCard,updateCard:closed"})
+}
+
 // DidCreateCard() returns true if this action created a card, false otherwise.
 func (a *Action) DidCreateCard() bool {
 	switch a.Type {
@@ -105,6 +112,17 @@ func (a *Action) DidChangeListForCard() bool {
 		}
 	}
 	return false
+}
+
+func (a *Action) DidChangeCardMembership() bool {
+	switch a.Type {
+	case "addMemberToCard":
+		return true
+	case "removeMemberFromCard":
+		return true
+	default:
+		return false
+	}
 }
 
 // ListAfterAction calculates which List the card ended up in after this action
