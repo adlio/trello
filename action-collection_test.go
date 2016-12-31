@@ -51,13 +51,13 @@ func TestFilterToListChangeActions(t *testing.T) {
 func TestFilterToCardMembershipChangeActions(t *testing.T) {
 	ac := make(ActionCollection, 5)
 	ac[0] = &Action{Type: "addMemberToCard"}
-	ac[1] = &Action{}
-	ac[2] = &Action{}
-	ac[3] = &Action{}
-	ac[4] = &Action{}
+	ac[1] = &Action{Type: "removeMemberFromCard"}
+	ac[2] = &Action{Type: "updateCard", Data: &ActionData{Old: &Card{Closed: true}}}
+	ac[3] = &Action{Type: "updateCard", Data: &ActionData{Card: &Card{Closed: true}}}
+	ac[4] = &Action{Type: "commentCard"}
 	mcas := ac.FilterToCardMembershipChangeActions()
 
-	if len(mcas) != 1 {
+	if len(mcas) != 4 {
 		t.Errorf("Expected 1, got %d", len(mcas))
 	}
 }
