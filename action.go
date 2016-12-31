@@ -84,11 +84,11 @@ func (a *Action) DidCreateCard() bool {
 }
 
 func (a *Action) DidArchiveCard() bool {
-	return a.Type == "updateCard" && a.Data.Card != nil && a.Data.Card.Closed
+	return (a.Type == "updateCard") && a.Data != nil && a.Data.Card != nil && a.Data.Card.Closed
 }
 
 func (a *Action) DidUnarchiveCard() bool {
-	return a.Type == "updateCard" && a.Data.Old != nil && a.Data.Old.Closed
+	return (a.Type == "updateCard") && a.Data != nil && a.Data.Old != nil && a.Data.Old.Closed
 }
 
 // Returns true if this action created the card (in which case it caused it to enter its
@@ -107,7 +107,7 @@ func (a *Action) DidChangeListForCard() bool {
 		return true
 	}
 	if a.Type == "updateCard" {
-		if a.Data.ListAfter != nil {
+		if a.Data != nil && a.Data.ListAfter != nil {
 			return true
 		}
 	}
