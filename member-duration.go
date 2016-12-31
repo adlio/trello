@@ -7,6 +7,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Used to track the periods of time which a user (member) is attached to a card.
+//
 type MemberDuration struct {
 	MemberID   string
 	MemberName string
