@@ -22,12 +22,8 @@ type List struct {
 }
 
 func (l *List) CreatedAt() time.Time {
-	t, err := IDToTime(l.ID)
-	if err != nil {
-		return time.Time{}
-	} else {
-		return t
-	}
+	t, _ := IDToTime(l.ID)
+	return t
 }
 
 func (c *Client) GetList(listID string, args Arguments) (list *List, err error) {

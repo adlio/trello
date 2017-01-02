@@ -61,12 +61,8 @@ type BackgroundImage struct {
 }
 
 func (b *Board) CreatedAt() time.Time {
-	t, err := IDToTime(b.ID)
-	if err != nil {
-		return time.Time{}
-	} else {
-		return t
-	}
+	t, _ := IDToTime(b.ID)
+	return t
 }
 
 /**
