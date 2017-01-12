@@ -39,7 +39,7 @@ func NewClient(key, token string) *Client {
 		Logger:   logger,
 		Key:      key,
 		Token:    token,
-		throttle: time.Tick(time.Second / 9), // Actually 10/second, but we're extra cautious
+		throttle: time.Tick(time.Second / 8), // Actually 10/second, but we're extra cautious
 		testMode: false,
 	}
 }
