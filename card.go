@@ -70,7 +70,7 @@ type Card struct {
 	// Attachments
 	IDAttachmentCover     string        `json:"idAttachmentCover"`
 	ManualCoverAttachment bool          `json:"manualCoverAttachment"`
-	Attachments           []*Attachment `json:attachments,omitempty"`
+	Attachments           []*Attachment `json:"attachments,omitempty"`
 
 	// Labels
 	Labels []*Label `json:"labels,omitempty"`
@@ -269,7 +269,8 @@ func (b *Board) GetCards(args Arguments) (cards []*Card, err error) {
 
 	err = b.client.Get(path, args, &cards)
 
-	// Naive implementation would return here. To make sure we get all cards, we begin
+	// Naive implementation would return here. To make sure we get all
+	// cards, we begin
 	if len(cards) > 0 {
 		moreCards := true
 		for moreCards == true {
