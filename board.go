@@ -41,16 +41,16 @@ type Board struct {
 		CanInvite             bool              `json:"canInvite"`
 	} `json:"prefs"`
 	LabelNames struct {
-		Black  string `json:"black",omitempty`
-		Blue   string `json:"blue",omitempty`
-		Green  string `json:"green",omitempty`
-		Lime   string `json:"lime",omitempty`
-		Orange string `json:"orange",omitempty`
-		Pink   string `json:"pink",omitempty`
-		Purple string `json:"purple",omitempty`
-		Red    string `json:"red",omitempty`
-		Sky    string `json:"sky",omitempty`
-		Yellow string `json:"yellow",omitempty`
+		Black  string `json:"black,omitempty"`
+		Blue   string `json:"blue,omitempty"`
+		Green  string `json:"green,omitempty"`
+		Lime   string `json:"lime,omitempty"`
+		Orange string `json:"orange,omitempty"`
+		Pink   string `json:"pink,omitempty"`
+		Purple string `json:"purple",omitempty"`
+		Red    string `json:"red,omitempty"`
+		Sky    string `json:"sky,omitempty"`
+		Yellow string `json:"yellow,omitempty"`
 	} `json:"labelNames"`
 }
 
