@@ -47,7 +47,7 @@ type Board struct {
 		Lime   string `json:"lime,omitempty"`
 		Orange string `json:"orange,omitempty"`
 		Pink   string `json:"pink,omitempty"`
-		Purple string `json:"purple",omitempty"`
+		Purple string `json:"purple,omitempty"`
 		Red    string `json:"red,omitempty"`
 		Sky    string `json:"sky,omitempty"`
 		Yellow string `json:"yellow,omitempty"`
@@ -55,9 +55,9 @@ type Board struct {
 }
 
 type BackgroundImage struct {
-	width  int    `json:"width"`
-	height int    `json:"height"`
-	url    string `json:"url"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+	URL    string `json:"url"`
 }
 
 func (b *Board) CreatedAt() time.Time {
