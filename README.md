@@ -7,8 +7,12 @@ Go Trello API
 [![Build Status](https://travis-ci.org/adlio/trello.svg)](https://travis-ci.org/adlio/trello)
 [![Coverage Status](https://coveralls.io/repos/github/adlio/trello/badge.svg?branch=master)](https://coveralls.io/github/adlio/trello?branch=master)
 
-A #golang package to access the [Trello API](https://www.trello.com/api). Currently supports
-read operations for Boards, Lists, Cards and Actions, and currently works only with API keys.
+A #golang package to access the [Trello API](https://www.trello.com/api). Nearly 100% of the
+read-only surface area of the API is covered, as is creation and modification of Cards. Pull
+requests are welcome for missing features.
+
+My current development focus is documentation, especially enhancing this README.md with more
+example use cases.
 
 ## Installation
 
