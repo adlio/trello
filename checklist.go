@@ -10,16 +10,16 @@ type Checklist struct {
 	Name       string      `json:"name"`
 	IDBoard    string      `json:"idBoard,omitempty"`
 	IDCard     string      `json:"idCard,omitempty"`
-	Pos        int         `json:"pos,omitempty"`
+	Pos        float64     `json:"pos,omitempty"`
 	CheckItems []CheckItem `json:"checkItems,omitempty"`
 }
 
 type CheckItem struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	State       string `json:"state"`
-	IDChecklist string `json:"idChecklist,omitempty"`
-	Pos         int    `json:"pos,omitempty"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	State       string  `json:"state"`
+	IDChecklist string  `json:"idChecklist,omitempty"`
+	Pos         float64 `json:"pos,omitempty"`
 }
 
 // Manifestation of CheckItem when it appears in CheckItemStates
