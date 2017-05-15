@@ -18,7 +18,7 @@ type List struct {
 	Closed  bool    `json:"closed"`
 	Pos     float32 `json:"pos,omitempty"`
 	Board   *Board  `json:"board,omitempty"`
-	Cards   []Card  `json:"cards,omitempty"`
+	Cards   []*Card `json:"cards,omitempty"`
 }
 
 func (l *List) CreatedAt() time.Time {
