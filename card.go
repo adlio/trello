@@ -81,6 +81,12 @@ func (c *Card) CreatedAt() time.Time {
 	return t
 }
 
+func (c *Card) MoveToList(listID string, args Arguments) error {
+	path := fmt.Sprintf("cards/%s", c.ID)
+	args["idList"] = listID
+	return c.client.Put(path, args, &c)
+}
+
 func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 	path := "cards"
 	args := Arguments{
@@ -256,7 +262,7 @@ func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) 
 	if card != nil {
 		card.client = c
 	}
-	return
+	return card, err
 }
 
 /**
