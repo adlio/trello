@@ -92,6 +92,48 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	return nil
 }
 
+func (c *Client) Put(path string, args Arguments, target interface{}) error {
+
+	// Trello prohibits more than 10 seconds/second per token
+	c.Throttle()
+
+	params := args.ToURLValues()
+	c.Logger.Debugf("PUT request to %s?%s", path, params.Encode())
+
+	if c.Key != "" {
+		params.Set("key", c.Key)
+	}
+
+	if c.Token != "" {
+		params.Set("token", c.Token)
+	}
+
+	url := fmt.Sprintf("%s/%s", c.BaseURL, path)
+	urlWithParams := fmt.Sprintf("%s?%s", url, params.Encode())
+
+	req, err := http.NewRequest("PUT", urlWithParams, nil)
+	if err != nil {
+		return errors.Wrapf(err, "Invalid PUT request %s", url)
+	}
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return errors.Wrapf(err, "HTTP request failure on %s", url)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return makeHttpClientError(url, resp)
+	}
+
+	decoder := json.NewDecoder(resp.Body)
+	err = decoder.Decode(target)
+	if err != nil {
+		return errors.Wrapf(err, "JSON decode failed on %s", url)
+	}
+
+	return nil
+}
+
 func (c *Client) Post(path string, args Arguments, target interface{}) error {
 
 	// Trello prohibits more than 10 seconds/second per token
