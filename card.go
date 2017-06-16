@@ -153,6 +153,17 @@ func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 	return &newCard, err
 }
 
+func (c *Card) AddComment(comment string, args Arguments) (*Action, error) {
+	path := fmt.Sprintf("cards/%s/actions/comments", c.ID)
+	args["text"] = comment
+	action := Action{}
+	err := c.client.Post(path, args, &action)
+	if err != nil {
+		err = errors.Wrapf(err, "Error commenting on card %s", c.ID)
+	}
+	return &action, err
+}
+
 // If this Card was created from a copy of another Card, this func retrieves
 // the originating Card. Returns an error only when a low-level failure occurred.
 // If this Card has no parent, a nil card and nil error are returned. In other words, the
