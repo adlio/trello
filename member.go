@@ -16,6 +16,7 @@ type Member struct {
 	FullName   string `json:"fullName"`
 	Initials   string `json:"initials"`
 	AvatarHash string `json:"avatarHash"`
+	Email      string `json:"email"`
 }
 
 func (c *Client) GetMember(memberID string, args Arguments) (member *Member, err error) {
