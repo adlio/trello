@@ -228,6 +228,25 @@ func (c *Card) GetOriginatingCard(args Arguments) (*Card, error) {
 	}
 }
 
+func (c *Card) CreatorMember() (*Member, error) {
+	var actions ActionCollection
+	var err error
+
+	if len(c.Actions) == 0 {
+		c.Actions, err = c.GetActions(Arguments{"filter": "all", "limit": "1000", "memberCreator_fields": "all"})
+		if err != nil {
+			err = errors.Wrapf(err, "GetActions() call failed.")
+			return nil, err
+		}
+	}
+	actions = c.Actions.FilterToCardCreationActions()
+
+	if len(actions) > 0 {
+		return actions[0].MemberCreator, nil
+	}
+	return nil, errors.Errorf("No card creation actions on Card %s with a .MemberCreator", c.ID)
+}
+
 func (c *Card) CreatorMemberID() (string, error) {
 
 	var actions ActionCollection
@@ -235,13 +254,12 @@ func (c *Card) CreatorMemberID() (string, error) {
 
 	if len(c.Actions) == 0 {
 		c.client.Logger.Debugf("CreatorMemberID() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
-		actions, err = c.GetActions(Defaults())
+		c.Actions, err = c.GetActions(Defaults())
 		if err != nil {
 			err = errors.Wrapf(err, "GetActions() call failed.")
 		}
-	} else {
-		actions = c.Actions.FilterToCardCreationActions()
 	}
+	actions = c.Actions.FilterToCardCreationActions()
 
 	if len(actions) > 0 {
 		if actions[0].IDMemberCreator != "" {
