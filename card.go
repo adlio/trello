@@ -31,6 +31,7 @@ type Card struct {
 	Closed           bool       `json:"closed"`
 	Subscribed       bool       `json:"subscribed"`
 	DateLastActivity *time.Time `json:"dateLastActivity"`
+	DueComplete      bool       `json:"dueComplete"`
 
 	// Board
 	Board   *Board
