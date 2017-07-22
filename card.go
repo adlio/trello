@@ -28,6 +28,7 @@ type Card struct {
 	Url              string     `json:"url"`
 	Desc             string     `json:"desc"`
 	Due              *time.Time `json:"due"`
+	DueComplete      bool       `json:"dueComplete"`
 	Closed           bool       `json:"closed"`
 	Subscribed       bool       `json:"subscribed"`
 	DateLastActivity *time.Time `json:"dateLastActivity"`
