@@ -87,6 +87,26 @@ func (c *Card) MoveToList(listID string, args Arguments) error {
 	return c.client.Put(path, args, &c)
 }
 
+func (c *Card) SetPos(newPos float64) error {
+	path := fmt.Sprintf("cards/%s", c.ID)
+	return c.client.Put(path, Arguments{"pos": fmt.Sprintf("%f", newPos)}, c)
+}
+
+func (c *Card) MoveToTopOfList() error {
+	path := fmt.Sprintf("cards/%s", c.ID)
+	return c.client.Put(path, Arguments{"pos": "top"}, c)
+}
+
+func (c *Card) MoveToBottomOfList() error {
+	path := fmt.Sprintf("cards/%s", c.ID)
+	return c.client.Put(path, Arguments{"pos": "bottom"}, c)
+}
+
+func (c *Card) Update(args Arguments) error {
+	path := fmt.Sprintf("cards/%s", c.ID)
+	return c.client.Put(path, args, c)
+}
+
 func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 	path := "cards"
 	args := Arguments{
