@@ -197,7 +197,7 @@ func (c *Card) GetParentCard(args Arguments) (*Card, error) {
 
 	if action == nil {
 		// No luck. Go get copyCard actions for this card.
-		c.client.Logger.Debugf("Creation action wasn't supplied before GetParentCard() on '%s'. Getting copyCard actions.", c.ID)
+		c.client.log("Creation action wasn't supplied before GetParentCard() on '%s'. Getting copyCard actions.", c.ID)
 		actions, err := c.GetActions(Arguments{"filter": "copyCard"})
 		if err != nil {
 			err = errors.Wrapf(err, "GetParentCard() failed to GetActions() for card '%s'", c.ID)
@@ -219,7 +219,7 @@ func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
 	// Get the first parent
 	parent, err := c.GetParentCard(args)
 	if IsNotFound(err) || IsPermissionDenied(err) {
-		c.client.Logger.Debugf("Can't get details about the parent of card '%s' due to lack of permissions or card deleted.", c.ID)
+		c.client.log("[trello] Can't get details about the parent of card '%s' due to lack of permissions or card deleted.", c.ID)
 		return ancestors, nil
 	}
 
@@ -227,7 +227,7 @@ func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
 		ancestors = append(ancestors, parent)
 		parent, err = parent.GetParentCard(args)
 		if IsNotFound(err) || IsPermissionDenied(err) {
-			c.client.Logger.Debugf("Can't get details about the parent of card '%s' due to lack of permissions or card deleted.", c.ID)
+			c.client.log("[trello] Can't get details about the parent of card '%s' due to lack of permissions or card deleted.", c.ID)
 			return ancestors, nil
 		} else if err != nil {
 			return ancestors, err
@@ -274,7 +274,7 @@ func (c *Card) CreatorMemberID() (string, error) {
 	var err error
 
 	if len(c.Actions) == 0 {
-		c.client.Logger.Debugf("CreatorMemberID() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
+		c.client.log("[trello] CreatorMemberID() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
 		c.Actions, err = c.GetActions(Defaults())
 		if err != nil {
 			err = errors.Wrapf(err, "GetActions() call failed.")

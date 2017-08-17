@@ -53,7 +53,7 @@ func (d *MemberDuration) stopTimerAsOf(t time.Time) {
 func (c *Card) GetMemberDurations() (durations []*MemberDuration, err error) {
 	var actions ActionCollection
 	if len(c.Actions) == 0 {
-		c.client.Logger.Debugf("GetMemberDurations() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
+		c.client.log("[trello] GetMemberDurations() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
 		actions, err = c.GetMembershipChangeActions()
 		if err != nil {
 			err = errors.Wrap(err, "GetMembershipChangeActions() call failed.")
