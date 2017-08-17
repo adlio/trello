@@ -47,6 +47,24 @@ if err != nil {
 }
 ```
 
+## Client Longevity
+
+When getting Lists from Boards or Cards from Lists, the original `trello.Client` pointer
+is carried along in returned child objects. It's important to realize that this enables
+you to make additional API calls via functions invoked on the objects you receive:
+
+```Go
+client := trello.NewClient(appKey, token)
+board, err := client.GetBoard("ID", trello.Defaults())
+
+// GetLists makes an API call to /boards/:id/lists using credentials from `client`
+lists, err := board.GetLists(trello.Defaults())
+for _, list := range lists {
+  // GetCards makes an API call to /lists/:id/cards using credentials from `client`
+  cards, err := list.GetCards(trello.Defaults())
+}
+```
+
 ## Get Trello Boards for a User
 
 Boards can be retrieved directly by their ID (see example above), or by asking
