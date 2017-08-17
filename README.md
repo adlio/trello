@@ -59,6 +59,7 @@ board, err := client.GetBoard("ID", trello.Defaults())
 
 // GetLists makes an API call to /boards/:id/lists using credentials from `client`
 lists, err := board.GetLists(trello.Defaults())
+
 for _, list := range lists {
   // GetCards makes an API call to /lists/:id/cards using credentials from `client`
   cards, err := list.GetCards(trello.Defaults())
@@ -124,6 +125,38 @@ if err != nil {
 }
 ```
 
+## Creating a Card
+
+The API provides several mechanisms for creating new cards.
+
+### Creating Cards from Scratch on the Client
+
+This approach requires the most input data on the card:
+
+```Go
+card := trello.Card{
+  Name: "Card Name",
+  Desc: "Card description",
+  Pos: 12345.678,
+  IDList: "iDOfaLiSt",
+}
+err := client.CreateCard(card, trello.Defaults())
+```
+
+
+### Creating Cards On a List
+
+```Go
+list, err := client.GetList("lIsTID", trello.Defaults())
+list.AddCard(trello.Card{ Name: "Card Name", Description: "Card description" }, trello.Defaults())
+```
+
+### Creating a Card by Copying Another Card
+
+```Go
+err := card.CopyToList("listIdNUmber", trello.Defaults()
+```
+
 ## Get Actions on a Board
 
 ```Go
@@ -160,16 +193,29 @@ err = card.MoveToBottomOfList()
 err = card.SetPos(12345.6789)
 ```
 
-## Creating a Copy of Card on Another List
-
-```Go
-err := card.CopyToList("listIdNUmber", trello.Defaults()
-```
 
 ## Moving a Card to Another List
 
 ```Go
 err := card.MoveToList("listIdNUmber", trello.Defaults())
+```
+
+
+## Card Ancestry
+
+Trello provides ancestry tracking when cards are created as copies of other cards. This package
+provides functions for working with this data:
+
+```Go
+
+// ancestors will hold a slice of *trello.Cards, with the first
+// being the card's parent, and the last being parent's parent's parent...
+ancestors, err := card.GetAncestorCards(trello.Defaults())
+
+// GetOriginatingCard() is an alias for the last element in the slice
+// of ancestor cards.
+ultimateParentCard, err := card.GetOriginatingCard(trello.Defaults())
+
 ```
 
 ## Debug Logging
