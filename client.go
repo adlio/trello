@@ -55,7 +55,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	c.Throttle()
 
 	params := args.ToURLValues()
-	c.log("GET request to %s?%s", path, params.Encode())
+	c.log("[trello] GET %s?%s", path, params.Encode())
 
 	if c.Key != "" {
 		params.Set("key", c.Key)
@@ -97,7 +97,7 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 	c.Throttle()
 
 	params := args.ToURLValues()
-	c.log("PUT request to %s?%s", path, params.Encode())
+	c.log("[trello] PUT %s?%s", path, params.Encode())
 
 	if c.Key != "" {
 		params.Set("key", c.Key)
@@ -139,6 +139,8 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	c.Throttle()
 
 	params := args.ToURLValues()
+	c.log("[trello] POST %s?%s", path, params.Encode())
+
 	if c.Key != "" {
 		params.Set("key", c.Key)
 	}
