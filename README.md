@@ -8,8 +8,11 @@ Go Trello API
 [![Coverage Status](https://coveralls.io/repos/github/adlio/trello/badge.svg?branch=master)](https://coveralls.io/github/adlio/trello?branch=master)
 
 A #golang package to access the [Trello API](https://www.trello.com/api). Nearly 100% of the
-read-only surface area of the API is covered, as is creation and modification of Cards. Pull
-requests are welcome for missing features.
+read-only surface area of the API is covered, as is creation and modification of Cards.
+Low-level infrastructure for features to modify Lists and Boards are easy to add... just not
+done yet.
+
+Pull requests are welcome for missing features.
 
 My current development focus is documentation, especially enhancing this README.md with more
 example use cases.
@@ -33,7 +36,7 @@ client := trello.NewClient(appKey, token)
 
 All API requests accept a trello.Arguments object. This object is a simple
 `map[string]string`, converted to query string arguments in the API call.
-Trello has sane defaults on API calls. We have a `rello.Defaults` object
+Trello has sane defaults on API calls. We have a `trello.Defaults()` utility function
 which can be used when you desire the default Trello arguments. Internally,
 `trello.Defaults()` is an empty map, which translates to an empty query string.
 
@@ -129,4 +132,36 @@ actions, err := card.GetActions(trello.Defaults())
 if err != nil {
   // Handle error
 }
+```
+
+## Rearrange Cards Within a List
+
+```Go
+err := card.MoveToTopOfList()
+err = card.MoveToBottomOfList()
+err = card.SetPos(12345.6789)
+```
+
+## Creating a Copy of Card on Another List
+
+```Go
+err := card.CopyToList("listIdNUmber", trello.Defaults()
+```
+
+## Moving a Card to Another List
+
+```Go
+err := card.MoveToList("listIdNUmber", trello.Defaults())
+```
+
+## Debug Logging
+
+If you'd like to see all API calls logged, you can attach a `.Logger` (implementing `Debugf(string, ...interface{})`)
+to your client. The interface for the logger mimics logrus. Example usage:
+
+```Go
+logger := logrus.New()
+logger.SetLevel(logrus.DebugLevel)
+client := trello.NewClient(appKey, token)
+client.Logger = logger
 ```
