@@ -14,14 +14,13 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 const DEFAULT_BASEURL = "https://api.trello.com/1"
 
 type Client struct {
 	client   *http.Client
-	Logger   *logrus.Logger
+	Logger   logger
 	BaseURL  string
 	Key      string
 	Token    string
@@ -29,14 +28,14 @@ type Client struct {
 	testMode bool
 }
 
-func NewClient(key, token string) *Client {
-	logger := logrus.New()
-	logger.Level = logrus.WarnLevel
+type logger interface {
+	Debugf(string, ...interface{})
+}
 
+func NewClient(key, token string) *Client {
 	return &Client{
 		client:   http.DefaultClient,
 		BaseURL:  DEFAULT_BASEURL,
-		Logger:   logger,
 		Key:      key,
 		Token:    token,
 		throttle: time.Tick(time.Second / 8), // Actually 10/second, but we're extra cautious
@@ -56,7 +55,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	c.Throttle()
 
 	params := args.ToURLValues()
-	c.Logger.Debugf("GET request to %s?%s", path, params.Encode())
+	c.log("GET request to %s?%s", path, params.Encode())
 
 	if c.Key != "" {
 		params.Set("key", c.Key)
@@ -98,7 +97,7 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 	c.Throttle()
 
 	params := args.ToURLValues()
-	c.Logger.Debugf("PUT request to %s?%s", path, params.Encode())
+	c.log("PUT request to %s?%s", path, params.Encode())
 
 	if c.Key != "" {
 		params.Set("key", c.Key)
@@ -175,4 +174,10 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	}
 
 	return nil
+}
+
+func (c *Client) log(format string, args ...interface{}) {
+	if c.Logger != nil {
+		c.Logger.Debugf(format, args)
+	}
 }
