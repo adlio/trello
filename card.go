@@ -93,6 +93,11 @@ func (c *Card) SetPos(newPos float64) error {
 	return c.client.Put(path, Arguments{"pos": fmt.Sprintf("%f", newPos)}, c)
 }
 
+func (c *Card) RemoveMember(memberID string) error {
+	path := fmt.Sprintf("cards/%s/idMembers/%s", c.ID, memberID)
+	return c.client.Delete(path, Defaults(), nil)
+}
+
 func (c *Card) MoveToTopOfList() error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, Arguments{"pos": "top"}, c)
