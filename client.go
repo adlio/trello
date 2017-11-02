@@ -178,6 +178,49 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	return nil
 }
 
+func (c *Client) Delete(path string, args Arguments, target interface{}) error {
+
+	c.Throttle()
+
+	params := args.ToURLValues()
+	c.log("[trello] DELETE %s?%s", path, params.Encode())
+
+	if c.Key != "" {
+		params.Set("key", c.Key)
+	}
+
+	if c.Token != "" {
+		params.Set("token", c.Token)
+	}
+
+	url := fmt.Sprintf("%s/%s", c.BaseURL, path)
+	urlWithParams := fmt.Sprintf("%s?%s", url, params.Encode())
+
+	req, err := http.NewRequest("DELETE", urlWithParams, nil)
+	if err != nil {
+		return errors.Wrapf(err, "Invalid DELETE request %s", url)
+	}
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return errors.Wrapf(err, "HTTP request failure on %s", url)
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errors.Wrapf(err, "HTTP Read error on response for %s", url)
+	}
+
+	decoder := json.NewDecoder(bytes.NewBuffer(b))
+	err = decoder.Decode(target)
+	if err != nil {
+		return errors.Wrapf(err, "JSON decode failed on %s:\n%s", url, string(b))
+	}
+
+	return nil
+}
+
 func (c *Client) log(format string, args ...interface{}) {
 	if c.Logger != nil {
 		c.Logger.Debugf(format, args)
