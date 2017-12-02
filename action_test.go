@@ -66,8 +66,8 @@ func TestListAfterActionOnArchive(t *testing.T) {
 		Data: &ActionData{
 			List:  &List{Name: "SameList"},
 			Board: &Board{},
-			Card:  &Card{Closed: true},
-			Old:   &Card{Closed: false},
+			Card:  &ActionDataCard{Closed: true},
+			Old:   &ActionDataCard{Closed: false},
 		},
 	}
 	l := ListAfterAction(a)
@@ -82,8 +82,8 @@ func TestListAfterActionOnUnarchive(t *testing.T) {
 		Data: &ActionData{
 			List:  &List{Name: "SameList"},
 			Board: &Board{},
-			Card:  &Card{Closed: false},
-			Old:   &Card{Closed: true},
+			Card:  &ActionDataCard{Closed: false},
+			Old:   &ActionDataCard{Closed: true},
 		},
 	}
 	l := ListAfterAction(a)
@@ -101,7 +101,7 @@ func TestListAfterActionOnCopyCard(t *testing.T) {
 		Data: &ActionData{
 			List:  &List{Name: "FirstList"},
 			Board: &Board{},
-			Card:  &Card{Closed: false},
+			Card:  &ActionDataCard{Closed: false},
 		},
 	}
 	l := ListAfterAction(a)
