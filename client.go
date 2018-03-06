@@ -20,7 +20,7 @@ import (
 const DEFAULT_BASEURL = "https://api.trello.com/1"
 
 type Client struct {
-	client   *http.Client
+	Client   *http.Client
 	Logger   logger
 	BaseURL  string
 	Key      string
@@ -36,7 +36,7 @@ type logger interface {
 
 func NewClient(key, token string) *Client {
 	return &Client{
-		client:   http.DefaultClient,
+		Client:   http.DefaultClient,
 		BaseURL:  DEFAULT_BASEURL,
 		Key:      key,
 		Token:    token,
@@ -83,7 +83,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	}
 	req = req.WithContext(c.ctx)
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return errors.Wrapf(err, "HTTP request failure on %s", url)
 	}
@@ -125,7 +125,7 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 		return errors.Wrapf(err, "Invalid PUT request %s", url)
 	}
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return errors.Wrapf(err, "HTTP request failure on %s", url)
 	}
@@ -168,7 +168,7 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return errors.Wrapf(err, "HTTP request failure on %s", url)
 	}
@@ -211,7 +211,7 @@ func (c *Client) Delete(path string, args Arguments, target interface{}) error {
 		return errors.Wrapf(err, "Invalid DELETE request %s", url)
 	}
 
-	resp, err := c.client.Do(req)
+	resp, err := c.Client.Do(req)
 	if err != nil {
 		return errors.Wrapf(err, "HTTP request failure on %s", url)
 	}
