@@ -7,6 +7,7 @@ package trello
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -26,6 +27,7 @@ type Client struct {
 	Token    string
 	throttle <-chan time.Time
 	testMode bool
+	ctx      context.Context
 }
 
 type logger interface {
@@ -40,7 +42,14 @@ func NewClient(key, token string) *Client {
 		Token:    token,
 		throttle: time.Tick(time.Second / 8), // Actually 10/second, but we're extra cautious
 		testMode: false,
+		ctx:      context.Background(),
 	}
+}
+
+func (c *Client) WithContext(ctx context.Context) *Client {
+	newC := *c
+	newC.ctx = ctx
+	return &newC
 }
 
 func (c *Client) Throttle() {
@@ -72,6 +81,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	if err != nil {
 		return errors.Wrapf(err, "Invalid GET request %s", url)
 	}
+	req = req.WithContext(c.ctx)
 
 	resp, err := c.client.Do(req)
 	if err != nil {
