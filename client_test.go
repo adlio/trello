@@ -48,7 +48,7 @@ func TestWithContext(t *testing.T) {
 			return http.DefaultTransport.RoundTrip(req)
 		},
 	}
-	newC.client = &http.Client{
+	newC.Client = &http.Client{
 		Transport: mt,
 	}
 	newC.Get("members", nil, nil)
