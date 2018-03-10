@@ -154,7 +154,7 @@ list.AddCard(trello.Card{ Name: "Card Name", Description: "Card description" }, 
 ### Creating a Card by Copying Another Card
 
 ```Go
-err := card.CopyToList("listIdNUmber", trello.Defaults()
+err := card.CopyToList("listIdNUmber", trello.Defaults())
 ```
 
 ## Get Actions on a Board
