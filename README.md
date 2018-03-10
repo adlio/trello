@@ -19,7 +19,7 @@ example use cases.
 
 ## Installation
 
-The Go Trello API has been Tested compatible with Go 1.1 on up. Its only dependency is
+The Go Trello API has been Tested compatible with Go 1.7 on up. Its only dependency is
 the `github.com/pkg/errors` package. It otherwise relies only on the Go standard library.
 
 ```
