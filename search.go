@@ -40,6 +40,9 @@ func (c *Client) SearchBoards(query string, args Arguments) (boards []*Board, er
 	res := SearchResult{}
 	err = c.Get("search", args, &res)
 	boards = res.Boards
+	for _, board := range boards {
+		board.client = c
+	}
 	return
 }
 
