@@ -14,10 +14,14 @@ type SearchResult struct {
 }
 
 type SearchOptions struct {
-	Terms      []SearchTerm `json:"terms"`
-	Modifiers  []string     `json:"modifiers,omitempty"`
-	ModelTypes []string     `json:"modelTypes,omitempty"`
-	Partial    bool         `json:"partial"`
+	Terms      []SearchTerm     `json:"terms"`
+	Modifiers  []SearchModifier `json:"modifiers,omitempty"`
+	ModelTypes []string         `json:"modelTypes,omitempty"`
+	Partial    bool             `json:"partial"`
+}
+
+type SearchModifier struct {
+	Text string `json:"text"`
 }
 
 type SearchTerm struct {
