@@ -32,6 +32,21 @@ func TestGetBoard(t *testing.T) {
 	}
 }
 
+func TestGetBoardWithListsAndActions(t *testing.T) {
+	board := testBoardWithListsAndActions(t)
+	if board.Name != "Public Trello Boards" {
+		t.Errorf("Incorrect board name '%s'", board.Name)
+	}
+
+	if len(board.Lists) != 4 {
+		t.Errorf("Expected %d lists. Got %d", 4, len(board.Lists))
+	}
+
+	if len(board.Actions) != 43 {
+		t.Errorf("Expected %d actions. Got %d", 4, len(board.Actions))
+	}
+}
+
 func TestGetBoards(t *testing.T) {
 	c := testClient()
 
@@ -76,6 +91,17 @@ func testBoard(t *testing.T) *Board {
 	boardResponse := mockResponse("boards", "cI66RoQS.json")
 	c.BaseURL = boardResponse.URL
 	board, err := c.GetBoard("cIRoQS", Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return board
+}
+
+func testBoardWithListsAndActions(t *testing.T) *Board {
+	c := testClient()
+	boardResponse := mockResponse("boards", "rq2mYJNn.json")
+	c.BaseURL = boardResponse.URL
+	board, err := c.GetBoard("rq2mYJNn", Defaults())
 	if err != nil {
 		t.Fatal(err)
 	}

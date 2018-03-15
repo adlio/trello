@@ -19,7 +19,7 @@ example use cases.
 
 ## Installation
 
-The Go Trello API has been Tested compatible with Go 1.1 on up. Its only dependency is
+The Go Trello API has been Tested compatible with Go 1.7 on up. Its only dependency is
 the `github.com/pkg/errors` package. It otherwise relies only on the Go standard library.
 
 ```
@@ -154,7 +154,7 @@ list.AddCard(trello.Card{ Name: "Card Name", Description: "Card description" }, 
 ### Creating a Card by Copying Another Card
 
 ```Go
-err := card.CopyToList("listIdNUmber", trello.Defaults()
+err := card.CopyToList("listIdNUmber", trello.Defaults())
 ```
 
 ## Get Actions on a Board
