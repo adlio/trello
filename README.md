@@ -139,6 +139,7 @@ card := trello.Card{
   Desc: "Card description",
   Pos: 12345.678,
   IDList: "iDOfaLiSt",
+  IDLabels: []string{"labelID1", "labelID2"},
 }
 err := client.CreateCard(card, trello.Defaults())
 ```
