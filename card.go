@@ -74,7 +74,8 @@ type Card struct {
 	Attachments           []*Attachment `json:"attachments,omitempty"`
 
 	// Labels
-	Labels []*Label `json:"labels,omitempty"`
+	IDLabels []string `json:idLabels,omitempty"`
+	Labels   []*Label `json:"labels,omitempty"`
 }
 
 func (c *Card) CreatedAt() time.Time {
@@ -121,6 +122,7 @@ func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 		"pos":       strconv.FormatFloat(card.Pos, 'g', -1, 64),
 		"idList":    card.IDList,
 		"idMembers": strings.Join(card.IDMembers, ","),
+		"idLabels":  strings.Join(card.IDLabels, ","),
 	}
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)
@@ -142,6 +144,7 @@ func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 		"name":      card.Name,
 		"desc":      card.Desc,
 		"idMembers": strings.Join(card.IDMembers, ","),
+		"idLabels":  strings.Join(card.IDLabels, ","),
 	}
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)

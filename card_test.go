@@ -72,10 +72,11 @@ func TestCreateCard(t *testing.T) {
 	dueDate := time.Now().AddDate(0, 0, 3)
 
 	card := Card{
-		Name:   "Test Card Create",
-		Desc:   "What its about",
-		Due:    &dueDate,
-		IDList: "57f03a06b5ff33a63c8be316",
+		Name:     "Test Card Create",
+		Desc:     "What its about",
+		Due:      &dueDate,
+		IDList:   "57f03a06b5ff33a63c8be316",
+		IDLabels: []string{"label1", "label2"},
 	}
 
 	err := c.CreateCard(&card, Arguments{"pos": "top"})
@@ -94,6 +95,10 @@ func TestCreateCard(t *testing.T) {
 	if card.ID != "57f5183c691585658d408681" {
 		t.Errorf("Expected card to pick up an ID. Instead got '%s'.", card.ID)
 	}
+
+	if len(card.Labels) < 2 {
+		t.Errorf("Expected card to be assigned two labels. Instead got '%v'.", card.Labels)
+	}
 }
 
 func TestAddCardToList(t *testing.T) {
@@ -102,9 +107,10 @@ func TestAddCardToList(t *testing.T) {
 	dueDate := time.Now().AddDate(0, 0, 1)
 
 	card := Card{
-		Name: "Test Card POSTed to List",
-		Desc: "This is its description.",
-		Due:  &dueDate,
+		Name:     "Test Card POSTed to List",
+		Desc:     "This is its description.",
+		Due:      &dueDate,
+		IDLabels: []string{"label1", "label2"},
 	}
 
 	err := l.AddCard(&card, Arguments{"pos": "bottom"})
@@ -122,6 +128,10 @@ func TestAddCardToList(t *testing.T) {
 
 	if card.ID != "57f5118667db8839dab68698" {
 		t.Errorf("Expected card to pick up an ID. Instead got '%s'.", card.ID)
+	}
+
+	if len(card.Labels) < 2 {
+		t.Errorf("Expected card to be assigned two labels. Instead got '%v'.", card.Labels)
 	}
 }
 
