@@ -23,13 +23,28 @@
   "email": null,
   "idBoard": "57f039fbc0f98772398d289d",
   "idChecklists": [],
-  "idLabels": [],
+  "idLabels": ["label1", "label2"],
   "idList": "57f03a06b5ff33a63c8be316",
   "idMembers": [],
   "idShort": 9,
   "idAttachmentCover": null,
   "manualCoverAttachment": false,
-  "labels": [],
+  "labels": [
+      {
+          "id": "akjbwerkljj",
+          "idBoard": "kjlbaweti",
+          "name": "Overdue",
+          "color": "red",
+          "uses": 3
+      },
+      {
+          "id": "akjbwerkljj",
+          "idBoard": "kjlbaweti",
+          "name": "Complete",
+          "color": "green",
+          "uses": 6
+      }
+  ],
   "name": "Test Card Create",
   "pos": 8192,
   "shortUrl": "https://trello.com/c/j9UEXfyh",
