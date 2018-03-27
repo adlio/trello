@@ -99,6 +99,11 @@ func (c *Card) RemoveMember(memberID string) error {
 	return c.client.Delete(path, Defaults(), nil)
 }
 
+func (c *Card) AddMember(memberID string) error {
+	path := fmt.Sprintf("cards/%s/idMembers", c.ID)
+	return c.client.Post(path, Arguments{"value": memberID}, nil)
+}
+
 func (c *Card) MoveToTopOfList() error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, Arguments{"pos": "top"}, c)
