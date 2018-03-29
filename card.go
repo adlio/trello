@@ -99,9 +99,10 @@ func (c *Card) RemoveMember(memberID string) error {
 	return c.client.Delete(path, Defaults(), nil)
 }
 
-func (c *Card) AddMember(memberID string) error {
+func (c *Card) AddMember(memberID string) (member []*Member, err error) {
 	path := fmt.Sprintf("cards/%s/idMembers", c.ID)
-	return c.client.Post(path, Arguments{"value": memberID}, nil)
+	err = c.client.Post(path, Arguments{"value": memberID}, &member)
+	return member, err
 }
 
 func (c *Card) MoveToTopOfList() error {
@@ -169,9 +170,9 @@ func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 
 // Try these Arguments
 //
-// 	Arguments["keepFromSource"] = "all"
+//	Arguments["keepFromSource"] = "all"
 //  Arguments["keepFromSource"] = "none"
-// 	Arguments["keepFromSource"] = "attachments,checklists,comments"
+//	Arguments["keepFromSource"] = "attachments,checklists,comments"
 //
 func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 	path := "cards"

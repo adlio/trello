@@ -179,6 +179,21 @@ func TestGetAncestorCards(t *testing.T) {
 	}
 }
 
+func TestAddMemberIdToCard(t *testing.T) {
+	c := testCard(t)
+	c.client.BaseURL = mockResponse("cards", "card-add-member-response.json").URL
+	member, err := c.AddMember("testmemberid")
+	if err != nil {
+		t.Error(err)
+	}
+	if member[0].ID != "testmemberid" {
+		t.Errorf("Expected id testmemberid, got %v", member[0].ID)
+	}
+	if member[0].Username != "testmemberusername" {
+		t.Errorf("Expected username testmemberusername, got %v", member[0].Username)
+	}
+}
+
 // Utility function to get a simple response from Client.GetCard()
 //
 func testCard(t *testing.T) *Card {
