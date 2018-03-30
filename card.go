@@ -99,7 +99,7 @@ func (c *Card) RemoveMember(memberID string) error {
 	return c.client.Delete(path, Defaults(), nil)
 }
 
-func (c *Card) AddMember(memberID string) (member []*Member, err error) {
+func (c *Card) AddMemberID(memberID string) (member []*Member, err error) {
 	path := fmt.Sprintf("cards/%s/idMembers", c.ID)
 	err = c.client.Post(path, Arguments{"value": memberID}, &member)
 	return member, err

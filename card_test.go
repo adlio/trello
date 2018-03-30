@@ -182,7 +182,7 @@ func TestGetAncestorCards(t *testing.T) {
 func TestAddMemberIdToCard(t *testing.T) {
 	c := testCard(t)
 	c.client.BaseURL = mockResponse("cards", "card-add-member-response.json").URL
-	member, err := c.AddMember("testmemberid")
+	member, err := c.AddMemberID("testmemberid")
 	if err != nil {
 		t.Error(err)
 	}
