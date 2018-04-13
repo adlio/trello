@@ -74,7 +74,7 @@ type Card struct {
 	Attachments           []*Attachment `json:"attachments,omitempty"`
 
 	// Labels
-	IDLabels []string `json:idLabels,omitempty"`
+	IDLabels []string `json:"idLabels,omitempty"`
 	Labels   []*Label `json:"labels,omitempty"`
 }
 
