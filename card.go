@@ -74,7 +74,8 @@ type Card struct {
 	Attachments           []*Attachment `json:"attachments,omitempty"`
 
 	// Labels
-	Labels []*Label `json:"labels,omitempty"`
+	IDLabels []string `json:"idLabels,omitempty"`
+	Labels   []*Label `json:"labels,omitempty"`
 }
 
 func (c *Card) CreatedAt() time.Time {
@@ -96,6 +97,12 @@ func (c *Card) SetPos(newPos float64) error {
 func (c *Card) RemoveMember(memberID string) error {
 	path := fmt.Sprintf("cards/%s/idMembers/%s", c.ID, memberID)
 	return c.client.Delete(path, Defaults(), nil)
+}
+
+func (c *Card) AddMemberID(memberID string) (member []*Member, err error) {
+	path := fmt.Sprintf("cards/%s/idMembers", c.ID)
+	err = c.client.Post(path, Arguments{"value": memberID}, &member)
+	return member, err
 }
 
 func (c *Card) MoveToTopOfList() error {
@@ -121,6 +128,7 @@ func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 		"pos":       strconv.FormatFloat(card.Pos, 'g', -1, 64),
 		"idList":    card.IDList,
 		"idMembers": strings.Join(card.IDMembers, ","),
+		"idLabels":  strings.Join(card.IDLabels, ","),
 	}
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)
@@ -142,6 +150,7 @@ func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 		"name":      card.Name,
 		"desc":      card.Desc,
 		"idMembers": strings.Join(card.IDMembers, ","),
+		"idLabels":  strings.Join(card.IDLabels, ","),
 	}
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)
@@ -161,9 +170,9 @@ func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 
 // Try these Arguments
 //
-// 	Arguments["keepFromSource"] = "all"
+//	Arguments["keepFromSource"] = "all"
 //  Arguments["keepFromSource"] = "none"
-// 	Arguments["keepFromSource"] = "attachments,checklists,comments"
+//	Arguments["keepFromSource"] = "attachments,checklists,comments"
 //
 func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 	path := "cards"

@@ -172,6 +172,7 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	if err != nil {
 		return errors.Wrapf(err, "HTTP request failure on %s", url)
 	}
+
 	defer resp.Body.Close()
 
 	b, err := ioutil.ReadAll(resp.Body)

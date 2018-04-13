@@ -14,10 +14,14 @@ type SearchResult struct {
 }
 
 type SearchOptions struct {
-	Terms      []SearchTerm `json:"terms"`
-	Modifiers  []string     `json:"modifiers,omitempty"`
-	ModelTypes []string     `json:"modelTypes,omitempty"`
-	Partial    bool         `json:"partial"`
+	Terms      []SearchTerm     `json:"terms"`
+	Modifiers  []SearchModifier `json:"modifiers,omitempty"`
+	ModelTypes []string         `json:"modelTypes,omitempty"`
+	Partial    bool             `json:"partial"`
+}
+
+type SearchModifier struct {
+	Text string `json:"text"`
 }
 
 type SearchTerm struct {
@@ -40,6 +44,9 @@ func (c *Client) SearchBoards(query string, args Arguments) (boards []*Board, er
 	res := SearchResult{}
 	err = c.Get("search", args, &res)
 	boards = res.Boards
+	for _, board := range boards {
+		board.client = c
+	}
 	return
 }
 
