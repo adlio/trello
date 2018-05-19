@@ -28,6 +28,21 @@ func TestGetList(t *testing.T) {
 	}
 }
 
+func TestGetListWithCards(t *testing.T) {
+	c := testClient()
+	c.BaseURL = mockResponse("lists", "list-api-example.json").URL
+	list, err := c.GetList("4eea4ff", Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list.Cards) == 0 {
+		t.Fatal("cannot test cards as non was available in lists mock response")
+	}
+	if list.Cards[0].client == nil {
+		t.Fatal("client not set on cards")
+	}
+}
+
 func TestGetListsOnBoard(t *testing.T) {
 	board := testBoard(t)
 	board.client.BaseURL = mockResponse("lists", "board-lists-api-example.json").URL
@@ -38,6 +53,23 @@ func TestGetListsOnBoard(t *testing.T) {
 
 	if len(lists) != 3 {
 		t.Errorf("Expected 1 list, got %d", len(lists))
+	}
+}
+
+func TestGetListsOnBoardWithCards(t *testing.T) {
+	board := testBoard(t)
+	board.client.BaseURL = mockResponse("lists", "board-lists-api-example.json").URL
+	lists, err := board.GetLists(Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := range lists {
+		if len(lists[i].Cards) == 0 {
+			t.Fatal("cannot test cards as non was available in lists mock response")
+		}
+		if lists[i].Cards[0].client == nil {
+			t.Fatal("client not set on cards")
+		}
 	}
 }
 
