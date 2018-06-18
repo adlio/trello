@@ -1,0 +1,17 @@
+[
+  {
+    "id": "57a890c6504676888e1dd747",
+    "name": "Verified on branch",
+    "color": "yellow"
+  },
+  {
+    "id": "57a890c6504676888e1dd74a",
+    "name": "Regression",
+    "color": "purple"
+  },
+  {
+    "id": "57a890c6504676888e1dd74b",
+    "name": "Verified on staging",
+    "color": "blue"
+  }
+]
