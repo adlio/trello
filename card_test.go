@@ -46,6 +46,39 @@ func TestGetCardsInList(t *testing.T) {
 	}
 }
 
+func TestCardsCustomFields(t *testing.T) {
+	list := testList(t)
+	list.client.BaseURL = mockResponse("cards", "list-cards-api-example.json").URL
+	cards, err := list.GetCards(Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cards) != 1 {
+		t.Errorf("Expected 1 cards, got %d", len(cards))
+	}
+
+	if len(cards[0].CustomFieldItems) != 2 {
+		t.Errorf("Expected 2 custom field items on card %s, got %d", cards[0].ID, len(cards[0].CustomFieldItems))
+	}
+
+	customFields := testBoardCustomFields(t)
+	fields := cards[0].CustomFields(customFields)
+
+	if len(fields) != 2 {
+		t.Errorf("Expected 2 map items on parsed custom fields")
+	}
+
+	vf1, ok := fields["Field1"]
+	if !ok || vf1 != "F1 1st opt" {
+		t.Errorf("Expected Field1 to be 'F1 1st opt' but it was %v", vf1)
+	}
+
+	vf2, ok := fields["Field2"]
+	if !ok || vf2 != "F2 2nd opt" {
+		t.Errorf("Expected Field1 to be 'F2 2nd opt' but it was %v", vf2)
+	}
+}
+
 func TestBoardContainsCopyOfCard(t *testing.T) {
 	board := testBoard(t)
 	board.client.BaseURL = mockResponse("actions", "board-actions-copyCard.json").URL
