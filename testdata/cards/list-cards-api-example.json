@@ -34,5 +34,21 @@
     "shortLink": "XlG8S7ll",
     "shortUrl": "https://trello.com/c/XlG8S7ll",
     "subscribed": null,
-    "url": "https://trello.com/c/XlG8S7ll/3-finish-my-awesome-application"
+    "url": "https://trello.com/c/XlG8S7ll/3-finish-my-awesome-application",
+    "customFieldItems":[
+        {
+            "id":"5ac371de1a3ac661db5cd24b",
+            "idValue":"5a6a23abf958725e1ac86c23",
+            "idCustomField":"5a6a23abf958725e1ac86c21",
+            "idModel":"5a00adcebe1991022b4a4bb4",
+            "modelType":"card"
+        },
+        {
+            "id":"5b101ace5ed69243295ad468",
+            "idValue":"5ae8b4fb79ceb77fe7852df5",
+            "idCustomField":"53a146b81c4364c3ba4250ff",
+            "idModel":"5696e63a665f2296f3ca7df7",
+            "modelType":"card"
+        }
+    ]
 }]

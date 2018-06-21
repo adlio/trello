@@ -1,0 +1,60 @@
+[
+  {
+    "id": "5a6a23abf958725e1ac86c21",
+    "idModel": "5a00adcebe1991022b4a4bb4",
+    "modelType": "board",
+    "fieldGroup": "a18e01ef877d1dba894dfce28e4aee373bd384a458417ab0558d1058825d3d91",
+    "name": "Field1",
+    "pos": 49152,
+    "options": [
+      {
+        "id": "5a6a23abf958725e1ac86c23",
+        "idCustomField": "5a6a23abf958725e1ac86c21",
+        "value": {
+          "text": "F1 1st opt"
+        },
+        "color": "none",
+        "pos": 16384
+      },
+      {
+        "id": "5a6a23abf958725e1ac86c22",
+        "idCustomField": "5a6a23abf958725e1ac86c21",
+        "value": {
+          "text": "F1 2nd opt"
+        },
+        "color": "none",
+        "pos": 32768
+      }
+    ],
+    "type": "list"
+  },
+  {
+    "id": "53a146b81c4364c3ba4250ff",
+    "idModel": "5696e63a665f2296f3ca7df7",
+    "modelType": "board",
+    "fieldGroup": "570b2b6989d9847f48b20d788a114eb9d0ef64f1fc65f550964ba2cd5a271be5",
+    "name": "Field2",
+    "pos": 49152,
+    "options": [
+      {
+        "id": "5ae8b4da0631fa7cae252c7e",
+        "idCustomField": "53a146b81c4364c3ba4250ff",
+        "value": {
+          "text": "F2 1st opt"
+        },
+        "color": "none",
+        "pos": 16384
+      },
+      {
+        "id": "5ae8b4fb79ceb77fe7852df5",
+        "idCustomField": "53a146b81c4364c3ba4250ff",
+        "value": {
+          "text": "F2 2nd opt"
+        },
+        "color": "none",
+        "pos": 32768
+      }
+    ],
+    "type": "list"
+  }
+]
