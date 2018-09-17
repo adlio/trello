@@ -54,6 +54,8 @@ type Board struct {
 	} `json:"labelNames"`
 	Lists   []*List   `json:"lists"`
 	Actions []*Action `json:"actions"`
+    Organization Organization `json:"organization"`
+
 }
 
 type BackgroundImage struct {
