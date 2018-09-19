@@ -105,6 +105,18 @@ func (c *Card) AddMemberID(memberID string) (member []*Member, err error) {
 	return member, err
 }
 
+func (c *Card) RemoveIDLabel(labelID string, label *Label) error {
+	path := fmt.Sprintf("cards/%s/idLabels/%s", c.ID, labelID)
+	return c.client.Delete(path, Defaults(), label)
+
+}
+
+func (c *Card) AddIDLabel(labelID string) error {
+	path := fmt.Sprintf("cards/%s/idLabels", c.ID)
+	err := c.client.Post(path, Arguments{"value": labelID}, &c.IDLabels)
+	return err
+}
+
 func (c *Card) MoveToTopOfList() error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, Arguments{"pos": "top"}, c)

@@ -31,6 +31,9 @@ func (c *Client) GetList(listID string, args Arguments) (list *List, err error) 
 	err = c.Get(path, args, &list)
 	if list != nil {
 		list.client = c
+		for i := range list.Cards {
+			list.Cards[i].client = c
+		}
 	}
 	return
 }
@@ -40,6 +43,9 @@ func (b *Board) GetLists(args Arguments) (lists []*List, err error) {
 	err = b.client.Get(path, args, &lists)
 	for i := range lists {
 		lists[i].client = b.client
+		for j := range lists[i].Cards {
+			lists[i].Cards[j].client = b.client
+		}
 	}
 	return
 }
