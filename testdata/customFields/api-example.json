@@ -1,0 +1,12 @@
+{
+  "id": "5a98670bd6afbd6de1c8c360",
+  "idModel": "586e8f681d4fe9b06a928307",
+  "modelType": "board",
+  "fieldGroup": "ea4cea3f750322e7254bf9e27b8eb60b46ee16d1b1885c7183599e83f64691ff",
+  "name": "Priority",
+  "pos": 16384,
+  "display": {
+    "cardFront": true
+  },
+  "type": "text"
+}

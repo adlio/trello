@@ -76,11 +76,62 @@ type Card struct {
 	// Labels
 	IDLabels []string `json:"idLabels,omitempty"`
 	Labels   []*Label `json:"labels,omitempty"`
+
+	// Custom Fields
+	CustomFieldItems []*CustomFieldItem	`json:"customFieldItems",omitempty`
+
+	customFieldMap *map[string]interface{}
 }
 
 func (c *Card) CreatedAt() time.Time {
 	t, _ := IDToTime(c.ID)
 	return t
+}
+
+func (c *Card) CustomFields(boardCustomFields []*CustomField) (map[string]interface{}) {
+
+	cfm := c.customFieldMap
+
+	if cfm == nil {
+		cfm = &(map[string]interface{} {})
+
+		// bcfOptionNames[CustomField ID] = Custom Field Name
+		bcfOptionNames := map[string]string{}
+
+		// bcfOptionsMap[CustomField ID][ID of the option] = Value of the option
+		bcfOptionsMap := map[string] map[string]interface{}{}
+
+		for _, bcf := range boardCustomFields {
+			bcfOptionNames[bcf.ID] = bcf.Name
+			for _, cf := range bcf.Options {
+				// create 2nd level map when not available yet
+				map2, ok := bcfOptionsMap[cf.IDCustomField]
+				if !ok {
+					map2 = map[string]interface{}{}
+					bcfOptionsMap[bcf.ID] = map2
+				}
+
+				bcfOptionsMap[bcf.ID][cf.ID] = cf.Value.Text
+			}
+		}
+
+		for _, cf := range c.CustomFieldItems {
+			name := bcfOptionNames[cf.IDCustomField]
+
+			// create 2nd level map when not available yet
+			map2, ok := bcfOptionsMap[cf.IDCustomField]
+			if !ok {
+				continue
+			}
+			value, ok := map2[cf.IDValue]
+
+			if ok {
+				(*cfm)[name] = value
+			}
+		}
+		c.customFieldMap = cfm
+	}
+	return *cfm
 }
 
 func (c *Card) MoveToList(listID string, args Arguments) error {
