@@ -227,6 +227,22 @@ func TestAddMemberIdToCard(t *testing.T) {
 	}
 }
 
+func TestAddURLAttachmentToCard(t *testing.T) {
+	c := testCard(t)
+	c.client.BaseURL = mockResponse("cards", "url-attachments.json").URL
+	attachment := Attachment{
+		Name: "Test",
+		URL: "https://github.com/test",
+	}
+	err := c.AddURLAttachment(&attachment)
+	if err != nil {
+		t.Error(err)
+	}
+	if attachment.ID != "5bbce18fa4a337483b145a57" {
+		t.Errorf("Expected attachment to pick up an ID, got %v instead", attachment.ID)
+	}
+}
+
 // Utility function to get a simple response from Client.GetCard()
 //
 func testCard(t *testing.T) *Card {
