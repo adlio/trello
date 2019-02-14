@@ -26,3 +26,9 @@ func (b *Board) GetLabels(args Arguments) (labels []*Label, err error) {
 	err = b.client.Get(path, args, &labels)
 	return
 }
+
+func (b *Board) CreateLabel(args Arguments) (label *Label, err error) {
+	path := fmt.Sprintf("boards/%s/labels/", b.ID)
+	err = b.client.Post(path, args, &label)
+	return
+}
