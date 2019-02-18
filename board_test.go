@@ -76,6 +76,28 @@ func TestGetBoards(t *testing.T) {
 
 }
 
+func TestGetMyBoards(t *testing.T) {
+	c := testClient()
+
+	c.BaseURL = mockResponse("boards", "member-boards-example.json").URL
+	boards, err := c.GetMyBoards(Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(boards) != 2 {
+		t.Errorf("Expected 2 boards. Got %d", len(boards))
+	}
+
+	if boards[0].Name != "Example Board" {
+		t.Errorf("Name of first board incorrect. Got: '%s'", boards[0].Name)
+	}
+
+	if boards[1].Name != "Public Board" {
+		t.Errorf("Name of second board incorrect. Got: '%s'", boards[1].Name)
+	}
+}
+
 func TestGetUnauthorizedBoard(t *testing.T) {
 	c := testClient()
 	c.BaseURL = mockErrorResponse(401).URL
