@@ -10,6 +10,40 @@ import (
 	"time"
 )
 
+func TestCreateBoard(t *testing.T) {
+	c := testClient()
+	c.BaseURL = mockResponse("boards", "AkFGHS12.json").URL
+
+	board := Board{
+		Name: "Test Board Create",
+	}
+
+	err := c.CreateBoard(&board, Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+
+	if board.ID != "5c602cf77061a8169a69deb5" {
+		t.Errorf("Expected board to pick up an ID. Instead got '%s'.", board.ID)
+	}
+}
+
+func TestDeleteBoard(t *testing.T) {
+	c := testClient()
+	c.BaseURL = mockResponse("boards", "deleted.json").URL
+
+	board := Board{
+		ID:   "5c602cf77061a8169a69deb5",
+		Name: "Test Board Create",
+	}
+	board.client = c
+
+	err := board.Delete(Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestBoardCreatedAt(t *testing.T) {
 	b := Board{ID: "4d5ea62fd76aa1136000000c"}
 	ts := b.CreatedAt()

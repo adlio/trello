@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// Board represents a Trello Board.
+// https://developers.trello.com/reference/#boardsid
 type Board struct {
 	client         *Client
 	ID             string `json:"id"`
@@ -57,6 +59,18 @@ type Board struct {
 	Organization Organization `json:"organization"`
 }
 
+// NewBoard is a constructor that sets the default values
+// for Prefs.SelfJoin and Prefs.CardCovers also set by the API.
+func NewBoard(name string) Board {
+	b := Board{Name: name}
+
+	// default values in line with API POST
+	b.Prefs.SelfJoin = true
+	b.Prefs.CardCovers = true
+
+	return b
+}
+
 type BackgroundImage struct {
 	Width  int    `json:"width"`
 	Height int    `json:"height"`
@@ -66,6 +80,57 @@ type BackgroundImage struct {
 func (b *Board) CreatedAt() time.Time {
 	t, _ := IDToTime(b.ID)
 	return t
+}
+
+// CreateBoard creates a board remote.
+// Attribute currently supported as exra argument: powerUps.
+// Attributes currently known to be unsupported: idBoardSource, keepFromSource.
+//
+// API Docs: https://developers.trello.com/reference/#boardsid
+func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
+	path := "boards"
+	args := Arguments{
+		"desc":             board.Desc,
+		"name":             board.Name,
+		"prefs_selfJoin":   fmt.Sprintf("%t", board.Prefs.SelfJoin),
+		"prefs_cardCovers": fmt.Sprintf("%t", board.Prefs.CardCovers),
+		"idOrganization":   board.IdOrganization,
+	}
+
+	if board.Prefs.Voting != "" {
+		args["prefs_voting"] = board.Prefs.Voting
+	}
+	if board.Prefs.PermissionLevel != "" {
+		args["prefs_permissionLevel"] = board.Prefs.PermissionLevel
+	}
+	if board.Prefs.Comments != "" {
+		args["prefs_comments"] = board.Prefs.Comments
+	}
+	if board.Prefs.Invitations != "" {
+		args["prefs_invitations"] = board.Prefs.Invitations
+	}
+	if board.Prefs.Background != "" {
+		args["prefs_background"] = board.Prefs.Background
+	}
+	if board.Prefs.CardAging != "" {
+		args["prefs_cardAging"] = board.Prefs.CardAging
+	}
+
+	// Expects one of "all", "calendar", "cardAging", "recap", or "voting".
+	if powerUps, ok := extraArgs["powerUps"]; ok {
+		args["powerUps"] = powerUps
+	}
+
+	err := c.Post(path, args, &board)
+	if err == nil {
+		board.client = c
+	}
+	return err
+}
+
+func (b *Board) Delete(extraArgs Arguments) error {
+	path := fmt.Sprintf("boards/%s", b.ID)
+	return b.client.Delete(path, Arguments{}, b)
 }
 
 /**
