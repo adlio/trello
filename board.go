@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// Board represents a Trello Board.
+// https://developers.trello.com/reference/#boardsid
 type Board struct {
 	client         *Client
 	ID             string `json:"id"`
