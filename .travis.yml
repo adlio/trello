@@ -1,17 +1,20 @@
 language: go
 sudo: false
 go:
-  - 1.7
-  - 1.8
-  - 1.9
-  - "1.10"
-  - "1.11.x"
-  - master
+- 1.7
+- 1.8
+- 1.9
+- '1.10'
+- 1.11.x
+- master
 install:
-  - go get golang.org/x/tools/cmd/cover
-  - go get github.com/mattn/goveralls
-  - go get github.com/pkg/errors
+- go get golang.org/x/tools/cmd/cover
+- go get github.com/mattn/goveralls
+- go get github.com/pkg/errors
 script:
-  - go test -v -covermode=count -coverprofile=coverage.out
-  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
-secure: "NRXgUHndl4RT2Yt69KukPrYIiD88uZ71SVaOWgcqQMiJxzAEm03NwlQCvoMPvSIJ875VC2Eg48XluMLJ+yz4G7x1rjWdn6qYognrO6VZaWM7l7YeIcxkabpJNvx3xAz456S+zdbf7IA4zM6uXsmyRj39BhXHB75Q3XuBb2QRmRP5i6zlAGMk1rFdRT7ivux0FaV2JwpW/vKOv8+1rrJnNhxoFHNFyG0SOW2VF7ReJjtJuxFzsz72XFKk+k9LvAnZggfaGiccck6hj1FeCC8yywKoHP3it2+HrqFsMu9VfjJi2EmeAFt4HbD1emPZYDaKuvfwkp/EQ/ygzYGJ/0aOciZxlYVsrtqWHCqGOHJZEDL3tROYatwr/7/M4B4uI07Nmxt+Vm/joVEHDiZIzXTd55mdXcgjPmSPUPTtgUfE/mwfu2KkQWNIo4yMeYidNSYcXQflzl/09rgYFZWs99ZwZDsZmi4lXd5IJv40p4R8iKqF4erbi3jj+fOTdjgm7k8DmIVto/H1qXw8YUWl7PEShAqz7gRMII+KArPLqYcJi0DzLxae+THaR+nKOeeUpcg68myikCj/lZfytEQiaJDMbZFTYstJy21qyzKnSQ+ulYcLMgVBCtHFpPB6fKdpmiCVaaXNVgwV1KDdVcV2ZED0IAfR9lfKk6LySLRlDivJGUw="
+- go test -v -covermode=count -coverprofile=coverage.out
+- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+  $COVERALLS_TOKEN"
+env:
+  global:
+    secure: B+BZR10f01Q3xVY3xvDpd2cElk2a/I/s3RIQeXb3tIo73ZutrgaGsYt8iLPU4ov2sZzdH/fT9rw4LF66XjFwdVWeHHCZr67KULBZFoL9hnKRCcj+NyZ+bGlMWYQMsDkEFawW3MkqT2hXYhmkzCWrK4gCH8Ni/20rPYXP/azqt/MveIMfZVOR5g1vjSY61/XB2FZRskJPwZthxoOi1Qavy6Ow6LGYpGTtIszIAK71hwN18HjmA92wmbJVV34o0WltRgoC1nxsZlh542ir26liMNXoZFYErMh2q/c/sgAW9zILijLAdzvDj7TNSdgB2qISb8/L9hqzlGznJWHhFkl93bWaqYVfDfLTKgqds9j8wH/HzVzGacaXbWduUz8aj21Vtznz41gC8Hl0KZmaRG88agsX8s42XYxhiA13JB1miZ8YhpAvcGqXvp6e4w7YparVnhaxOPF7NjlTzxoy8kfMJHZ6aVOh7mN3TNOeRC9HsiZFmTRScwgPUuohYlISR8QOfc669iMhIEEi3I/YcpapO9Y4Ad3l3uucLf+hAVxfukknzwt+YiLI6YOU0NqUgj2dwrN/ERlAR/h9yfi692luRSRxDrDCPqLJIK68dQCAj96cyAKAjY5S2c99DRsntR3/S+s3UZlXL/WFZ+v0Tn+enzCF2EQ7rCDujVNSbLCJfJs=
