@@ -127,6 +127,12 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 	}
 	return err
 }
+
+func (b *Board) Delete(extraArgs Arguments) error {
+	path := fmt.Sprintf("boards/%s", b.ID)
+	return b.client.Delete(path, Arguments{}, b)
+}
+
 /**
  * Board retrieves a Trello board by its ID.
  */
