@@ -149,7 +149,7 @@ err := client.CreateCard(card, trello.Defaults())
 
 ```Go
 list, err := client.GetList("lIsTID", trello.Defaults())
-list.AddCard(trello.Card{ Name: "Card Name", Description: "Card description" }, trello.Defaults())
+list.AddCard(&trello.Card{ Name: "Card Name", Desc: "Card description" }, trello.Defaults())
 ```
 
 ### Creating a Card by Copying Another Card
