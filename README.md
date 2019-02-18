@@ -125,6 +125,18 @@ if err != nil {
 }
 ```
 
+## Creating a Board
+
+A board can be created for the user whose credentias are being used.
+
+```Go
+  board := trello.NewBoard("My bucket list")
+
+  // POST new board to Trello
+  err := client.CreateBoard(&board, trello.Defaults())
+}
+```
+
 ## Creating a Card
 
 The API provides several mechanisms for creating new cards.
