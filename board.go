@@ -82,6 +82,51 @@ func (b *Board) CreatedAt() time.Time {
 	return t
 }
 
+// CreateBoard creates a board remote.
+// Attribute currently supported as exra argument: powerUps.
+// Attributes currently known to be unsupported: idBoardSource, keepFromSource.
+//
+// API Docs: https://developers.trello.com/reference/#boardsid
+func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
+	path := "boards"
+	args := Arguments{
+		"desc":             board.Desc,
+		"name":             board.Name,
+		"prefs_selfJoin":   fmt.Sprintf("%t", board.Prefs.SelfJoin),
+		"prefs_cardCovers": fmt.Sprintf("%t", board.Prefs.CardCovers),
+		"idOrganization":   board.IdOrganization,
+	}
+
+	if board.Prefs.Voting != "" {
+		args["prefs_voting"] = board.Prefs.Voting
+	}
+	if board.Prefs.PermissionLevel != "" {
+		args["prefs_permissionLevel"] = board.Prefs.PermissionLevel
+	}
+	if board.Prefs.Comments != "" {
+		args["prefs_comments"] = board.Prefs.Comments
+	}
+	if board.Prefs.Invitations != "" {
+		args["prefs_invitations"] = board.Prefs.Invitations
+	}
+	if board.Prefs.Background != "" {
+		args["prefs_background"] = board.Prefs.Background
+	}
+	if board.Prefs.CardAging != "" {
+		args["prefs_cardAging"] = board.Prefs.CardAging
+	}
+
+	// Expects one of "all", "calendar", "cardAging", "recap", or "voting".
+	if powerUps, ok := extraArgs["powerUps"]; ok {
+		args["powerUps"] = powerUps
+	}
+
+	err := c.Post(path, args, &board)
+	if err == nil {
+		board.client = c
+	}
+	return err
+}
 /**
  * Board retrieves a Trello board by its ID.
  */
