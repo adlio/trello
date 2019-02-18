@@ -262,6 +262,20 @@ func (c *Card) AddComment(comment string, args Arguments) (*Action, error) {
 	return &action, err
 }
 
+func (c *Card) AddURLAttachment(attachment *Attachment)  error {
+	path := fmt.Sprintf("cards/%s/attachments", c.ID)
+	args := Arguments{
+		"url":  attachment.URL,
+		"name": attachment.Name,
+	}
+	err := c.client.Post(path, args, &attachment)
+	if err != nil {
+		err = errors.Wrapf(err, "Error adding attachment to card %s", c.ID)
+	}
+	return err
+
+}
+
 // If this Card was created from a copy of another Card, this func retrieves
 // the originating Card. Returns an error only when a low-level failure occurred.
 // If this Card has no parent, a nil card and nil error are returned. In other words, the
