@@ -57,6 +57,18 @@ type Board struct {
 	Organization Organization `json:"organization"`
 }
 
+// NewBoard is a constructor that sets the default values
+// for Prefs.SelfJoin and Prefs.CardCovers also set by the API.
+func NewBoard(name string) Board {
+	b := Board{Name: name}
+
+	// default values in line with API POST
+	b.Prefs.SelfJoin = true
+	b.Prefs.CardCovers = true
+
+	return b
+}
+
 type BackgroundImage struct {
 	Width  int    `json:"width"`
 	Height int    `json:"height"`
