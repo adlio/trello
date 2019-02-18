@@ -125,15 +125,21 @@ if err != nil {
 }
 ```
 
-## Creating a Board
+## Creating and deleting a Board
 
-A board can be created for the user whose credentias are being used.
+A board can be created or deleted on the `Board` struct for the user whose credentias are being used.
 
 ```Go
   board := trello.NewBoard("My bucket list")
 
-  // POST new board to Trello
+  // POST
   err := client.CreateBoard(&board, trello.Defaults())
+
+  // DELETE
+  err := board.Delete(trello.Defaults())
+  if err != nil {
+    fmt.Println(err)
+  }
 }
 ```
 
