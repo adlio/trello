@@ -5,6 +5,9 @@
 
 package trello
 
+// Checklist represents Trello card's checklists.
+// A card can have one zero or more checklists.
+// https://developers.trello.com/reference/#checklist-object
 type Checklist struct {
 	ID         string      `json:"id"`
 	Name       string      `json:"name"`
@@ -14,6 +17,7 @@ type Checklist struct {
 	CheckItems []CheckItem `json:"checkItems,omitempty"`
 }
 
+// CheckItem is a nested resource representing an item in Checklist.
 type CheckItem struct {
 	ID          string  `json:"id"`
 	Name        string  `json:"name"`
