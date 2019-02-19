@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+// Action represents Trello API actions
+// Actions are immutable event traces generated whenever an action occurs in Trello.
+// See https://developers.trello.com/reference/#actions.
 type Action struct {
 	ID              string      `json:"id"`
 	IDMemberCreator string      `json:"idMemberCreator"`
@@ -20,6 +23,7 @@ type Action struct {
 	Member          *Member     `json:"member,omitempty"`
 }
 
+// ActionData represent the nested data of actions
 type ActionData struct {
 	Text           string          `json:"text,omitempty"`
 	List           *List           `json:"list,omitempty"`
@@ -35,6 +39,7 @@ type ActionData struct {
 	Checklist *Checklist `json:"checklist"`
 }
 
+// ActionDataCard represent the nested 'card' data attribute of actions
 type ActionDataCard struct {
 	ID        string  `json:"id"`
 	Name      string  `json:"name"`
@@ -44,18 +49,21 @@ type ActionDataCard struct {
 	Closed    bool    `json:"closed"`
 }
 
+// GetActions make a GET call for a board's actions
 func (b *Board) GetActions(args Arguments) (actions ActionCollection, err error) {
 	path := fmt.Sprintf("boards/%s/actions", b.ID)
 	err = b.client.Get(path, args, &actions)
 	return
 }
 
+// GetActions makes a GET call for a list's actions
 func (l *List) GetActions(args Arguments) (actions ActionCollection, err error) {
 	path := fmt.Sprintf("lists/%s/actions", l.ID)
 	err = l.client.Get(path, args, &actions)
 	return
 }
 
+// GetActions makes a GET for a card's actions
 func (c *Card) GetActions(args Arguments) (actions ActionCollection, err error) {
 	path := fmt.Sprintf("cards/%s/actions", c.ID)
 	err = c.client.Get(path, args, &actions)
@@ -64,8 +72,8 @@ func (c *Card) GetActions(args Arguments) (actions ActionCollection, err error) 
 
 // GetListChangeActions retrieves a slice of Actions which resulted in changes
 // to the card's active List. This includes the createCard and copyCard action (which
-// place the card in its first list, and the updateCard:closed action, which remove it
-// from its last list.
+// place the card in its first list), and the updateCard:closed action (which remove it
+// from its last list).
 //
 // This function is just an alias for:
 //   card.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed", "limit": "1000"})
@@ -74,6 +82,7 @@ func (c *Card) GetListChangeActions() (actions ActionCollection, err error) {
 	return c.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed"})
 }
 
+// GetMembershipChangeActions makes a GET call for a card's membership-change actions
 func (c *Card) GetMembershipChangeActions() (actions ActionCollection, err error) {
 	// We include updateCard:closed as if the member is implicitly removed from the card when it's closed.
 	// This allows us to "close out" the duration length.
@@ -92,10 +101,12 @@ func (a *Action) DidCreateCard() bool {
 	}
 }
 
+// DidArchiveCard returns true if the card was updated
 func (a *Action) DidArchiveCard() bool {
 	return (a.Type == "updateCard") && a.Data != nil && a.Data.Card != nil && a.Data.Card.Closed
 }
 
+// DidUnarchiveCard returns true if the card was unarchived
 func (a *Action) DidUnarchiveCard() bool {
 	return (a.Type == "updateCard") && a.Data != nil && a.Data.Old != nil && a.Data.Old.Closed
 }
@@ -123,6 +134,7 @@ func (a *Action) DidChangeListForCard() bool {
 	return false
 }
 
+// DidChangeCardMembership returns true if card's membership was changed
 func (a *Action) DidChangeCardMembership() bool {
 	switch a.Type {
 	case "addMemberToCard":
