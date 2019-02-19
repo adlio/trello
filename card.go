@@ -14,6 +14,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Card represents the card resource.
+// https://developers.trello.com/reference/#card-object
 type Card struct {
 	client *Client
 
@@ -83,12 +85,14 @@ type Card struct {
 	customFieldMap *map[string]interface{}
 }
 
+// CreatedAt returns the receiver card's created-at attribute as time.Time.
 func (c *Card) CreatedAt() time.Time {
 	t, _ := IDToTime(c.ID)
 	return t
 }
 
-func (c *Card) CustomFields(boardCustomFields []*CustomField) (map[string]interface{}) {
+// CustomFields returns the card's custom fields.
+func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interface{} {
 
 	cfm := c.customFieldMap
 
@@ -134,55 +138,66 @@ func (c *Card) CustomFields(boardCustomFields []*CustomField) (map[string]interf
 	return *cfm
 }
 
+// MoveToList moves a card to a list given by listID.
 func (c *Card) MoveToList(listID string, args Arguments) error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	args["idList"] = listID
 	return c.client.Put(path, args, &c)
 }
 
+// SetPos sets a card's new position.
 func (c *Card) SetPos(newPos float64) error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, Arguments{"pos": fmt.Sprintf("%f", newPos)}, c)
 }
 
+// RemoveMember receives the id of a member and removes the corresponding member from the card.
 func (c *Card) RemoveMember(memberID string) error {
 	path := fmt.Sprintf("cards/%s/idMembers/%s", c.ID, memberID)
 	return c.client.Delete(path, Defaults(), nil)
 }
 
+// AddMemberID receives a member id and adds the corresponding member to the card.
+// Returns a list of the card's members or an error.
 func (c *Card) AddMemberID(memberID string) (member []*Member, err error) {
 	path := fmt.Sprintf("cards/%s/idMembers", c.ID)
 	err = c.client.Post(path, Arguments{"value": memberID}, &member)
 	return member, err
 }
 
+// RemoveIDLabel removes a label id from the card.
 func (c *Card) RemoveIDLabel(labelID string, label *Label) error {
 	path := fmt.Sprintf("cards/%s/idLabels/%s", c.ID, labelID)
 	return c.client.Delete(path, Defaults(), label)
 
 }
 
+// AddIDLabel receives a label id and adds the corresponding label or returns an error.
 func (c *Card) AddIDLabel(labelID string) error {
 	path := fmt.Sprintf("cards/%s/idLabels", c.ID)
 	err := c.client.Post(path, Arguments{"value": labelID}, &c.IDLabels)
 	return err
 }
 
+// MoveToTopOfList moves the card to the top of it's list.
 func (c *Card) MoveToTopOfList() error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, Arguments{"pos": "top"}, c)
 }
 
+// MoveToBottomOfList moves the card to the bottom of its list.
 func (c *Card) MoveToBottomOfList() error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, Arguments{"pos": "bottom"}, c)
 }
 
+// Update UPDATEs the card's attributes.
 func (c *Card) Update(args Arguments) error {
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, args, c)
 }
 
+// CreateCard takes a Card and Arguments and POSTs the card.
 func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 	path := "cards"
 	args := Arguments{
@@ -207,6 +222,7 @@ func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 	return err
 }
 
+// AddCard takes a Card and Arguments and adds the card to the receiver list.
 func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	args := Arguments{
@@ -251,6 +267,7 @@ func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 	return &newCard, err
 }
 
+// AddComment takes a comment string and Arguments and adds the comment to the card.
 func (c *Card) AddComment(comment string, args Arguments) (*Action, error) {
 	path := fmt.Sprintf("cards/%s/actions/comments", c.ID)
 	args["text"] = comment
@@ -262,7 +279,8 @@ func (c *Card) AddComment(comment string, args Arguments) (*Action, error) {
 	return &action, err
 }
 
-func (c *Card) AddURLAttachment(attachment *Attachment)  error {
+// AddURLAttachment takes an Attachment and adds it to the card.
+func (c *Card) AddURLAttachment(attachment *Attachment) error {
 	path := fmt.Sprintf("cards/%s/attachments", c.ID)
 	args := Arguments{
 		"url":  attachment.URL,
@@ -305,6 +323,7 @@ func (c *Card) GetParentCard(args Arguments) (*Card, error) {
 	return nil, nil
 }
 
+// GetAncestorCards takes Arguments, GETs the card's ancestors and returns them as a slice.
 func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
 
 	// Get the first parent
@@ -328,6 +347,7 @@ func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
 	return ancestors, err
 }
 
+// GetOriginatingCard takes Arguments, GETs ancestors and returns most recent ancestor card of the Card.
 func (c *Card) GetOriginatingCard(args Arguments) (*Card, error) {
 	ancestors, err := c.GetAncestorCards(args)
 	if err != nil {
@@ -340,6 +360,8 @@ func (c *Card) GetOriginatingCard(args Arguments) (*Card, error) {
 	}
 }
 
+// CreatorMember returns the member of the card who created it or and error.
+// The creator is the member who is associated with the card's first action.
 func (c *Card) CreatorMember() (*Member, error) {
 	var actions ActionCollection
 	var err error
@@ -359,6 +381,8 @@ func (c *Card) CreatorMember() (*Member, error) {
 	return nil, errors.Errorf("No card creation actions on Card %s with a .MemberCreator", c.ID)
 }
 
+// CreatorMemberID returns as string the id of the member who created the card or an error.
+// The creator is the member who is associated with the card's first action.
 func (c *Card) CreatorMemberID() (string, error) {
 
 	var actions ActionCollection
@@ -382,6 +406,8 @@ func (c *Card) CreatorMemberID() (string, error) {
 	return "", errors.Wrapf(err, "No Actions on card '%s' could be used to find its creator.", c.ID)
 }
 
+// ContainsCopyOfCard accepts a card id and Arguments and returns true
+// if the receiver Board contains a Card with the id.
 func (b *Board) ContainsCopyOfCard(cardID string, args Arguments) (bool, error) {
 	args["filter"] = "copyCard"
 	actions, err := b.GetActions(args)
@@ -397,6 +423,9 @@ func (b *Board) ContainsCopyOfCard(cardID string, args Arguments) (bool, error) 
 	return false, nil
 }
 
+// GetCard receives a card id and Arguments and returns the card if found
+// with the credentials given for the receiver Client. Returns an error
+// otherwise.
 func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) {
 	path := fmt.Sprintf("cards/%s", cardID)
 	err = c.Get(path, args, &card)
