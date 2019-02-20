@@ -7,8 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Used to track the periods of time which a user (member) is attached to a card.
-//
+// MemberDuration is used to track the periods of time which a user (member) is attached to a card.
 type MemberDuration struct {
 	MemberID   string
 	MemberName string
@@ -18,9 +17,14 @@ type MemberDuration struct {
 	lastAdded  time.Time
 }
 
+// ByLongestDuration is a slice of *MemberDuration
 type ByLongestDuration []*MemberDuration
 
-func (d ByLongestDuration) Len() int           { return len(d) }
+// Len returns the length of the ByLongestDuration slice.
+func (d ByLongestDuration) Len() int { return len(d) }
+
+// Less takes two indexes i and j and returns true exactly if the Duration
+// at i is larger than the Duration at j.
 func (d ByLongestDuration) Less(i, j int) bool { return d[i].Duration > d[j].Duration }
 func (d ByLongestDuration) Swap(i, j int)      { d[i], d[j] = d[j], d[i] }
 
@@ -50,6 +54,7 @@ func (d *MemberDuration) stopTimerAsOf(t time.Time) {
 	}
 }
 
+// GetMemberDurations returns a slice containing all durations of a card.
 func (c *Card) GetMemberDurations() (durations []*MemberDuration, err error) {
 	var actions ActionCollection
 	if len(c.Actions) == 0 {
