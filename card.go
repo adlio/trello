@@ -354,9 +354,9 @@ func (c *Card) GetOriginatingCard(args Arguments) (*Card, error) {
 	}
 	if len(ancestors) > 0 {
 		return ancestors[len(ancestors)-1], nil
-	} else {
-		return c, nil
 	}
+
+	return c, nil
 }
 
 // CreatorMember returns the member of the card who created it or and error.
