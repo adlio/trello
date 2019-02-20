@@ -26,8 +26,7 @@ type CheckItem struct {
 	Pos         float64 `json:"pos,omitempty"`
 }
 
-// Manifestation of CheckItem when it appears in CheckItemStates
-// on a Card.
+// CheckItemState represents a CheckItem when it appears in CheckItemStates on a Card.
 type CheckItemState struct {
 	IDCheckItem string `json:"idCheckItem"`
 	State       string `json:"state"`
