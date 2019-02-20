@@ -18,7 +18,7 @@ type Board struct {
 	Name           string `json:"name"`
 	Desc           string `json:"desc"`
 	Closed         bool   `json:"closed"`
-	IdOrganization string `json:"idOrganization"`
+	IDOrganization string `json:"idOrganization"`
 	Pinned         bool   `json:"pinned"`
 	Url            string `json:"url"`
 	ShortUrl       string `json:"shortUrl"`
@@ -96,7 +96,7 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 		"name":             board.Name,
 		"prefs_selfJoin":   fmt.Sprintf("%t", board.Prefs.SelfJoin),
 		"prefs_cardCovers": fmt.Sprintf("%t", board.Prefs.CardCovers),
-		"idOrganization":   board.IdOrganization,
+		"idOrganization":   board.IDOrganization,
 	}
 
 	if board.Prefs.Voting != "" {
