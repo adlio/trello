@@ -247,12 +247,12 @@ func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 	return err
 }
 
-// Try these Arguments
+// CopyToList takes a list id and Arguments and returns the matching Card.
+// The following Arguments are supported.
 //
 //	Arguments["keepFromSource"] = "all"
 //  Arguments["keepFromSource"] = "none"
 //	Arguments["keepFromSource"] = "attachments,checklists,comments"
-//
 func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 	path := "cards"
 	args["idList"] = listID
@@ -294,11 +294,10 @@ func (c *Card) AddURLAttachment(attachment *Attachment) error {
 
 }
 
-// If this Card was created from a copy of another Card, this func retrieves
-// the originating Card. Returns an error only when a low-level failure occurred.
+// GetParentCard retrieves the originating Card if the Card was created
+// from a copy of another Card. Returns an error only when a low-level failure occurred.
 // If this Card has no parent, a nil card and nil error are returned. In other words, the
 // non-existence of a parent is not treated as an error.
-//
 func (c *Card) GetParentCard(args Arguments) (*Card, error) {
 
 	// Hopefully the card came pre-loaded with Actions including the card creation
@@ -435,11 +434,7 @@ func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) 
 	return card, err
 }
 
-/**
- * Retrieves all Cards on a Board
- *
- * If before
- */
+// GetCards takes Arguments and retrieves all Cards on a Board as slice or returns error.
 func (b *Board) GetCards(args Arguments) (cards []*Card, err error) {
 	path := fmt.Sprintf("boards/%s/cards", b.ID)
 
@@ -468,9 +463,7 @@ func (b *Board) GetCards(args Arguments) (cards []*Card, err error) {
 	return
 }
 
-/**
- * Retrieves all Cards in a List
- */
+// GetCards retrieves all Cards in a List or an error if something goes wrong.
 func (l *List) GetCards(args Arguments) (cards []*Card, err error) {
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
