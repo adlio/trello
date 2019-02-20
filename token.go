@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// Token represents Trello tokens. Tokens can be used for setting up Webhooks among other things.
+// https://developers.trello.com/reference/#tokens
 type Token struct {
 	client      *Client
 	ID          string       `json:"id"`
@@ -20,6 +22,7 @@ type Token struct {
 	Permissions []Permission `json:"permissions"`
 }
 
+// Permission represent a Token's permissions.
 type Permission struct {
 	IDModel   string `json:"idModel"`
 	ModelType string `json:"modelType"`
@@ -27,6 +30,7 @@ type Permission struct {
 	Write     bool   `json:"write"`
 }
 
+// GetToken takes a token id and Arguments and GETs and returns the Token or an error.
 func (c *Client) GetToken(tokenID string, args Arguments) (token *Token, err error) {
 	path := fmt.Sprintf("tokens/%s", tokenID)
 	err = c.Get(path, args, &token)
