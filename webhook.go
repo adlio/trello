@@ -15,6 +15,7 @@ import (
 
 // Webhook is the Go representation of a webhook registered in Trello's systems.
 // Used when creating, modifying or deleting webhooks.
+// https://developers.trello.com/reference/#webhook-object
 //
 type Webhook struct {
 	client      *Client
@@ -49,6 +50,7 @@ type CardWebhookRequest struct {
 	Action *Action
 }
 
+// CreateWebhook takes a Webhook, POSTs it and returns an error object.
 func (c *Client) CreateWebhook(webhook *Webhook) error {
 	path := "webhooks"
 	args := Arguments{"idModel": webhook.IDModel, "description": webhook.Description, "callbackURL": webhook.CallbackURL}
@@ -59,6 +61,7 @@ func (c *Client) CreateWebhook(webhook *Webhook) error {
 	return err
 }
 
+// GetWebhook takes a webhook id and Arguments, GETs the matching Webhook and returns it or an error.
 func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook, err error) {
 	path := fmt.Sprintf("webhooks/%s", webhookID)
 	err = c.Get(path, args, &webhook)
@@ -68,12 +71,14 @@ func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook,
 	return
 }
 
+// GetWebhooks takes Arguments and returns a list of all Webhooks for the receiver Token or an error.
 func (t *Token) GetWebhooks(args Arguments) (webhooks []*Webhook, err error) {
 	path := fmt.Sprintf("tokens/%s/webhooks", t.ID)
 	err = t.client.Get(path, args, &webhooks)
 	return
 }
 
+// GetBoardWebhookRequest takes a http.Request and returns the decoded body as BoardWebhookRequest or an error.
 func GetBoardWebhookRequest(r *http.Request) (whr *BoardWebhookRequest, err error) {
 	if r.Method == "HEAD" {
 		return &BoardWebhookRequest{}, nil
@@ -86,6 +91,7 @@ func GetBoardWebhookRequest(r *http.Request) (whr *BoardWebhookRequest, err erro
 	return
 }
 
+// GetListWebhookRequest takes a http.Request and returns the decoded Body as ListWebhookRequest or an error.
 func GetListWebhookRequest(r *http.Request) (whr *ListWebhookRequest, err error) {
 	if r.Method == "HEAD" {
 		return &ListWebhookRequest{}, nil
@@ -98,6 +104,7 @@ func GetListWebhookRequest(r *http.Request) (whr *ListWebhookRequest, err error)
 	return
 }
 
+// GetCardWebhookRequest takes a http.Request and returns the decoded Body as CardWebhookRequest or an error.
 func GetCardWebhookRequest(r *http.Request) (whr *CardWebhookRequest, err error) {
 	if r.Method == "HEAD" {
 		return &CardWebhookRequest{}, nil
