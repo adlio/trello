@@ -15,7 +15,7 @@ install:
 before_script:
 # golint is no longer available for go versions 1.7 and 1.8
 - INSTALLED_GO_VERSION=`go version | sed 's/go version go\(.*\) .*/\1/'`
-- if [ "$INSTALLED_GO_VERSION" != "1.7" ] && [ "$INSTALLED_GO_VERSION" != "1.8" ]; then; golint ./...; fi
+- if [ "$INSTALLED_GO_VERSION" != "1.7" ] && [ "$INSTALLED_GO_VERSION" != "1.8" ]; then golint ./...; fi
 
 script:
 - go test -v -race -coverprofile=coverage.txt -covermode=atomic
