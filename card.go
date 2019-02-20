@@ -451,7 +451,7 @@ func (b *Board) GetCards(args Arguments) (cards []*Card, err error) {
 		moreCards := true
 		for moreCards == true {
 			nextCardBatch := make([]*Card, 0)
-			args["before"] = EarliestCardID(cards)
+			args["before"] = earliestCardID(cards)
 			err = b.client.Get(path, args, &nextCardBatch)
 			if len(nextCardBatch) > 0 {
 				cards = append(cards, nextCardBatch...)
@@ -480,7 +480,7 @@ func (l *List) GetCards(args Arguments) (cards []*Card, err error) {
 	return
 }
 
-func EarliestCardID(cards []*Card) string {
+func earliestCardID(cards []*Card) string {
 	if len(cards) == 0 {
 		return ""
 	}
