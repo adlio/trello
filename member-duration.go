@@ -103,11 +103,11 @@ func (actions ActionCollection) GetMemberDurations() (durations []*MemberDuratio
 				}
 			}
 		} else if action.DidArchiveCard() {
-			for id, _ := range durs {
+			for id := range durs {
 				durs[id].stopTimerAsOf(action.Date)
 			}
 		} else if action.DidUnarchiveCard() {
-			for id, _ := range durs {
+			for id := range durs {
 				durs[id].startTimerAsOf(action.Date)
 			}
 		}
