@@ -12,6 +12,7 @@ install:
 - go get github.com/mattn/goveralls
 - go get github.com/pkg/errors
 script:
+- golint
 - go test -v -covermode=count -coverprofile=coverage.out
 - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
 env:
