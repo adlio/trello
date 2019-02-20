@@ -23,7 +23,7 @@ type httpClientError struct {
 	code int
 }
 
-func makeHttpClientError(url string, resp *http.Response) error {
+func makeHTTPClientError(url string, resp *http.Response) error {
 
 	body, _ := ioutil.ReadAll(resp.Body)
 	msg := fmt.Sprintf("HTTP request failure on %s:\n%d: %s", url, resp.StatusCode, string(body))

@@ -101,7 +101,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return makeHttpClientError(url, resp)
+		return makeHTTPClientError(url, resp)
 	}
 
 	decoder := json.NewDecoder(resp.Body)
@@ -147,7 +147,7 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return makeHttpClientError(url, resp)
+		return makeHTTPClientError(url, resp)
 	}
 
 	decoder := json.NewDecoder(resp.Body)
