@@ -13,9 +13,9 @@ func (c ActionCollection) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
 func (c ActionCollection) Less(i, j int) bool { return c[i].ID < c[j].ID }
 
 // FirstCardCreateAction returns first card-create action
-func (actions ActionCollection) FirstCardCreateAction() *Action {
-	sort.Sort(actions)
-	for _, action := range actions {
+func (c ActionCollection) FirstCardCreateAction() *Action {
+	sort.Sort(c)
+	for _, action := range c {
 		if action.DidCreateCard() {
 			return action
 		}
@@ -24,8 +24,8 @@ func (actions ActionCollection) FirstCardCreateAction() *Action {
 }
 
 // ContainsCardCreation returns true if collection contains a card-create action
-func (actions ActionCollection) ContainsCardCreation() bool {
-	return actions.FirstCardCreateAction() != nil
+func (c ActionCollection) ContainsCardCreation() bool {
+	return c.FirstCardCreateAction() != nil
 }
 
 // FilterToCardCreationActions returns this collection's card-create actions
