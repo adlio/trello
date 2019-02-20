@@ -89,7 +89,7 @@ func (c *Card) GetMembershipChangeActions() (actions ActionCollection, err error
 	return c.GetActions(Arguments{"filter": "addMemberToCard,removeMemberFromCard,updateCard:closed"})
 }
 
-// DidCreateCard() returns true if this action created a card, false otherwise.
+// DidCreateCard returns true if this action created a card, false otherwise.
 func (a *Action) DidCreateCard() bool {
 	switch a.Type {
 	case "createCard", "emailCard", "copyCard", "convertToCardFromCheckItem":
@@ -111,10 +111,10 @@ func (a *Action) DidUnarchiveCard() bool {
 	return (a.Type == "updateCard") && a.Data != nil && a.Data.Old != nil && a.Data.Old.Closed
 }
 
-// Returns true if this action created the card (in which case it caused it to enter its
-// first list), archived the card (in which case it caused it to leave its last List),
-// or was an updateCard action involving a change to the list. This is supporting
-// functionality for ListDuration.
+// DidChangeListForCard returns true if this action created the card (in which case it
+// caused it to enter its first list), archived the card (in which case it caused it to
+// leave its last List), or was an updateCard action involving a change to the list. This
+// is supporting functionality for ListDuration.
 //
 func (a *Action) DidChangeListForCard() bool {
 	if a.DidCreateCard() {
