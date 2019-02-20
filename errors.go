@@ -39,16 +39,20 @@ func (e *httpClientError) IsRateLimit() bool        { return e.code == 429 }
 func (e *httpClientError) IsNotFound() bool         { return e.code == 404 }
 func (e *httpClientError) IsPermissionDenied() bool { return e.code == 401 }
 
+// IsRateLimit takes an error and returns true exactly if the error is a rate-limit error.
 func IsRateLimit(err error) bool {
 	re, ok := err.(rateLimitError)
 	return ok && re.IsRateLimit()
 }
 
+// IsNotFound takes an error and returns true exactly if the error is a not-found error.
 func IsNotFound(err error) bool {
 	nf, ok := err.(notFoundError)
 	return ok && nf.IsNotFound()
 }
 
+// IsPermissionDenied takes an error and returns true exactly if the error is a
+// permission-denied error.
 func IsPermissionDenied(err error) bool {
 	pd, ok := err.(permissionDeniedError)
 	return ok && pd.IsPermissionDenied()
