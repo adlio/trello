@@ -7,14 +7,13 @@ go:
 - '1.10'
 - 1.11.x
 - master
+
 install:
-- go get golang.org/x/tools/cmd/cover
-- go get github.com/mattn/goveralls
 - go get github.com/pkg/errors
+
 script:
 - golint
-- go test -v -covermode=count -coverprofile=coverage.out
-- $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
-env:
-  global:
-    secure: B+BZR10f01Q3xVY3xvDpd2cElk2a/I/s3RIQeXb3tIo73ZutrgaGsYt8iLPU4ov2sZzdH/fT9rw4LF66XjFwdVWeHHCZr67KULBZFoL9hnKRCcj+NyZ+bGlMWYQMsDkEFawW3MkqT2hXYhmkzCWrK4gCH8Ni/20rPYXP/azqt/MveIMfZVOR5g1vjSY61/XB2FZRskJPwZthxoOi1Qavy6Ow6LGYpGTtIszIAK71hwN18HjmA92wmbJVV34o0WltRgoC1nxsZlh542ir26liMNXoZFYErMh2q/c/sgAW9zILijLAdzvDj7TNSdgB2qISb8/L9hqzlGznJWHhFkl93bWaqYVfDfLTKgqds9j8wH/HzVzGacaXbWduUz8aj21Vtznz41gC8Hl0KZmaRG88agsX8s42XYxhiA13JB1miZ8YhpAvcGqXvp6e4w7YparVnhaxOPF7NjlTzxoy8kfMJHZ6aVOh7mN3TNOeRC9HsiZFmTRScwgPUuohYlISR8QOfc669iMhIEEi3I/YcpapO9Y4Ad3l3uucLf+hAVxfukknzwt+YiLI6YOU0NqUgj2dwrN/ERlAR/h9yfi692luRSRxDrDCPqLJIK68dQCAj96cyAKAjY5S2c99DRsntR3/S+s3UZlXL/WFZ+v0Tn+enzCF2EQ7rCDujVNSbLCJfJs=
+- go test -v -race -coverprofile=coverage.txt -covermode=atomic
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
