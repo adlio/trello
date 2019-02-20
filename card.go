@@ -80,7 +80,7 @@ type Card struct {
 	Labels   []*Label `json:"labels,omitempty"`
 
 	// Custom Fields
-	CustomFieldItems []*CustomFieldItem	`json:"customFieldItems",omitempty`
+	CustomFieldItems []*CustomFieldItem `json:"customFieldItems",omitempty`
 
 	customFieldMap *map[string]interface{}
 }
@@ -97,13 +97,13 @@ func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interfa
 	cfm := c.customFieldMap
 
 	if cfm == nil {
-		cfm = &(map[string]interface{} {})
+		cfm = &(map[string]interface{}{})
 
 		// bcfOptionNames[CustomField ID] = Custom Field Name
 		bcfOptionNames := map[string]string{}
 
 		// bcfOptionsMap[CustomField ID][ID of the option] = Value of the option
-		bcfOptionsMap := map[string] map[string]interface{}{}
+		bcfOptionsMap := map[string]map[string]interface{}{}
 
 		for _, bcf := range boardCustomFields {
 			bcfOptionNames[bcf.ID] = bcf.Name
