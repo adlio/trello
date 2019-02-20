@@ -71,12 +71,11 @@ func (c *Card) GetMemberDurations() (durations []*MemberDuration, err error) {
 	return actions.GetMemberDurations()
 }
 
-// Similar to GetListDurations(), this function returns a slice of MemberDuration objects,
+// GetMemberDurations is similar to GetListDurations. It returns a slice of MemberDuration objects,
 // which describes the length of time each member was attached to this card. Durations are
 // calculated such that being added to a card starts a timer for that member, and being removed
 // starts it again (so that if a person is added and removed multiple times, the duration
 // captures only the times which they were attached). Archiving the card also stops the timer.
-//
 func (actions ActionCollection) GetMemberDurations() (durations []*MemberDuration, err error) {
 	sort.Sort(actions)
 	durs := make(map[string]*MemberDuration)
