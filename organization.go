@@ -9,6 +9,8 @@ import (
 	"fmt"
 )
 
+// Organization represents a Trello organization or team, i.e. a collection of members and boards.
+// https://developers.trello.com/reference/#organizations
 type Organization struct {
 	client      *Client
 	ID          string   `json:"id"`
@@ -21,6 +23,8 @@ type Organization struct {
 	PowerUps    []string `json:"powerUps"`
 }
 
+// GetOrganization takes an organization id and Arguments and either
+// GETs returns an Organization, or an error.
 func (c *Client) GetOrganization(orgID string, args Arguments) (organization *Organization, err error) {
 	path := fmt.Sprintf("organizations/%s", orgID)
 	err = c.Get(path, args, &organization)
