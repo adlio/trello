@@ -23,8 +23,8 @@ func (l *ListDuration) AddDuration(d time.Duration) {
 	l.TimesInList++
 }
 
-// Analyses a Card's actions to figure out how long it was in each List. It returns
-// a slice of the ListDurations, one Duration per list, or an error.
+// GetListDurations analyses a Card's actions to figure out how long it was in each List.
+// It returns a slice of the ListDurations, one Duration per list, or an error.
 func (c *Card) GetListDurations() (durations []*ListDuration, err error) {
 
 	var actions ActionCollection
