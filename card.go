@@ -26,8 +26,8 @@ type Card struct {
 	Pos              float64    `json:"pos"`
 	Email            string     `json:"email"`
 	ShortLink        string     `json:"shortLink"`
-	ShortUrl         string     `json:"shortUrl"`
-	Url              string     `json:"url"`
+	ShortURL         string     `json:"shortUrl"`
+	URL              string     `json:"url"`
 	Desc             string     `json:"desc"`
 	Due              *time.Time `json:"due"`
 	DueComplete      bool       `json:"dueComplete"`
