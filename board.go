@@ -21,7 +21,7 @@ type Board struct {
 	IDOrganization string `json:"idOrganization"`
 	Pinned         bool   `json:"pinned"`
 	URL            string `json:"url"`
-	ShortUrl       string `json:"shortUrl"`
+	ShortURL       string `json:"shortUrl"`
 	Prefs          struct {
 		PermissionLevel       string            `json:"permissionLevel"`
 		Voting                string            `json:"voting"`
