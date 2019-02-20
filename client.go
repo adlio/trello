@@ -17,8 +17,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// DEFAULT_BASEURL is the default API base url used by Client to send requests to Trello.
-const DEFAULT_BASEURL = "https://api.trello.com/1"
+// DefaultBaseURL is the default API base url used by Client to send requests to Trello.
+const DefaultBaseURL = "https://api.trello.com/1"
 
 // Client is the central object for making API calls. It wraps a http client,
 // context, logger and identity configuration (Key and Token) of the Trello member.
@@ -42,7 +42,7 @@ type logger interface {
 func NewClient(key, token string) *Client {
 	return &Client{
 		Client:   http.DefaultClient,
-		BaseURL:  DEFAULT_BASEURL,
+		BaseURL:  DefaultBaseURL,
 		Key:      key,
 		Token:    token,
 		throttle: time.Tick(time.Second / 8), // Actually 10/second, but we're extra cautious
