@@ -136,9 +136,7 @@ func (b *Board) Delete(extraArgs Arguments) error {
 	return b.client.Delete(path, Arguments{}, b)
 }
 
-/**
- * Board retrieves a Trello board by its ID.
- */
+// GetBoard retrieves a Trello board by its ID.
 func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err error) {
 	path := fmt.Sprintf("boards/%s", boardID)
 	err = c.Get(path, args, &board)
