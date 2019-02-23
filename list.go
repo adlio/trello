@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// List represents Trello lists.
+// https://developers.trello.com/reference/#list-object
 type List struct {
 	client  *Client
 	ID      string  `json:"id"`
@@ -21,11 +23,13 @@ type List struct {
 	Cards   []*Card `json:"cards,omitempty"`
 }
 
+// CreatedAt returns the time.Time from the list's id.
 func (l *List) CreatedAt() time.Time {
 	t, _ := IDToTime(l.ID)
 	return t
 }
 
+// GetList takes a list's id and Arguments and returns the matching list.
 func (c *Client) GetList(listID string, args Arguments) (list *List, err error) {
 	path := fmt.Sprintf("lists/%s", listID)
 	err = c.Get(path, args, &list)
@@ -38,6 +42,7 @@ func (c *Client) GetList(listID string, args Arguments) (list *List, err error) 
 	return
 }
 
+// GetLists takes Arguments and returns the lists of the receiver Board.
 func (b *Board) GetLists(args Arguments) (lists []*List, err error) {
 	path := fmt.Sprintf("boards/%s/lists", b.ID)
 	err = b.client.Get(path, args, &lists)

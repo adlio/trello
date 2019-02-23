@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// ListDuration represents the time a Card has been or was in list.
 type ListDuration struct {
 	ListID       string
 	ListName     string
@@ -15,12 +16,15 @@ type ListDuration struct {
 	TimesInList  int
 }
 
+// AddDuration takes a duration and adds it to the ListDuration's Duration.
+// Also increments TimesInList.
 func (l *ListDuration) AddDuration(d time.Duration) {
 	l.Duration = l.Duration + d
 	l.TimesInList++
 }
 
-// Analytzes a Cards actions to figure out how long it was in each List
+// GetListDurations analyses a Card's actions to figure out how long it was in each List.
+// It returns a slice of the ListDurations, one Duration per list, or an error.
 func (c *Card) GetListDurations() (durations []*ListDuration, err error) {
 
 	var actions ActionCollection
@@ -39,6 +43,7 @@ func (c *Card) GetListDurations() (durations []*ListDuration, err error) {
 	return actions.GetListDurations()
 }
 
+// GetListDurations returns a slice of ListDurations based on the receiver Actions.
 func (actions ActionCollection) GetListDurations() (durations []*ListDuration, err error) {
 	sort.Sort(actions)
 

@@ -17,8 +17,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-const DEFAULT_BASEURL = "https://api.trello.com/1"
+// DefaultBaseURL is the default API base url used by Client to send requests to Trello.
+const DefaultBaseURL = "https://api.trello.com/1"
 
+// Client is the central object for making API calls. It wraps a http client,
+// context, logger and identity configuration (Key and Token) of the Trello member.
 type Client struct {
 	Client   *http.Client
 	Logger   logger
@@ -34,10 +37,12 @@ type logger interface {
 	Debugf(string, ...interface{})
 }
 
+// NewClient is a constructor for the Client. It takes the key and token credentials
+// of a Trello member to authenticate and authorise requests with.
 func NewClient(key, token string) *Client {
 	return &Client{
 		Client:   http.DefaultClient,
-		BaseURL:  DEFAULT_BASEURL,
+		BaseURL:  DefaultBaseURL,
 		Key:      key,
 		Token:    token,
 		throttle: time.Tick(time.Second / 8), // Actually 10/second, but we're extra cautious
@@ -46,18 +51,25 @@ func NewClient(key, token string) *Client {
 	}
 }
 
+// WithContext takes a context.Context, sets it as context on the client and returns
+// a Client pointer.
 func (c *Client) WithContext(ctx context.Context) *Client {
 	newC := *c
 	newC.ctx = ctx
 	return &newC
 }
 
+// Throttle starts receiving throttles from throttle channel each ticker period.
 func (c *Client) Throttle() {
 	if !c.testMode {
 		<-c.throttle
 	}
 }
 
+// Get takes a path, Arguments, and a target interface (e.g. Board or Card).
+// It runs a GET request on the Trello API endpoint and the path and uses the
+// Arguments as URL parameters. Then it returns either the target interface
+// updated from the response or an error.
 func (c *Client) Get(path string, args Arguments, target interface{}) error {
 
 	// Trello prohibits more than 10 seconds/second per token
@@ -89,7 +101,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return makeHttpClientError(url, resp)
+		return makeHTTPClientError(url, resp)
 	}
 
 	decoder := json.NewDecoder(resp.Body)
@@ -101,6 +113,10 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	return nil
 }
 
+// Put takes a path, Arguments, and a target interface (e.g. Board or Card).
+// It runs a PUT request on the Trello API endpoint with the path and uses
+// the Arguments as URL parameters. Then it returns either the target interface
+// updated from the response or an error.
 func (c *Client) Put(path string, args Arguments, target interface{}) error {
 
 	// Trello prohibits more than 10 seconds/second per token
@@ -131,7 +147,7 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return makeHttpClientError(url, resp)
+		return makeHTTPClientError(url, resp)
 	}
 
 	decoder := json.NewDecoder(resp.Body)
@@ -143,6 +159,10 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 	return nil
 }
 
+// Post takes a path, Arguments, and a target interface (e.g. Board or Card).
+// It runs a POST request on the Trello API endpoint with the path and uses
+// the Arguments as URL parameters. Then it returns either the target interface
+// updated from the response or an error.
 func (c *Client) Post(path string, args Arguments, target interface{}) error {
 
 	// Trello prohibits more than 10 seconds/second per token
@@ -189,6 +209,10 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	return nil
 }
 
+// Delete takes a path, Arguments, and a target interface (e.g. Board or Card).
+// It runs a DELETE request on the Trello API endpoint with the path and uses
+// the Arguments as URL parameters. Then it returns either the target interface
+// updated from the response or an error.
 func (c *Client) Delete(path string, args Arguments, target interface{}) error {
 
 	c.Throttle()

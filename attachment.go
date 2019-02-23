@@ -5,6 +5,8 @@
 
 package trello
 
+// Attachment represent the attachments of cards. This is a nested resource of Card.
+// https://developers.trello.com/reference/#attachments
 type Attachment struct {
 	ID        string              `json:"id"`
 	Name      string              `json:"name"`
@@ -19,6 +21,7 @@ type Attachment struct {
 	URL       string              `json:"url"`
 }
 
+// AttachmentPreview is a nested attribute of Attachment.
 type AttachmentPreview struct {
 	ID     string `json:"_id"`
 	URL    string `json:"url"`

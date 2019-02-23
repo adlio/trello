@@ -18,10 +18,10 @@ type Board struct {
 	Name           string `json:"name"`
 	Desc           string `json:"desc"`
 	Closed         bool   `json:"closed"`
-	IdOrganization string `json:"idOrganization"`
+	IDOrganization string `json:"idOrganization"`
 	Pinned         bool   `json:"pinned"`
-	Url            string `json:"url"`
-	ShortUrl       string `json:"shortUrl"`
+	URL            string `json:"url"`
+	ShortURL       string `json:"shortUrl"`
 	Prefs          struct {
 		PermissionLevel       string            `json:"permissionLevel"`
 		Voting                string            `json:"voting"`
@@ -71,12 +71,14 @@ func NewBoard(name string) Board {
 	return b
 }
 
+// BackgroundImage is a nested resource of Board.
 type BackgroundImage struct {
 	Width  int    `json:"width"`
 	Height int    `json:"height"`
 	URL    string `json:"url"`
 }
 
+// CreatedAt returns a board's created-at attribute as time.Time.
 func (b *Board) CreatedAt() time.Time {
 	t, _ := IDToTime(b.ID)
 	return t
@@ -94,7 +96,7 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 		"name":             board.Name,
 		"prefs_selfJoin":   fmt.Sprintf("%t", board.Prefs.SelfJoin),
 		"prefs_cardCovers": fmt.Sprintf("%t", board.Prefs.CardCovers),
-		"idOrganization":   board.IdOrganization,
+		"idOrganization":   board.IDOrganization,
 	}
 
 	if board.Prefs.Voting != "" {
@@ -128,14 +130,13 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 	return err
 }
 
+// Delete makes a DELETE call for the receiver Board.
 func (b *Board) Delete(extraArgs Arguments) error {
 	path := fmt.Sprintf("boards/%s", b.ID)
 	return b.client.Delete(path, Arguments{}, b)
 }
 
-/**
- * Board retrieves a Trello board by its ID.
- */
+// GetBoard retrieves a Trello board by its ID.
 func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err error) {
 	path := fmt.Sprintf("boards/%s", boardID)
 	err = c.Get(path, args, &board)
@@ -145,7 +146,8 @@ func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err err
 	return
 }
 
-func (c *Client) GetMyBoards( args Arguments) (boards []*Board, err error) {
+// GetMyBoards returns a slice of all boards associated with the credentials set on the client.
+func (c *Client) GetMyBoards(args Arguments) (boards []*Board, err error) {
 	path := "members/me/boards"
 	err = c.Get(path, args, &boards)
 	for i := range boards {
@@ -154,6 +156,7 @@ func (c *Client) GetMyBoards( args Arguments) (boards []*Board, err error) {
 	return
 }
 
+// GetBoards returns a slice of all public boards of the receiver Member.
 func (m *Member) GetBoards(args Arguments) (boards []*Board, err error) {
 	path := fmt.Sprintf("members/%s/boards", m.ID)
 	err = m.client.Get(path, args, &boards)

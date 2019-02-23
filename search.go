@@ -5,6 +5,8 @@
 
 package trello
 
+// SearchResult represents a search result as collections of various
+// types returned by a search, e.g. Cards or Boards.
 type SearchResult struct {
 	Options SearchOptions `json:"options"`
 	Actions []*Action     `json:"actions,omitempty"`
@@ -13,6 +15,7 @@ type SearchResult struct {
 	Members []*Member     `json:"members,omitempty"`
 }
 
+// SearchOptions contains options for search requests.
 type SearchOptions struct {
 	Terms      []SearchTerm     `json:"terms"`
 	Modifiers  []SearchModifier `json:"modifiers,omitempty"`
@@ -20,15 +23,18 @@ type SearchOptions struct {
 	Partial    bool             `json:"partial"`
 }
 
+// SearchModifier is wrapper for a search string.
 type SearchModifier struct {
 	Text string `json:"text"`
 }
 
+// SearchTerm is a string that may be negated in a search query.
 type SearchTerm struct {
 	Text    string `json:"text"`
 	Negated bool   `json:"negated,omitempty"`
 }
 
+// SearchCards takes a query string and Arguments and returns a slice of Cards or an error.
 func (c *Client) SearchCards(query string, args Arguments) (cards []*Card, err error) {
 	args["query"] = query
 	args["modelTypes"] = "cards"
@@ -38,6 +44,7 @@ func (c *Client) SearchCards(query string, args Arguments) (cards []*Card, err e
 	return
 }
 
+// SearchBoards takes a query string and Arguments and returns a slice of Boards or an error.
 func (c *Client) SearchBoards(query string, args Arguments) (boards []*Board, err error) {
 	args["query"] = query
 	args["modelTypes"] = "boards"
@@ -50,6 +57,7 @@ func (c *Client) SearchBoards(query string, args Arguments) (boards []*Board, er
 	return
 }
 
+// SearchMembers takes a query string and Arguments and returns a slice of Members or an error.
 func (c *Client) SearchMembers(query string, args Arguments) (members []*Member, err error) {
 	args["query"] = query
 	err = c.Get("search/members", args, &members)

@@ -12,6 +12,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// IDToTime is a convenience function. It takes a Trello ID string and
+// extracts the encoded create time as time.Time or an error.
 func IDToTime(id string) (t time.Time, err error) {
 	if id == "" {
 		return time.Time{}, nil

@@ -7,8 +7,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Used to track the periods of time which a user (member) is attached to a card.
-//
+// MemberDuration is used to track the periods of time which a user (member) is attached to a card.
 type MemberDuration struct {
 	MemberID   string
 	MemberName string
@@ -18,9 +17,14 @@ type MemberDuration struct {
 	lastAdded  time.Time
 }
 
+// ByLongestDuration is a slice of *MemberDuration
 type ByLongestDuration []*MemberDuration
 
-func (d ByLongestDuration) Len() int           { return len(d) }
+// Len returns the length of the ByLongestDuration slice.
+func (d ByLongestDuration) Len() int { return len(d) }
+
+// Less takes two indexes i and j and returns true exactly if the Duration
+// at i is larger than the Duration at j.
 func (d ByLongestDuration) Less(i, j int) bool { return d[i].Duration > d[j].Duration }
 func (d ByLongestDuration) Swap(i, j int)      { d[i], d[j] = d[j], d[i] }
 
@@ -50,6 +54,7 @@ func (d *MemberDuration) stopTimerAsOf(t time.Time) {
 	}
 }
 
+// GetMemberDurations returns a slice containing all durations of a card.
 func (c *Card) GetMemberDurations() (durations []*MemberDuration, err error) {
 	var actions ActionCollection
 	if len(c.Actions) == 0 {
@@ -66,12 +71,11 @@ func (c *Card) GetMemberDurations() (durations []*MemberDuration, err error) {
 	return actions.GetMemberDurations()
 }
 
-// Similar to GetListDurations(), this function returns a slice of MemberDuration objects,
+// GetMemberDurations is similar to GetListDurations. It returns a slice of MemberDuration objects,
 // which describes the length of time each member was attached to this card. Durations are
 // calculated such that being added to a card starts a timer for that member, and being removed
 // starts it again (so that if a person is added and removed multiple times, the duration
 // captures only the times which they were attached). Archiving the card also stops the timer.
-//
 func (actions ActionCollection) GetMemberDurations() (durations []*MemberDuration, err error) {
 	sort.Sort(actions)
 	durs := make(map[string]*MemberDuration)
@@ -99,11 +103,11 @@ func (actions ActionCollection) GetMemberDurations() (durations []*MemberDuratio
 				}
 			}
 		} else if action.DidArchiveCard() {
-			for id, _ := range durs {
+			for id := range durs {
 				durs[id].stopTimerAsOf(action.Date)
 			}
 		} else if action.DidUnarchiveCard() {
-			for id, _ := range durs {
+			for id := range durs {
 				durs[id].startTimerAsOf(action.Date)
 			}
 		}
