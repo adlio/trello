@@ -80,7 +80,7 @@ type Card struct {
 	Labels   []*Label `json:"labels,omitempty"`
 
 	// Custom Fields
-	CustomFieldItems []*CustomFieldItem `json:"customFieldItems",omitempty`
+	CustomFieldItems []*CustomFieldItem `json:"customFieldItems,omitempty"`
 
 	customFieldMap *map[string]interface{}
 }
