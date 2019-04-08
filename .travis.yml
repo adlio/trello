@@ -24,6 +24,7 @@ before_script:
   if [ $? == 0 ]; then
     golint ./...
   fi
+  go vet
 
 script:
 - go test -v -race -coverprofile=coverage.txt -covermode=atomic
