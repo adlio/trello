@@ -79,7 +79,7 @@ func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook,
 
 // GetWebhooks takes Arguments and returns a list of all Webhooks for the receiver Token or an error.
 func (t *Token) GetWebhooks(args Arguments) (webhooks []*Webhook, err error) {
-	path := fmt.Sprintf("tokens/%s/webhooks", t.ID)
+	path := fmt.Sprintf("tokens/%s/webhooks", t.client.Token)
 	err = t.client.Get(path, args, &webhooks)
 	return
 }
