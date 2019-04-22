@@ -67,3 +67,21 @@ func TestGetWebhooks(t *testing.T) {
 		t.Errorf("Expected 2 webhooks. Got %d", len(webhooks))
 	}
 }
+func TestDeleteWebhook(t *testing.T) {
+	c := testClient()
+	c.BaseURL = mockResponse("webhooks", "deleted.json").URL
+
+	webhook := Webhook{
+		ID:          "57f1c02b618bc5da74ad3874",
+		Description: "Test Web Hook",
+		IDModel:     "57f039fbc0f98772398d289d",
+		CallbackURL: "http://example.com/uvbhswuv",
+		Active:      true,
+	}
+	webhook.client = c
+
+	err := webhook.Delete(Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+}
