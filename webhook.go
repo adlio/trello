@@ -81,6 +81,11 @@ func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook,
 func (t *Token) GetWebhooks(args Arguments) (webhooks []*Webhook, err error) {
 	path := fmt.Sprintf("tokens/%s/webhooks", t.client.Token)
 	err = t.client.Get(path, args, &webhooks)
+	if err == nil {
+		for _, webhook := range webhooks {
+			webhook.client = t.client
+		}
+	}
 	return
 }
 
