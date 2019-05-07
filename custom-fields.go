@@ -1,6 +1,7 @@
 package trello
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"strconv"
@@ -39,7 +40,17 @@ func (v CustomFieldValue) String() string {
 	return fmt.Sprintf("%s", v.val)
 }
 func (v CustomFieldValue) MarshalJSON() ([]byte, error) {
-	switch v := v.val.(type) {
+	val := v.val
+
+	switchVal:
+	switch v := val.(type) {
+	case driver.Valuer:
+		var err error
+		val, err = v.Value()
+		if err != nil {
+			return nil, err
+		}
+		goto switchVal
 	case string:
 		return json.Marshal(cfval{Text: v})
 	case int, int64:
