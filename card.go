@@ -99,18 +99,41 @@ func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interfa
 	if cfm == nil {
 		cfm = &(map[string]interface{}{})
 
-		// bcfNames[CustomFieldItem ID] = Custom Field Name
-		bcfNames := map[string]string{}
+		// bcfOptionNames[CustomField ID] = Custom Field Name
+		bcfOptionNames := map[string]string{}
+
+		// bcfOptionsMap[CustomField ID][ID of the option] = Value of the option
+		bcfOptionsMap := map[string]map[string]interface{}{}
 
 		for _, bcf := range boardCustomFields {
-			bcfNames[bcf.ID] = bcf.Name
-		}
+			bcfOptionNames[bcf.ID] = bcf.Name
+			for _, cf := range bcf.Options {
+				// create 2nd level map when not available yet
+				map2, ok := bcfOptionsMap[cf.IDCustomField]
+				if !ok {
+					map2 = map[string]interface{}{}
+					bcfOptionsMap[bcf.ID] = map2
+				}
 
-		for _, v := range c.CustomFieldItems {
-			if name, ok := bcfNames[v.IDCustomField]; ok {
-				(*cfm)[name] = v.Value.Get()
+				bcfOptionsMap[bcf.ID][cf.ID] = cf.Value.Text
 			}
 		}
+
+		for _, cf := range c.CustomFieldItems {
+			name := bcfOptionNames[cf.IDCustomField]
+
+			// create 2nd level map when not available yet
+			map2, ok := bcfOptionsMap[cf.IDCustomField]
+			if !ok {
+				continue
+			}
+			value, ok := map2[cf.IDValue]
+
+			if ok {
+				(*cfm)[name] = value
+			}
+		}
+		c.customFieldMap = cfm
 	}
 	return *cfm
 }
