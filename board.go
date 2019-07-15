@@ -130,6 +130,12 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 	return err
 }
 
+// Update PUTs the supported board attributes remote and updates
+// the struct from the returned values.
+func (b *Board) Update(extraArgs Arguments) error {
+	return b.client.PutBoard(b, extraArgs)
+}
+
 // Delete makes a DELETE call for the receiver Board.
 func (b *Board) Delete(extraArgs Arguments) error {
 	path := fmt.Sprintf("boards/%s", b.ID)
@@ -164,4 +170,43 @@ func (m *Member) GetBoards(args Arguments) (boards []*Board, err error) {
 		boards[i].client = m.client
 	}
 	return
+}
+
+// PutBoard PUTs a board remote. Extra arguments are currently unsupported.
+//
+// API Docs: https://developers.trello.com/reference#idnext
+func (c *Client) PutBoard(board *Board, extraArgs Arguments) error {
+	path := fmt.Sprintf("boards/%s", board.ID)
+	args := Arguments{
+		"desc":             board.Desc,
+		"name":             board.Name,
+		"prefs/selfJoin":   fmt.Sprintf("%t", board.Prefs.SelfJoin),
+		"prefs/cardCovers": fmt.Sprintf("%t", board.Prefs.CardCovers),
+		"idOrganization":   board.IDOrganization,
+	}
+
+	if board.Prefs.Voting != "" {
+		args["prefs/voting"] = board.Prefs.Voting
+	}
+	if board.Prefs.PermissionLevel != "" {
+		args["prefs/permissionLevel"] = board.Prefs.PermissionLevel
+	}
+	if board.Prefs.Comments != "" {
+		args["prefs/comments"] = board.Prefs.Comments
+	}
+	if board.Prefs.Invitations != "" {
+		args["prefs/invitations"] = board.Prefs.Invitations
+	}
+	if board.Prefs.Background != "" {
+		args["prefs/background"] = board.Prefs.Background
+	}
+	if board.Prefs.CardAging != "" {
+		args["prefs/cardAging"] = board.Prefs.CardAging
+	}
+
+	err := c.Put(path, args, &board)
+	if err == nil {
+		board.client = c
+	}
+	return err
 }
