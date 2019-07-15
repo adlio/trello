@@ -153,6 +153,79 @@ func testBoard(t *testing.T) *Board {
 	return board
 }
 
+func TestBoardUpdate(t *testing.T) {
+	expected := map[string]map[string]string{
+		"created": map[string]string{
+			"id":          "5d2ccd3015468d3df508f10d",
+			"name":        "test-board-for-update",
+			"description": "Some description",
+			"cardAging":   "regular",
+		},
+		"updated": map[string]string{
+			"id":          "5d2ccd3015468d3df508f10d",
+			"name":        "test-board-for-update plus",
+			"description": "Some other description",
+			"cardAging":   "pirate",
+		},
+	}
+
+	board := Board{
+		ID:   expected["created"]["id"],
+		Name: expected["created"]["id"],
+		Desc: expected["created"]["description"],
+	}
+	board.Prefs.CardAging = "regular"
+
+	client := testClient()
+	board.client = client
+	boardResponse := mockResponse("boards/5d2ccd3015468d3df508f10d", "create.json")
+	client.BaseURL = boardResponse.URL
+
+	err := client.CreateBoard(&board, Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+	if board.ID != expected["created"]["id"] {
+		t.Errorf("Expected board to pick up ID. Instead got '%s'.", board.ID)
+	}
+	if board.Name != expected["created"]["name"] {
+		t.Errorf("Expected board name. Instead got '%s'.", board.Name)
+	}
+	if board.Desc != expected["created"]["description"] {
+		t.Errorf("Expected board description. Instead got '%s'.", board.Desc)
+	}
+	if board.Prefs.CardAging != expected["created"]["cardAging"] {
+		t.Errorf("Expected board's card aging. Instead got '%s'.", board.Prefs.CardAging)
+	}
+
+	board.Name = expected["updated"]["name"]
+	board.Desc = expected["updated"]["description"]
+	board.Prefs.CardAging = expected["updated"]["cardAging"]
+
+	boardResponse = mockResponse("boards/5d2ccd3015468d3df508f10d", "update.json")
+	client.BaseURL = boardResponse.URL
+
+	err = board.Update(Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if board.ID != expected["updated"]["id"] {
+		t.Errorf("Expected board to pick up ID. Instead got '%s'.", board.ID)
+	}
+	if board.Name != expected["updated"]["name"] {
+		t.Errorf("Expected board name. Instead got '%s'.", board.Name)
+	}
+	if board.Desc != expected["updated"]["description"] {
+		t.Errorf("Expected board description. Instead got '%s'.", board.Desc)
+	}
+	if board.Prefs.CardAging != expected["updated"]["cardAging"] {
+		t.Errorf("Expected board's card aging. Instead got '%s'.", board.Prefs.CardAging)
+	}
+
+	return
+}
+
 func testBoardWithListsAndActions(t *testing.T) *Board {
 	c := testClient()
 	boardResponse := mockResponse("boards", "rq2mYJNn.json")
