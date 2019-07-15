@@ -171,7 +171,7 @@ func TestBoardUpdate(t *testing.T) {
 
 	board := Board{
 		ID:   expected["created"]["id"],
-		Name: expected["created"]["id"],
+		Name: expected["created"]["name"],
 		Desc: expected["created"]["description"],
 	}
 	board.Prefs.CardAging = "regular"
