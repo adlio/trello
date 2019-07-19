@@ -90,8 +90,8 @@ func TestCreateList(t *testing.T) {
 	c.BaseURL = mockResponse("lists", "create-list-example.json").URL
 
 	board := Board{
-		client:         c,
-		ID:             "5c41027ca9c378795b5a5036",
+		client: c,
+		ID:     "5c41027ca9c378795b5a5036",
 	}
 
 	listName := "hello"
