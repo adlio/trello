@@ -64,12 +64,12 @@ func (b *Board) GetLists(args Arguments) (lists []*List, err error) {
 func (c *Client) CreateList(onBoard *Board, name string, extraArgs Arguments) (list *List, err error) {
 	path := "lists"
 	args := Arguments{
-		"name": name,
-		"pos": "top",
+		"name":    name,
+		"pos":     "top",
 		"idBoard": onBoard.ID,
 	}
 
-	if pos, ok := extraArgs["pos"]; ok{
+	if pos, ok := extraArgs["pos"]; ok {
 		args["pos"] = pos
 	}
 
