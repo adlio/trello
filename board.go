@@ -85,7 +85,7 @@ func (b *Board) CreatedAt() time.Time {
 }
 
 // CreateBoard creates a board remote.
-// Attribute currently supported as exra argument: powerUps.
+// Attribute currently supported as exra argument: defaultLists, powerUps.
 // Attributes currently known to be unsupported: idBoardSource, keepFromSource.
 //
 // API Docs: https://developers.trello.com/reference/#boardsid
@@ -118,6 +118,10 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 		args["prefs_cardAging"] = board.Prefs.CardAging
 	}
 
+	// Expects "true" or "false"
+	if defaultLists, ok := extraArgs["defaultLists"]; ok {
+		args["defaultLists"] = defaultLists
+	}
 	// Expects one of "all", "calendar", "cardAging", "recap", or "voting".
 	if powerUps, ok := extraArgs["powerUps"]; ok {
 		args["powerUps"] = powerUps
