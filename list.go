@@ -55,7 +55,6 @@ func (b *Board) GetLists(args Arguments) (lists []*List, err error) {
 	return
 }
 
-
 // CreateList creates a list.
 // Attribute currently supported as extra argument: pos.
 // Attributes currently known to be unsupported: idListSource.
@@ -64,12 +63,12 @@ func (b *Board) GetLists(args Arguments) (lists []*List, err error) {
 func (c *Client) CreateList(onBoard *Board, name string, extraArgs Arguments) (list *List, err error) {
 	path := "lists"
 	args := Arguments{
-		"name": name,
-		"pos": "top",
+		"name":    name,
+		"pos":     "top",
 		"idBoard": onBoard.ID,
 	}
 
-	if pos, ok := extraArgs["pos"]; ok{
+	if pos, ok := extraArgs["pos"]; ok {
 		args["pos"] = pos
 	}
 
@@ -88,4 +87,11 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs Arguments) (l
 // API Docs: https://developers.trello.com/reference/#lists-1
 func (b *Board) CreateList(name string, extraArgs Arguments) (list *List, err error) {
 	return b.client.CreateList(b, name, extraArgs)
+}
+
+// Update UPDATEs the list's attributes.
+// API Docs: https://developers.trello.com/reference/#listsid-1
+func (l *List) Update(args Arguments) error {
+	path := fmt.Sprintf("lists/%s", l.ID)
+	return l.client.Put(path, args, l)
 }
