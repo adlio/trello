@@ -13,14 +13,15 @@ import (
 // List represents Trello lists.
 // https://developers.trello.com/reference/#list-object
 type List struct {
-	client  *Client
-	ID      string  `json:"id"`
-	Name    string  `json:"name"`
-	IDBoard string  `json:"idBoard,omitempty"`
-	Closed  bool    `json:"closed"`
-	Pos     float32 `json:"pos,omitempty"`
-	Board   *Board  `json:"board,omitempty"`
-	Cards   []*Card `json:"cards,omitempty"`
+	client     *Client
+	ID         string  `json:"id"`
+	Name       string  `json:"name"`
+	IDBoard    string  `json:"idBoard,omitempty"`
+	Closed     bool    `json:"closed"`
+	Pos        float32 `json:"pos,omitempty"`
+	Subscribed bool    `json:"subscribed"`
+	Board      *Board  `json:"board,omitempty"`
+	Cards      []*Card `json:"cards,omitempty"`
 }
 
 // CreatedAt returns the time.Time from the list's id.
