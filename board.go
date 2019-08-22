@@ -42,6 +42,7 @@ type Board struct {
 		CanBePrivate          bool              `json:"canBePrivate"`
 		CanInvite             bool              `json:"canInvite"`
 	} `json:"prefs"`
+	Subscribed bool `json:"subscribed"`
 	LabelNames struct {
 		Black  string `json:"black,omitempty"`
 		Blue   string `json:"blue,omitempty"`
