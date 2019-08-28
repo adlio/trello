@@ -90,8 +90,11 @@ func TestGetBoards(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	args := Defaults()
+	args["lists"] = "all"
+
 	c.BaseURL = mockResponse("boards", "member-boards-example.json").URL
-	boards, err := member.GetBoards(Defaults())
+	boards, err := member.GetBoards(args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,6 +111,13 @@ func TestGetBoards(t *testing.T) {
 		t.Errorf("Name of second board incorrect. Got: '%s'", boards[1].Name)
 	}
 
+	if len(boards[1].Lists) != 1 {
+		t.Error("Lists not sideloaded:", boards[0].Lists)
+	}
+
+	if boards[1].client != boards[1].Lists[0].client {
+		t.Error("Client not passed to list")
+	}
 }
 
 func TestGetMyBoards(t *testing.T) {

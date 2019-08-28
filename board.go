@@ -173,6 +173,10 @@ func (m *Member) GetBoards(args Arguments) (boards []*Board, err error) {
 	err = m.client.Get(path, args, &boards)
 	for i := range boards {
 		boards[i].client = m.client
+
+		for j := range boards[i].Lists {
+			boards[i].Lists[j].client = m.client
+		}
 	}
 	return
 }
