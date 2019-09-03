@@ -20,6 +20,7 @@ type Board struct {
 	Closed         bool   `json:"closed"`
 	IDOrganization string `json:"idOrganization"`
 	Pinned         bool   `json:"pinned"`
+	Starred        bool   `json:"starred"`
 	URL            string `json:"url"`
 	ShortURL       string `json:"shortUrl"`
 	Prefs          struct {
@@ -150,6 +151,8 @@ func (b *Board) Delete(extraArgs Arguments) error {
 // GetBoard retrieves a Trello board by its ID.
 func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err error) {
 	path := fmt.Sprintf("boards/%s", boardID)
+	// force field presence
+	args["fields"] = "all"
 	err = c.Get(path, args, &board)
 	if board != nil {
 		board.client = c
