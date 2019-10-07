@@ -57,6 +57,7 @@ type Board struct {
 		Yellow string `json:"yellow,omitempty"`
 	} `json:"labelNames"`
 	Lists        []*List      `json:"lists"`
+	Cards        []*Card      `json:"cards"`
 	Actions      []*Action    `json:"actions"`
 	Organization Organization `json:"organization"`
 }
@@ -181,6 +182,14 @@ func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err err
 	err = c.Get(path, args, &board)
 	if board != nil {
 		board.client = c
+
+		for j := range board.Lists {
+			board.Lists[j].client = c
+		}
+
+		for j := range board.Cards {
+			board.Cards[j].client = c
+		}
 	}
 	return
 }
@@ -191,6 +200,10 @@ func (c *Client) GetMyBoards(args Arguments) (boards []*Board, err error) {
 	err = c.Get(path, args, &boards)
 	for i := range boards {
 		boards[i].client = c
+
+		for j := range boards[i].Lists {
+			boards[i].Lists[j].client = c
+		}
 	}
 	return
 }
