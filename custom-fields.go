@@ -1,28 +1,37 @@
 package trello
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 // CustomFieldItem represents the custom field items of Trello a trello card.
 type CustomFieldItem struct {
-	ID            string `json:"id"`
+	ID    string `json:"id"`
+	Value struct {
+		Checked string     `json:"checked"`
+		Text    string     `json:"text"`
+		Date    *time.Time `json:"date"`
+		Number  string     `json:"number"`
+	} `json: "value"`
 	IDValue       string `json:"idValue"`
 	IDCustomField string `json:"idCustomField"`
 	IDModel       string `json:"idModel"`
-	IDModelType   string `json:"modelType,omitempty"`
+	ModelType     string `json:"modelType"`
 }
 
 // CustomField represents Trello's custom fields: "extra bits of structured data
 // attached to cards when our users need a bit more than what Trello provides."
 // https://developers.trello.com/reference/#custom-fields
 type CustomField struct {
-	ID          string `json:"id"`
-	IDModel     string `json:"idModel"`
-	IDModelType string `json:"modelType,omitempty"`
-	FieldGroup  string `json:"fieldGroup"`
-	Name        string `json:"name"`
-	Pos         int    `json:"pos"`
-	Display     struct {
-		CardFront bool `json:"cardfront"`
+	ID         string `json:"id"`
+	IDModel    string `json:"idModel"`
+	ModelType  string `json:"modelType,omitempty"`
+	FieldGroup string `json:"fieldGroup"`
+	Name       string `json:"name"`
+	Pos        int    `json:"pos"`
+	Display    struct {
+		CardFront bool `json:"cardFront"`
 	} `json:"display"`
 	Type    string               `json:"type"`
 	Options []*CustomFieldOption `json:"options"`

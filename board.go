@@ -55,9 +55,11 @@ type Board struct {
 		Sky    string `json:"sky,omitempty"`
 		Yellow string `json:"yellow,omitempty"`
 	} `json:"labelNames"`
-	Lists        []*List      `json:"lists"`
-	Actions      []*Action    `json:"actions"`
-	Organization Organization `json:"organization"`
+	CustomFields    []*CustomField `json:"customFields"`
+	customFieldsMap *map[string]*CustomField
+	Lists           []*List      `json:"lists"`
+	Actions         []*Action    `json:"actions"`
+	Organization    Organization `json:"organization"`
 }
 
 // NewBoard is a constructor that sets the default values
@@ -145,6 +147,27 @@ func (b *Board) Update(extraArgs Arguments) error {
 func (b *Board) Delete(extraArgs Arguments) error {
 	path := fmt.Sprintf("boards/%s", b.ID)
 	return b.client.Delete(path, Arguments{}, b)
+}
+
+// CustomFieldsMap returns the board's custom fields as a map
+//
+// For this call to work, GetBoard or GetBoards must be called with the customFields=true argument
+//
+// For example:
+//
+// 	args := trello.Defaults()
+// 	args["customFields"] = "true"
+// 	cards, err := l.GetBoard(, args)
+func (b *Board) CustomFieldsMap() (fields map[string]*CustomField) {
+	cfm := b.customFieldsMap
+	if cfm == nil {
+		cfm = &(map[string]*CustomField{})
+		for _, cf := range b.CustomFields {
+			(*cfm)[cf.ID] = cf
+		}
+		b.customFieldsMap = cfm
+	}
+	return *cfm
 }
 
 // GetBoard retrieves a Trello board by its ID.

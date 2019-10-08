@@ -81,8 +81,7 @@ type Card struct {
 
 	// Custom Fields
 	CustomFieldItems []*CustomFieldItem `json:"customFieldItems,omitempty"`
-
-	customFieldMap *map[string]interface{}
+	customFieldsMap  *map[string]interface{}
 }
 
 // CreatedAt returns the receiver card's created-at attribute as time.Time.
@@ -91,49 +90,44 @@ func (c *Card) CreatedAt() time.Time {
 	return t
 }
 
-// CustomFields returns the card's custom fields.
-func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interface{} {
+// CustomFieldsMap returns the card's custom fields items data as a map from data to value.
+//
+// For this call to work, GetCard or GetCards must be called with the customFieldItems=true argument
+//
+// For example:
+//
+// 	args := trello.Defaults()
+// 	args["customFieldItems"] = "true"
+// 	cards, err := l.GetCards(args)
+func (c *Card) CustomFieldsMap(boardCustomFieldsMap map[string]*CustomField) map[string]interface{} {
 
-	cfm := c.customFieldMap
-
+	cfm := c.customFieldsMap
 	if cfm == nil {
+
 		cfm = &(map[string]interface{}{})
 
-		// bcfOptionNames[CustomField ID] = Custom Field Name
-		bcfOptionNames := map[string]string{}
-
-		// bcfOptionsMap[CustomField ID][ID of the option] = Value of the option
-		bcfOptionsMap := map[string]map[string]interface{}{}
-
-		for _, bcf := range boardCustomFields {
-			bcfOptionNames[bcf.ID] = bcf.Name
-			for _, cf := range bcf.Options {
-				// create 2nd level map when not available yet
-				map2, ok := bcfOptionsMap[cf.IDCustomField]
-				if !ok {
-					map2 = map[string]interface{}{}
-					bcfOptionsMap[bcf.ID] = map2
-				}
-
-				bcfOptionsMap[bcf.ID][cf.ID] = cf.Value.Text
-			}
-		}
-
 		for _, cf := range c.CustomFieldItems {
-			name := bcfOptionNames[cf.IDCustomField]
-
-			// create 2nd level map when not available yet
-			map2, ok := bcfOptionsMap[cf.IDCustomField]
-			if !ok {
-				continue
-			}
-			value, ok := map2[cf.IDValue]
-
-			if ok {
-				(*cfm)[name] = value
+			bcf := boardCustomFieldsMap[cf.IDCustomField]
+			switch bcf.Type {
+			case "text":
+				(*cfm)[bcf.Name] = cf.Value.Text
+			case "number":
+				(*cfm)[bcf.Name] = cf.Value.Number
+			case "checkbox":
+				(*cfm)[bcf.Name] = cf.Value.Checked == "true"
+			case "date":
+				(*cfm)[bcf.Name] = cf.Value.Date
+			case "list":
+				idValue := cf.IDValue
+				for _, option := range bcf.Options {
+					if option.ID == idValue {
+						(*cfm)[bcf.Name] = option.Value.Text
+						break
+					}
+				}
 			}
 		}
-		c.customFieldMap = cfm
+		c.customFieldsMap = cfm
 	}
 	return *cfm
 }
