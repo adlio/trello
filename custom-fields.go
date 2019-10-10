@@ -13,7 +13,7 @@ type CustomFieldItem struct {
 		Text    string     `json:"text"`
 		Date    *time.Time `json:"date"`
 		Number  string     `json:"number"`
-	} `json: "value"`
+	} `json:"value"`
 	IDValue       string `json:"idValue"`
 	IDCustomField string `json:"idCustomField"`
 	IDModel       string `json:"idModel"`
