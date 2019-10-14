@@ -102,13 +102,41 @@ func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interfa
 		// bcfNames[CustomFieldItem ID] = Custom Field Name
 		bcfNames := map[string]string{}
 
+		// bcfOptionsMap[CustomField ID][ID of the option] = Value of the option
+		bcfOptionsMap := map[string]map[string]interface{}{}
+
 		for _, bcf := range boardCustomFields {
 			bcfNames[bcf.ID] = bcf.Name
+
+			//Options for Dropbox field
+			for _, cf := range bcf.Options {
+				// create 2nd level map when not available yet
+				map2, ok := bcfOptionsMap[cf.IDCustomField]
+				if !ok {
+					map2 = map[string]interface{}{}
+					bcfOptionsMap[bcf.ID] = map2
+				}
+
+				bcfOptionsMap[bcf.ID][cf.ID] = cf.Value.Text
+			}
 		}
 
-		for _, v := range c.CustomFieldItems {
-			if name, ok := bcfNames[v.IDCustomField]; ok {
-				(*cfm)[name] = v.Value.Get()
+		for _, cf := range c.CustomFieldItems {
+			if name, ok := bcfNames[cf.IDCustomField]; ok {
+				if cf.Value.Get() != nil {
+					(*cfm)[name] = cf.Value.Get()
+				} else { // Dropbox
+					// create 2nd level map when not available yet
+					map2, ok := bcfOptionsMap[cf.IDCustomField]
+					if !ok {
+						continue
+					}
+					value, ok := map2[cf.IDValue]
+
+					if ok {
+						(*cfm)[name] = value
+					}
+				}
 			}
 		}
 	}
