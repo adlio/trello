@@ -90,8 +90,11 @@ func TestGetBoards(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	args := Defaults()
+	args["lists"] = "all"
+
 	c.BaseURL = mockResponse("boards", "member-boards-example.json").URL
-	boards, err := member.GetBoards(Defaults())
+	boards, err := member.GetBoards(args)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,6 +111,13 @@ func TestGetBoards(t *testing.T) {
 		t.Errorf("Name of second board incorrect. Got: '%s'", boards[1].Name)
 	}
 
+	if len(boards[1].Lists) != 1 {
+		t.Error("Lists not sideloaded:", boards[0].Lists)
+	}
+
+	if boards[1].client != boards[1].Lists[0].client {
+		t.Error("Client not passed to list")
+	}
 }
 
 func TestGetMyBoards(t *testing.T) {
@@ -151,6 +161,79 @@ func testBoard(t *testing.T) *Board {
 		t.Fatal(err)
 	}
 	return board
+}
+
+func TestBoardUpdate(t *testing.T) {
+	expected := map[string]map[string]string{
+		"created": map[string]string{
+			"id":          "5d2ccd3015468d3df508f10d",
+			"name":        "test-board-for-update",
+			"description": "Some description",
+			"cardAging":   "regular",
+		},
+		"updated": map[string]string{
+			"id":          "5d2ccd3015468d3df508f10d",
+			"name":        "test-board-for-update plus",
+			"description": "Some other description",
+			"cardAging":   "pirate",
+		},
+	}
+
+	board := Board{
+		ID:   expected["created"]["id"],
+		Name: expected["created"]["name"],
+		Desc: expected["created"]["description"],
+	}
+	board.Prefs.CardAging = "regular"
+
+	client := testClient()
+	board.client = client
+	boardResponse := mockResponse("boards/5d2ccd3015468d3df508f10d", "create.json")
+	client.BaseURL = boardResponse.URL
+
+	err := client.CreateBoard(&board, Defaults())
+	if err != nil {
+		t.Error(err)
+	}
+	if board.ID != expected["created"]["id"] {
+		t.Errorf("Expected board to pick up ID. Instead got '%s'.", board.ID)
+	}
+	if board.Name != expected["created"]["name"] {
+		t.Errorf("Expected board name. Instead got '%s'.", board.Name)
+	}
+	if board.Desc != expected["created"]["description"] {
+		t.Errorf("Expected board description. Instead got '%s'.", board.Desc)
+	}
+	if board.Prefs.CardAging != expected["created"]["cardAging"] {
+		t.Errorf("Expected board's card aging. Instead got '%s'.", board.Prefs.CardAging)
+	}
+
+	board.Name = expected["updated"]["name"]
+	board.Desc = expected["updated"]["description"]
+	board.Prefs.CardAging = expected["updated"]["cardAging"]
+
+	boardResponse = mockResponse("boards/5d2ccd3015468d3df508f10d", "update.json")
+	client.BaseURL = boardResponse.URL
+
+	err = board.Update(Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if board.ID != expected["updated"]["id"] {
+		t.Errorf("Expected board to pick up ID. Instead got '%s'.", board.ID)
+	}
+	if board.Name != expected["updated"]["name"] {
+		t.Errorf("Expected board name. Instead got '%s'.", board.Name)
+	}
+	if board.Desc != expected["updated"]["description"] {
+		t.Errorf("Expected board description. Instead got '%s'.", board.Desc)
+	}
+	if board.Prefs.CardAging != expected["updated"]["cardAging"] {
+		t.Errorf("Expected board's card aging. Instead got '%s'.", board.Prefs.CardAging)
+	}
+
+	return
 }
 
 func testBoardWithListsAndActions(t *testing.T) *Board {

@@ -84,3 +84,92 @@ func testList(t *testing.T) *List {
 	}
 	return list
 }
+
+func TestCreateList(t *testing.T) {
+	c := testClient()
+	c.BaseURL = mockResponse("lists", "create-list-example.json").URL
+
+	board := Board{
+		client: c,
+		ID:     "5c41027ca9c378795b5a5036",
+	}
+
+	listName := "hello"
+
+	list, err := board.CreateList(listName, Arguments{"pos": "35"})
+	if err != nil {
+		t.Error(err)
+	}
+	if list.ID != "5ccd793e91682684235c0b13" {
+		t.Errorf("Expected list to pick up an ID. Instead got '%s'.", list.ID)
+	}
+	if list.IDBoard != "5c41027ca9c378795b5a5036" {
+		t.Errorf("Expected list to pick up board ID. Instead got '%s'.", list.IDBoard)
+	}
+	if list.Name != listName {
+		t.Errorf("Expected list to pick up name. Instead got '%s'", list.Name)
+	}
+	if list.Pos != 35 {
+		t.Errorf("Expected the returned list to pick up a position. Instead got '%v'.", list.Pos)
+	}
+	if list.Closed != false {
+		t.Errorf("Expected list to pick up Closed. Instead got '%v'", list.Closed)
+	}
+	if list.client == nil {
+		t.Errorf("Expected list to pick up client. Instead got nil")
+	}
+}
+
+func TestUpdateList(t *testing.T) {
+	c := testClient()
+	c.BaseURL = mockResponse("lists", "create-list-example.json").URL
+
+	// preparation: create board
+	board := Board{
+		client: c,
+		ID:     "5c41027ca9c378795b5a5036",
+	}
+
+	listName := "hello"
+
+	list, err := board.CreateList(listName, Arguments{"pos": "35"})
+	if err != nil {
+		t.Error(err)
+	}
+	if list.ID != "5ccd793e91682684235c0b13" {
+		t.Errorf("Expected list to pick up an ID. Instead got '%s'.", list.ID)
+	}
+	if list.IDBoard != "5c41027ca9c378795b5a5036" {
+		t.Errorf("Expected list to pick up board ID. Instead got '%s'.", list.IDBoard)
+	}
+	if list.Name != listName {
+		t.Errorf("Expected list to pick up name. Instead got '%s'", list.Name)
+	}
+	if list.Pos != 35 {
+		t.Errorf("Expected the returned list to pick up a position. Instead got '%v'.", list.Pos)
+	}
+
+	// update
+	listName = "updated-list-name"
+
+	c.BaseURL = mockResponse("lists", "update-list-example.json").URL
+	updateArgs := Arguments{"name": listName, "idBoard": "5d31c3d8615ae32928635a28"}
+
+	err = list.Update(updateArgs)
+
+	if err != nil {
+		t.Error(err)
+	}
+	if list.ID != "5ccd793e91682684235c0b13" {
+		t.Errorf("Expected list to pick up an ID. Instead got '%s'.", list.ID)
+	}
+	if list.IDBoard != "5d31c3d8615ae32928635a28" {
+		t.Errorf("Expected list to pick up board ID. Instead got '%s'.", list.IDBoard)
+	}
+	if list.Name != listName {
+		t.Errorf("Expected list to pick up name. Instead got '%s'", list.Name)
+	}
+	if list.Pos != 24576 {
+		t.Errorf("Expected the returned list to pick up a position. Instead got '%v'.", list.Pos)
+	}
+}

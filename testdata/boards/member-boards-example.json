@@ -85,6 +85,10 @@
         "pink": "",
         "black": ""
     },
+    "lists": [{
+      "name": "Some list",
+      "id":  "4een4ffc91r31q174fsldk46"
+    }],
     "memberships": [{
         "id": "4ee7e707e582acdec8000521",
         "idMember": "4ee7df3ce582acdec80000b2",

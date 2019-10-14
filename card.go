@@ -91,6 +91,7 @@ func (c *Card) CreatedAt() time.Time {
 	return t
 }
 
+
 // CustomFields returns the card's custom fields.
 func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interface{} {
 

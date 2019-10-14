@@ -61,6 +61,12 @@ func (c *Client) CreateWebhook(webhook *Webhook) error {
 	return err
 }
 
+// Delete takes a webhook and deletes it
+func (w *Webhook) Delete(args Arguments) error {
+	path := fmt.Sprintf("webhooks/%s", w.ID)
+	return w.client.Delete(path, Arguments{}, w)
+}
+
 // GetWebhook takes a webhook id and Arguments, GETs the matching Webhook and returns it or an error.
 func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook, err error) {
 	path := fmt.Sprintf("webhooks/%s", webhookID)
@@ -73,8 +79,13 @@ func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook,
 
 // GetWebhooks takes Arguments and returns a list of all Webhooks for the receiver Token or an error.
 func (t *Token) GetWebhooks(args Arguments) (webhooks []*Webhook, err error) {
-	path := fmt.Sprintf("tokens/%s/webhooks", t.ID)
+	path := fmt.Sprintf("tokens/%s/webhooks", t.client.Token)
 	err = t.client.Get(path, args, &webhooks)
+	if err == nil {
+		for _, webhook := range webhooks {
+			webhook.client = t.client
+		}
+	}
 	return
 }
 
