@@ -20,6 +20,7 @@ type Board struct {
 	Closed         bool   `json:"closed"`
 	IDOrganization string `json:"idOrganization"`
 	Pinned         bool   `json:"pinned"`
+	Starred        bool   `json:"starred"`
 	URL            string `json:"url"`
 	ShortURL       string `json:"shortUrl"`
 	Prefs          struct {
