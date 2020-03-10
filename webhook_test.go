@@ -11,7 +11,9 @@ import (
 
 func TestCreateWebhook(t *testing.T) {
 	client := testClient()
-	client.BaseURL = mockResponse("webhooks", "webhook-create.json").URL
+	server := mockResponse("webhooks", "webhook-create.json")
+	defer server.Close()
+	client.BaseURL = server.URL
 	wh := Webhook{IDModel: "test", Description: "Webhook name", CallbackURL: "http://example.com/test"}
 	err := client.CreateWebhook(&wh)
 	if err != nil {
@@ -33,7 +35,9 @@ func TestCreateWebhook(t *testing.T) {
 
 func TestGetWebhook(t *testing.T) {
 	client := testClient()
-	client.BaseURL = mockResponse("webhooks", "webhook.json").URL
+	server := mockResponse("webhooks", "webhook.json")
+	defer server.Close()
+	client.BaseURL = server.URL
 	webhook, err := client.GetWebhook("webhookID", Defaults())
 
 	if err != nil {
@@ -56,7 +60,9 @@ func TestGetWebhook(t *testing.T) {
 
 func TestGetWebhooks(t *testing.T) {
 	token := testToken(t)
-	token.client.BaseURL = mockResponse("webhooks", "webhooks.json").URL
+	server := mockResponse("webhooks", "webhooks.json")
+	defer server.Close()
+	token.client.BaseURL = server.URL
 
 	webhooks, err := token.GetWebhooks(Defaults())
 	if err != nil {
@@ -67,9 +73,12 @@ func TestGetWebhooks(t *testing.T) {
 		t.Errorf("Expected 2 webhooks. Got %d", len(webhooks))
 	}
 }
+
 func TestDeleteWebhook(t *testing.T) {
 	c := testClient()
-	c.BaseURL = mockResponse("webhooks", "deleted.json").URL
+	server := mockResponse("webhooks", "deleted.json")
+	defer server.Close()
+	c.BaseURL = server.URL
 
 	webhook := Webhook{
 		ID:          "57f1c02b618bc5da74ad3874",
