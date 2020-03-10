@@ -143,6 +143,23 @@ A board can be created or deleted on the `Board` struct for the user whose crede
 }
 ```
 
+## Adding a new Member to the Board
+
+
+```Go
+  board, err := client.GetBoard("bOaRdID", trello.Defaults())
+  if err != nil {
+    // Handle error
+  }
+
+  member := Member{Email: "user@example.com"}
+  _, err := board.AddMember(&member, trello.Defaults()) 
+
+  if err != nil {
+    // Handle error
+  }
+```
+
 ## Creating a Card
 
 The API provides several mechanisms for creating new cards.

@@ -148,6 +148,33 @@ func (b *Board) Delete(extraArgs Arguments) error {
 	return b.client.Delete(path, Arguments{}, b)
 }
 
+// AddedMembersResponse represents a response after adding a new member.
+type AddedMembersResponse struct {
+	ID          string        `json:"id"`
+	Members     []*Member     `json:"members"`
+	Memberships []*Membership `json:"memberships"`
+}
+
+// AddMember adds a new member to the board.
+// https://developers.trello.com/reference#boardsidlabelnamesmembers
+func (b *Board) AddMember(member *Member, extraArgs Arguments) (response *AddedMembersResponse, err error) {
+	args := Arguments{
+		"email": member.Email,
+	}
+
+	// "normal" is the default type, so we can omit it.
+	if memberType, ok := extraArgs["type"]; ok {
+		switch memberType {
+		case "admin", "observer":
+			args["type"] = memberType
+		}
+	}
+
+	path := fmt.Sprintf("boards/%s/members", b.ID)
+	err = b.client.Put(path, args, &response)
+	return
+}
+
 // GetBoard retrieves a Trello board by its ID.
 func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err error) {
 	path := fmt.Sprintf("boards/%s", boardID)

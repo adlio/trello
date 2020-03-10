@@ -246,3 +246,51 @@ func testBoardWithListsAndActions(t *testing.T) *Board {
 	}
 	return board
 }
+
+func TestBoardAddMember(t *testing.T) {
+	board := Board{
+		ID:   "5d2ccd3015468d3df508f10d",
+		Name: "Test Board Create",
+	}
+
+	client := testClient()
+	board.client = client
+
+	boardResponse := mockResponse("boards/5d2ccd3015468d3df508f10d", "added_members.json")
+	client.BaseURL = boardResponse.URL
+
+	member := Member{Email: "test@test.com"}
+
+	response, err := board.AddMember(&member, Arguments{"type": "fake"})
+	if err != nil {
+		t.Error(err)
+	}
+
+	if response.ID != "5d2ccd3015468d3df508f10d" {
+		t.Errorf("Name of first board incorrect. Got: '%s'", response.ID)
+	}
+
+	if len(response.Members) != 2 {
+		t.Errorf("Expected 2 members, got %d", len(response.Members))
+	}
+
+	if response.Members[1].Username != "user98198126" {
+		t.Errorf("Username of invited member incorrect, got %s", response.Members[1].Username)
+	}
+
+	if response.Members[1].FullName != "user" {
+		t.Errorf("Full name of invited member incorrect, got %s", response.Members[1].FullName)
+	}
+
+	if len(response.Memberships) != 2 {
+		t.Errorf("Expected 2 memberships, got %d", len(response.Memberships))
+	}
+
+	if response.Memberships[1].Type != "normal" {
+		t.Errorf("Type of membership incorrect, got %v", response.Memberships[1].Type)
+	}
+
+	if response.Memberships[1].Unconfirmed != true {
+		t.Errorf("Status membership incorrect, got %v", response.Memberships[1].Unconfirmed)
+	}
+}

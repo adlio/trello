@@ -1,0 +1,49 @@
+{
+  "id": "5d2ccd3015468d3df508f10d",
+  "members": [
+    {
+      "id": "4ee7df1be582acdec80000ae",
+      "activityBlocked": false,
+      "avatarHash": null,
+      "avatarUrl": null,
+      "fullName": "Bob Tester",
+      "idMemberReferrer": null,
+      "initials": "BT",
+      "nonPublic": {},
+      "nonPublicAvailable": false,
+      "username": "bobtester",
+      "confirmed": true,
+      "memberType": "normal"
+    },
+    {
+      "id": "4ee7df74e582acdec80000b6",
+      "activityBlocked": false,
+      "avatarHash": null,
+      "avatarUrl": null,
+      "fullName": "user",
+      "idMemberReferrer": "4ee7df1be582acdec80000ae",
+      "initials": "E",
+      "nonPublic": {},
+      "nonPublicAvailable": false,
+      "username": "user98198126",
+      "confirmed": false,
+      "memberType": "ghost"
+    }
+  ],
+  "memberships": [
+    {
+      "id": "4ee7e707e582acdec8000521",
+      "idMember": "4ee7df1be582acdec80000ae",
+      "memberType": "admin",
+      "unconfirmed": false,
+      "deactivated": false
+    },
+    {
+      "id": "4ee7e72fe582acdec8000573",
+      "idMember": "4ee7df74e582acdec80000b6",
+      "memberType": "normal",
+      "unconfirmed": true,
+      "deactivated": false
+    }
+  ]
+}
