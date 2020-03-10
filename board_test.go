@@ -188,7 +188,7 @@ func TestBoardUpdate(t *testing.T) {
 
 	client := testClient()
 	board.client = client
-	boardResponse := mockResponse("boards/5d2ccd3015468d3df508f10d", "create.json")
+	boardResponse := mockResponse("boards", "5d2ccd3015468d3df508f10d", "create.json")
 	client.BaseURL = boardResponse.URL
 
 	err := client.CreateBoard(&board, Defaults())
@@ -212,7 +212,7 @@ func TestBoardUpdate(t *testing.T) {
 	board.Desc = expected["updated"]["description"]
 	board.Prefs.CardAging = expected["updated"]["cardAging"]
 
-	boardResponse = mockResponse("boards/5d2ccd3015468d3df508f10d", "update.json")
+	boardResponse = mockResponse("boards", "5d2ccd3015468d3df508f10d", "update.json")
 	client.BaseURL = boardResponse.URL
 
 	err = board.Update(Defaults())
