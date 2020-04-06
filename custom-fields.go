@@ -17,9 +17,12 @@ type CustomFieldItem struct {
 	IDModel       string           `json:"idModel,omitempty"`
 	IDModelType   string           `json:"modelType,omitempty"`
 }
+
+// CustomFieldValue represents the custom field value struct
 type CustomFieldValue struct {
 	val interface{}
 }
+
 type cfval struct {
 	Text    string `json:"text,omitempty"`
 	Number  string `json:"number,omitempty"`
@@ -27,22 +30,28 @@ type cfval struct {
 	Checked string `json:"checked,omitempty"`
 }
 
+// NewCustomFieldValue the custom field constructor
 func NewCustomFieldValue(val interface{}) CustomFieldValue {
 	return CustomFieldValue{val: val}
 }
 
 const timeFmt = "2006-01-02T15:04:05Z"
 
+// Get the custom field value getter
 func (v CustomFieldValue) Get() interface{} {
 	return v.val
 }
+
+// String the custom field String method
 func (v CustomFieldValue) String() string {
 	return fmt.Sprintf("%s", v.val)
 }
+
+// MarshalJSON the custom field marchaller
 func (v CustomFieldValue) MarshalJSON() ([]byte, error) {
 	val := v.val
 
-	switchVal:
+switchVal:
 	switch v := val.(type) {
 	case driver.Valuer:
 		var err error
@@ -60,15 +69,16 @@ func (v CustomFieldValue) MarshalJSON() ([]byte, error) {
 	case bool:
 		if v {
 			return json.Marshal(cfval{Checked: "true"})
-		} else {
-			return json.Marshal(cfval{Checked: "false"})
 		}
+		return json.Marshal(cfval{Checked: "false"})
 	case time.Time:
 		return json.Marshal(cfval{Date: v.Format(timeFmt)})
 	default:
 		return nil, fmt.Errorf("unsupported type")
 	}
 }
+
+// UnmarshalJSON the custom field umarshaller
 func (v *CustomFieldValue) UnmarshalJSON(b []byte) error {
 	cfval := cfval{}
 	err := json.Unmarshal(b, &cfval)

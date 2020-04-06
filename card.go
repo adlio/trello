@@ -1,6 +1,6 @@
 // Copyright © 2016 Aaron Longwell
 //
-// Use of this source code is governed by an MIT licese.
+// Use of this source code is governed by an MIT license.
 // Details in the LICENSE file.
 
 package trello
@@ -90,7 +90,6 @@ func (c *Card) CreatedAt() time.Time {
 	t, _ := IDToTime(c.ID)
 	return t
 }
-
 
 // CustomFields returns the card's custom fields.
 func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interface{} {
