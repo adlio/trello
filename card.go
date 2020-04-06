@@ -123,8 +123,8 @@ func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interfa
 
 		for _, cf := range c.CustomFieldItems {
 			if name, ok := bcfNames[cf.IDCustomField]; ok {
-				if cf.Value.Get() != nil {
-					(*cfm)[name] = cf.Value.Get()
+				if cf.Value != nil {
+					(*cfm)[name] = cf.Value
 				} else { // Dropbox
 					// create 2nd level map when not available yet
 					map2, ok := bcfOptionsMap[cf.IDCustomField]

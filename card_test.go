@@ -82,13 +82,17 @@ func TestCardsCustomFields(t *testing.T) {
 func TestRemoveIDCustomField(t *testing.T) {
 	card := testCard(t)
 	card.client.BaseURL = mockResponse("customFields", "custom-fields-remove.json").URL
-	var customFieldItem CustomFieldItem
-	err := card.RemoveIDCustomField("customFieldDummyID", &customFieldItem)
+	customFieldItem := &CustomFieldItem{
+		Value: &CustomFieldValue{
+			Text: "Text that should be deleted",
+		},
+	}
+	err := card.RemoveIDCustomField("customFieldDummyID", customFieldItem)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if customFieldItem.Value.val != nil {
-		t.Fatal("Custom field value should be nil")
+	if customFieldItem.Value != nil {
+		t.Fatalf("Custom field value should be nil, but %+v", customFieldItem)
 	}
 }
 
