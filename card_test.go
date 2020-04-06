@@ -79,6 +79,19 @@ func TestCardsCustomFields(t *testing.T) {
 	}
 }
 
+func TestRemoveIDCustomField(t *testing.T) {
+	card := testCard(t)
+	card.client.BaseURL = mockResponse("customFields", "custom-fields-remove.json").URL
+	var customFieldItem CustomFieldItem
+	err := card.RemoveIDCustomField("customFieldDummyID", &customFieldItem)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if customFieldItem.Value.val != nil {
+		t.Fatal("Custom field value should be nil")
+	}
+}
+
 func TestBoardContainsCopyOfCard(t *testing.T) {
 	board := testBoard(t)
 	board.client.BaseURL = mockResponse("actions", "board-actions-copyCard.json").URL
@@ -232,7 +245,7 @@ func TestAddURLAttachmentToCard(t *testing.T) {
 	c.client.BaseURL = mockResponse("cards", "url-attachments.json").URL
 	attachment := Attachment{
 		Name: "Test",
-		URL: "https://github.com/test",
+		URL:  "https://github.com/test",
 	}
 	err := c.AddURLAttachment(&attachment)
 	if err != nil {
