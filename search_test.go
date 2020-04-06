@@ -19,6 +19,9 @@ func TestSearchCards(t *testing.T) {
 	if len(cards) != 1 {
 		t.Errorf("Expected 1 card search result. Got %d.", len(cards))
 	}
+	if cards[0].client == nil {
+		t.Errorf("Card struct in result has no client info")
+	}
 }
 
 func TestSearchBoards(t *testing.T) {
