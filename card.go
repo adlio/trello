@@ -82,7 +82,7 @@ type Card struct {
 	// Custom Fields
 	CustomFieldItems []*CustomFieldItem `json:"customFieldItems,omitempty"`
 
-	customFieldMap *map[string]interface{}
+	customFieldMap map[string]*CustomFieldValue
 }
 
 // CreatedAt returns the receiver card's created-at attribute as time.Time.
@@ -92,55 +92,72 @@ func (c *Card) CreatedAt() time.Time {
 }
 
 // CustomFields returns the card's custom fields.
-func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interface{} {
+func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]*CustomFieldValue {
 
-	cfm := c.customFieldMap
+	// if there is no custom fields in card struct → return nil
+	if c.CustomFieldItems == nil {
+		return nil
+	}
 
-	if cfm == nil {
-		cfm = &(map[string]interface{}{})
+	// if customFieldMap already exist → return it
+	if c.customFieldMap != nil {
+		return c.customFieldMap
+	}
 
-		// bcfNames[CustomFieldItem ID] = Custom Field Name
-		bcfNames := map[string]string{}
+	// customFieldsMap[CustomFieldName] = CustomFieldValue
+	customFieldsMap := make(map[string]*CustomFieldValue)
 
-		// bcfOptionsMap[CustomField ID][ID of the option] = Value of the option
-		bcfOptionsMap := map[string]map[string]interface{}{}
+	// boardCustomFieldsNames[CustomFieldItem.IDCustomField] = CustomFieldName
+	boardCustomFieldsNames := make(map[string]string)
 
-		for _, bcf := range boardCustomFields {
-			bcfNames[bcf.ID] = bcf.Name
+	// boardCustomFieldsOptionsMap[CustomFieldItem.IDCustomField][CustomFieldOptionID] =
+	// 		CustomFieldOptionIDValue
+	boardCustomFieldsOptions := make(map[string]map[string]*CustomFieldValue)
 
-			//Options for Dropbox field
-			for _, cf := range bcf.Options {
-				// create 2nd level map when not available yet
-				map2, ok := bcfOptionsMap[cf.IDCustomField]
-				if !ok {
-					map2 = map[string]interface{}{}
-					bcfOptionsMap[bcf.ID] = map2
-				}
+	for _, boardCustomField := range boardCustomFields {
+		boardCustomFieldsNames[boardCustomField.ID] = boardCustomField.Name
 
-				bcfOptionsMap[bcf.ID][cf.ID] = cf.Value.Text
+		// collect options for the custom field with dropdown
+		for _, customField := range boardCustomField.Options {
+			// make map if there is no one
+			_, ok := boardCustomFieldsOptions[customField.IDCustomField]
+			if !ok {
+				boardCustomFieldsOptions[boardCustomField.ID] =
+					make(map[string]*CustomFieldValue)
 			}
-		}
 
-		for _, cf := range c.CustomFieldItems {
-			if name, ok := bcfNames[cf.IDCustomField]; ok {
-				if cf.Value != nil {
-					(*cfm)[name] = cf.Value
-				} else { // Dropbox
-					// create 2nd level map when not available yet
-					map2, ok := bcfOptionsMap[cf.IDCustomField]
-					if !ok {
-						continue
-					}
-					value, ok := map2[cf.IDValue]
-
-					if ok {
-						(*cfm)[name] = value
-					}
+			boardCustomFieldsOptions[boardCustomField.ID][customField.ID] =
+				&CustomFieldValue{
+					Text: customField.Value.Text,
 				}
-			}
 		}
 	}
-	return *cfm
+
+	for _, customField := range c.CustomFieldItems {
+		// if there is a name in board custom fields names
+		if customFieldName, customFieldNameExist :=
+			boardCustomFieldsNames[customField.IDCustomField]; customFieldNameExist {
+
+			// if value not nil that it is not a dropdown custom field
+			if customField.Value != nil {
+				customFieldsMap[customFieldName] = customField.Value
+				continue
+			}
+
+			// else try to find option name
+			if optionsForCustomField, optionExist :=
+				boardCustomFieldsOptions[customField.IDCustomField]; optionExist {
+				if optionName, optionNameExist :=
+					optionsForCustomField[customField.IDValue]; optionNameExist {
+					customFieldsMap[customFieldName] = optionName
+				}
+			}
+
+		}
+	}
+
+	return customFieldsMap
+
 }
 
 // RemoveIDCustomField removes a custom field by ID from card
