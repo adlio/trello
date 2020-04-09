@@ -1,6 +1,6 @@
 // Copyright © 2016 Aaron Longwell
 //
-// Use of this source code is governed by an MIT licese.
+// Use of this source code is governed by an MIT license.
 // Details in the LICENSE file.
 
 package trello
@@ -41,6 +41,9 @@ func (c *Client) SearchCards(query string, args Arguments) (cards []*Card, err e
 	res := SearchResult{}
 	err = c.Get("search", args, &res)
 	cards = res.Cards
+	for _, card := range cards {
+		card.client = c
+	}
 	return
 }
 
