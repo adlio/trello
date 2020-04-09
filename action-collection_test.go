@@ -61,3 +61,22 @@ func TestFilterToCardMembershipChangeActions(t *testing.T) {
 		t.Errorf("Expected 1, got %d", len(mcas))
 	}
 }
+
+func TestGetLastCommentAction(t *testing.T) {
+	expectedText := "rightComment"
+	ac := make(ActionCollection, 9)
+	ac[0] = &Action{Type: "addMemberToCard"}
+	ac[1] = &Action{Type: "commentCard", Data: &ActionData{Text: expectedText}}
+	ac[2] = &Action{Type: "updateCard"}
+	ac[3] = &Action{Type: "updateCard"}
+	ac[4] = &Action{Type: "commentCard", Data: &ActionData{Text: "wrongText1"}}
+	ac[5] = &Action{Type: "removeMemberFromCard"}
+	ac[6] = &Action{Type: "removeMemberFromCard"}
+	ac[7] = &Action{Type: "commentCard", Data: &ActionData{Text: "wrongText2"}}
+	ac[8] = &Action{Type: "updateCard"}
+	lastCommentAction := ac.LastCommentAction()
+	resultText := lastCommentAction.Data.Text
+	if resultText != expectedText {
+		t.Errorf("Expected comment text %v, got %v", expectedText, resultText)
+	}
+}

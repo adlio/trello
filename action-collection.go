@@ -60,3 +60,14 @@ func (c ActionCollection) FilterToCardMembershipChangeActions() ActionCollection
 	}
 	return newSlice
 }
+
+// LastCommentAction returns last comment action
+func (c ActionCollection) LastCommentAction() *Action {
+	sort.Sort(sort.Reverse(c))
+	for _, action := range c {
+		if action.DidCommentCard() {
+			return action
+		}
+	}
+	return nil
+}
