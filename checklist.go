@@ -1,6 +1,6 @@
 // Copyright © 2016 Aaron Longwell
 //
-// Use of this source code is governed by an MIT licese.
+// Use of this source code is governed by an MIT license.
 // Details in the LICENSE file.
 
 package trello
@@ -15,7 +15,7 @@ type Checklist struct {
 	IDCard     string      `json:"idCard,omitempty"`
 	Pos        float64     `json:"pos,omitempty"`
 	CheckItems []CheckItem `json:"checkItems,omitempty"`
-	client *Client
+	client     *Client
 }
 
 // CheckItem is a nested resource representing an item in Checklist.
@@ -42,10 +42,10 @@ func (c *Client) CreateChecklist(card *Card, name string, extraArgs Arguments) (
 	path := "cards/" + card.ID + "/checklists"
 	args := Arguments{
 		"name": name,
-		"pos": "bottom",
+		"pos":  "bottom",
 	}
 
-	if pos, ok := extraArgs["pos"]; ok{
+	if pos, ok := extraArgs["pos"]; ok {
 		args["pos"] = pos
 	}
 
@@ -75,13 +75,13 @@ func (cl *Checklist) CreateCheckItem(name string, extraArgs Arguments) (item *Ch
 // API Docs: https://developers.trello.com/reference#checklistsidcheckitems
 func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs Arguments) (item *CheckItem, err error) {
 	path := "checklists/" + checklist.ID + "/checkItems"
-	args := Arguments {
-		"name": name,
-		"pos": "bottom",
+	args := Arguments{
+		"name":    name,
+		"pos":     "bottom",
 		"checked": "false",
 	}
 
-	if pos, ok := extraArgs["pos"]; ok{
+	if pos, ok := extraArgs["pos"]; ok {
 		args["pos"] = pos
 	}
 	if checked, ok := extraArgs["checked"]; ok {

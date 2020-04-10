@@ -1,6 +1,6 @@
 // Copyright © 2016 Aaron Longwell
 //
-// Use of this source code is governed by an MIT licese.
+// Use of this source code is governed by an MIT license.
 // Details in the LICENSE file.
 
 package trello
@@ -18,6 +18,9 @@ func TestSearchCards(t *testing.T) {
 	}
 	if len(cards) != 1 {
 		t.Errorf("Expected 1 card search result. Got %d.", len(cards))
+	}
+	if cards[0].client == nil {
+		t.Errorf("Card struct in result has no client info")
 	}
 }
 

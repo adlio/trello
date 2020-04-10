@@ -1,6 +1,6 @@
 // Copyright © 2016 Aaron Longwell
 //
-// Use of this source code is governed by an MIT licese.
+// Use of this source code is governed by an MIT license.
 // Details in the LICENSE file.
 
 package trello
@@ -21,7 +21,7 @@ func TestCreateWebhook(t *testing.T) {
 	}
 
 	if wh.ID != "57f1c02b618bc5da74ad3874" {
-		t.Errorf("Unexecpedted resultant Webhook ID: '%s'.", wh.ID)
+		t.Errorf("Unexpected resultant Webhook ID: '%s'.", wh.ID)
 	}
 
 	if wh.Active != true {

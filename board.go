@@ -1,6 +1,6 @@
 // Copyright © 2016 Aaron Longwell
 //
-// Use of this source code is governed by an MIT licese.
+// Use of this source code is governed by an MIT license.
 // Details in the LICENSE file.
 
 package trello
@@ -87,7 +87,7 @@ func (b *Board) CreatedAt() time.Time {
 }
 
 // CreateBoard creates a board remote.
-// Attribute currently supported as exra argument: defaultLists, powerUps.
+// Attribute currently supported as extra argument: defaultLists, powerUps.
 // Attributes currently known to be unsupported: idBoardSource, keepFromSource.
 //
 // API Docs: https://developers.trello.com/reference/#boardsid

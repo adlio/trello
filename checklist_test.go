@@ -9,9 +9,9 @@ func TestCreateChecklist(t *testing.T) {
 	c.BaseURL = mockResponse("checklists", "checklist-create.json").URL
 
 	card := Card{
-		Name:     "Test Card Create",
-		IDList:   "57f03a06b5ff33a63c8be316",
-		ID: "5c41028905a859019e323bc9",
+		Name:    "Test Card Create",
+		IDList:  "57f03a06b5ff33a63c8be316",
+		ID:      "5c41028905a859019e323bc9",
 		IDBoard: "5c41027ca9c378795b5a5036",
 	}
 
@@ -31,7 +31,7 @@ func TestCreateChecklist(t *testing.T) {
 	}
 
 	if cl.IDCard != card.ID {
-		t.Errorf("Expected checklist to pick up card ID. Insteaad got '%s'.", cl.IDCard)
+		t.Errorf("Expected checklist to pick up card ID. Instead got '%s'.", cl.IDCard)
 	}
 
 	if cl.IDBoard != card.IDBoard {
@@ -59,8 +59,8 @@ func TestCreateCheckItem(t *testing.T) {
 	c.BaseURL = mockResponse("checklists", "checkitem-create.json").URL
 
 	cl := Checklist{
-		Name: "SomeName",
-		ID: "5cc05fc2a44eed7872662d1b",
+		Name:   "SomeName",
+		ID:     "5cc05fc2a44eed7872662d1b",
 		client: c,
 	}
 

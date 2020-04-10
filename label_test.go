@@ -1,6 +1,6 @@
 // Copyright © 2016 Aaron Longwell
 //
-// Use of this source code is governed by an MIT licese.
+// Use of this source code is governed by an MIT license.
 // Details in the LICENSE file.
 
 package trello
@@ -8,7 +8,6 @@ package trello
 import (
 	"testing"
 )
-
 
 func TestGetLabel(t *testing.T) {
 	label := testLabel(t)
