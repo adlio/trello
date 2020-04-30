@@ -91,3 +91,42 @@ func TestCreateCheckItem(t *testing.T) {
 		t.Errorf("Expected checked to be set. Instead got '%s'.", item.State)
 	}
 }
+
+func TestGetChecklist(t *testing.T) {
+	checklist := testChecklist(t)
+	if checklist.Name != "Example checklist" {
+		t.Errorf("Name incorrect. Got '%s'", checklist.Name)
+	}
+
+	if checklist.Pos != 1 {
+		t.Errorf("Pos incorrect. Got '%0.2f'", checklist.Pos)
+	}
+
+	if len(checklist.CheckItems) != 1 {
+		t.Errorf("len(checklist.CheckItems) incorrect. Got '%0.2f'", checklist.Pos)
+	}
+
+	if checklist.CheckItems[0].Name != "Example checkItem" {
+		t.Errorf("CheckItem Name incorrect. Got '%s'", checklist.CheckItems[0].Name)
+	}
+
+	if checklist.CheckItems[0].State != "complete" {
+		t.Errorf("CheckItem State incorrect. Got '%s'", checklist.CheckItems[0].State)
+	}
+
+	if checklist.CheckItems[0].Pos != 2 {
+		t.Errorf("CheckItem Pos incorrect. Got '%0.2f'", checklist.CheckItems[0].Pos)
+	}
+}
+
+// Utility function to get a simple response from Client.GetChecklist()
+//
+func testChecklist(t *testing.T) *Checklist {
+	c := testClient()
+	c.BaseURL = mockResponse("checklists", "checklist-api-example.json").URL
+	checklist, err := c.GetChecklist("4eea503", Defaults())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return checklist
+}

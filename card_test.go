@@ -232,7 +232,7 @@ func TestAddURLAttachmentToCard(t *testing.T) {
 	c.client.BaseURL = mockResponse("cards", "url-attachments.json").URL
 	attachment := Attachment{
 		Name: "Test",
-		URL: "https://github.com/test",
+		URL:  "https://github.com/test",
 	}
 	err := c.AddURLAttachment(&attachment)
 	if err != nil {

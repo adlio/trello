@@ -5,6 +5,8 @@
 
 package trello
 
+import "fmt"
+
 // Checklist represents Trello card's checklists.
 // A card can have one zero or more checklists.
 // https://developers.trello.com/reference/#checklist-object
@@ -94,4 +96,16 @@ func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs Ar
 		checklist.CheckItems = append(checklist.CheckItems, *item)
 	}
 	return
+}
+
+// GetChecklist receives a checklist id and Arguments and returns the checklist if found
+// with the credentials given for the receiver Client. Returns an error
+// otherwise.
+func (c *Client) GetChecklist(checklistID string, args Arguments) (checklist *Checklist, err error) {
+	path := fmt.Sprintf("checklists/%s", checklistID)
+	err = c.Get(path, args, &checklist)
+	if checklist != nil {
+		checklist.client = c
+	}
+	return checklist, err
 }
