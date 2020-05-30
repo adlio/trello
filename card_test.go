@@ -168,6 +168,20 @@ func TestAddCardToList(t *testing.T) {
 	}
 }
 
+func TestArchiveUnarchive(t *testing.T) {
+	c := testCard(t)
+	c.Archive()
+
+	if c.Closed == false {
+		t.Errorf("Card should have been archived.")
+	}
+
+	c.Unarchive()
+	if c.Closed == true {
+		t.Errorf("Card should have been unarchived.")
+	}
+}
+
 func TestCopyCardToList(t *testing.T) {
 	c := testCard(t)
 	c.client.BaseURL = mockResponse("cards", "card-copied.json").URL
@@ -232,7 +246,7 @@ func TestAddURLAttachmentToCard(t *testing.T) {
 	c.client.BaseURL = mockResponse("cards", "url-attachments.json").URL
 	attachment := Attachment{
 		Name: "Test",
-		URL: "https://github.com/test",
+		URL:  "https://github.com/test",
 	}
 	err := c.AddURLAttachment(&attachment)
 	if err != nil {
