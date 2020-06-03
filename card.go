@@ -202,6 +202,16 @@ func (c *Card) Update(args Arguments) error {
 	return c.client.Put(path, args, c)
 }
 
+// Archive Archives the card.
+func (c *Card) Archive() error {
+	return c.Update(Arguments{"closed": "true"})
+}
+
+// Unarchive Unarchives the card.
+func (c *Card) Unarchive() error {
+	return c.Update(Arguments{"closed": "false"})
+}
+
 // CreateCard takes a Card and Arguments and POSTs the card.
 func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 	path := "cards"
