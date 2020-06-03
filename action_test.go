@@ -112,3 +112,33 @@ func TestListAfterActionOnCopyCard(t *testing.T) {
 		t.Errorf("Incorrect List name '%s'.", l.Name)
 	}
 }
+
+func TestAction_DidCommentCard(t *testing.T) {
+	tests := []struct {
+		name   string
+		fields *Action
+		want   bool
+	}{
+		{
+			name: "positive",
+			fields: &Action{
+				Type: "commentCard",
+			},
+			want: true,
+		},
+		{
+			name: "negative",
+			fields: &Action{
+				Type: "updateCard",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.fields.DidCommentCard(); got != tt.want {
+				t.Errorf("Action.DidCommentCard() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
