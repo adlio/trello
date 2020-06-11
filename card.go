@@ -180,8 +180,7 @@ func (c *Card) RemoveIDLabel(labelID string, label *Label) error {
 // AddIDLabel receives a label id and adds the corresponding label or returns an error.
 func (c *Card) AddIDLabel(labelID string) error {
 	path := fmt.Sprintf("cards/%s/idLabels", c.ID)
-	err := c.client.Post(path, Arguments{"value": labelID}, &c.IDLabels)
-	return err
+	return c.client.Post(path, Arguments{"value": labelID}, &c.IDLabels)
 }
 
 // MoveToTopOfList moves the card to the top of it's list.
@@ -202,14 +201,20 @@ func (c *Card) Update(args Arguments) error {
 	return c.client.Put(path, args, c)
 }
 
-// Archive Archives the card.
+// Archive archives the card.
 func (c *Card) Archive() error {
 	return c.Update(Arguments{"closed": "true"})
 }
 
-// Unarchive Unarchives the card.
+// Unarchive unarchives the card.
 func (c *Card) Unarchive() error {
 	return c.Update(Arguments{"closed": "false"})
+}
+
+// Delete deletes the card.
+func (c *Card) Delete() error {
+	path := fmt.Sprintf("cards/%s", c.ID)
+	return c.client.Delete(path, Defaults(), c)
 }
 
 // CreateCard takes a Card and Arguments and POSTs the card.
