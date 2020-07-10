@@ -1,3 +1,2 @@
 - Create List
-- Delete Card
 - Reorder Cards in List

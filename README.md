@@ -160,13 +160,17 @@ A board can be created or deleted on the `Board` struct for the user whose crede
   }
 ```
 
-## Archiving & Unarchiving a Card
+## Archiving, Unarchiving & Deleting a Card
+
 ```Go
 // archive
-err := card.Archive("cArDID")
+err := card.Archive()
 
 // unarchive
-err := card.Unarchive("cArDID")
+err := card.Unarchive()
+
+// delete
+err := card.Delete()
 ```
 
 ## Creating a Card
