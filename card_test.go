@@ -24,7 +24,11 @@ func TestCardCreatedAt(t *testing.T) {
 
 func TestGetCardsOnBoard(t *testing.T) {
 	board := testBoard(t)
-	board.client.BaseURL = mockDynamicPathResponse().URL
+
+	server := mockDynamicPathResponse()
+	defer server.Close()
+
+	board.client.BaseURL = server.URL
 	cards, err := board.GetCards(Defaults())
 	if err != nil {
 		t.Fatal(err)
@@ -36,7 +40,11 @@ func TestGetCardsOnBoard(t *testing.T) {
 
 func TestGetCardsInList(t *testing.T) {
 	list := testList(t)
-	list.client.BaseURL = mockResponse("cards", "list-cards-api-example.json").URL
+
+	server := mockResponse("cards", "list-cards-api-example.json")
+	defer server.Close()
+	list.client.BaseURL = server.URL
+
 	cards, err := list.GetCards(Defaults())
 	if err != nil {
 		t.Fatal(err)
@@ -48,7 +56,11 @@ func TestGetCardsInList(t *testing.T) {
 
 func TestCardsCustomFields(t *testing.T) {
 	list := testList(t)
-	list.client.BaseURL = mockResponse("cards", "list-cards-api-example.json").URL
+
+	server := mockResponse("cards", "list-cards-api-example.json")
+	defer server.Close()
+	list.client.BaseURL = server.URL
+
 	cards, err := list.GetCards(Defaults())
 	if err != nil {
 		t.Fatal(err)
@@ -81,7 +93,11 @@ func TestCardsCustomFields(t *testing.T) {
 
 func TestBoardContainsCopyOfCard(t *testing.T) {
 	board := testBoard(t)
-	board.client.BaseURL = mockResponse("actions", "board-actions-copyCard.json").URL
+
+	server := mockResponse("actions", "board-actions-copyCard.json")
+	defer server.Close()
+
+	board.client.BaseURL = server.URL
 	firstResult, err := board.ContainsCopyOfCard("57f50c552b96e3fffe588aad", Defaults())
 	if err != nil {
 		t.Error(err)
@@ -101,7 +117,10 @@ func TestBoardContainsCopyOfCard(t *testing.T) {
 
 func TestCreateCard(t *testing.T) {
 	c := testClient()
-	c.BaseURL = mockResponse("cards", "card-create.json").URL
+	server := mockResponse("cards", "card-create.json")
+	defer server.Close()
+
+	c.BaseURL = server.URL
 	dueDate := time.Now().AddDate(0, 0, 3)
 
 	card := Card{
@@ -136,7 +155,10 @@ func TestCreateCard(t *testing.T) {
 
 func TestAddCardToList(t *testing.T) {
 	l := testList(t)
-	l.client.BaseURL = mockResponse("cards", "card-posted-to-bottom-of-list.json").URL
+
+	server := mockResponse("cards", "card-posted-to-bottom-of-list.json")
+	defer server.Close()
+	l.client.BaseURL = server.URL
 	dueDate := time.Now().AddDate(0, 0, 1)
 
 	card := Card{
@@ -170,21 +192,30 @@ func TestAddCardToList(t *testing.T) {
 
 func TestArchiveUnarchive(t *testing.T) {
 	c := testCard(t)
-	c.Archive()
 
+	server := mockResponse("cards", "card-archived.json")
+	c.client.BaseURL = server.URL
+	c.Archive()
 	if c.Closed == false {
 		t.Errorf("Card should have been archived.")
 	}
+	server.Close()
 
+	server = mockResponse("cards", "card-unarchived.json")
+	c.client.BaseURL = server.URL
 	c.Unarchive()
 	if c.Closed == true {
 		t.Errorf("Card should have been unarchived.")
 	}
+	server.Close()
 }
 
 func TestCopyCardToList(t *testing.T) {
 	c := testCard(t)
-	c.client.BaseURL = mockResponse("cards", "card-copied.json").URL
+
+	server := mockResponse("cards", "card-copied.json")
+	defer server.Close()
+	c.client.BaseURL = server.URL
 
 	newCard, err := c.CopyToList("57f03a022cd45c863ca581f1", Defaults())
 	if err != nil {
@@ -202,7 +233,10 @@ func TestCopyCardToList(t *testing.T) {
 
 func TestGetParentCard(t *testing.T) {
 	c := testCard(t)
-	c.client.BaseURL = mockDynamicPathResponse().URL
+
+	server := mockDynamicPathResponse()
+	defer server.Close()
+	c.client.BaseURL = server.URL
 
 	parent, err := c.GetParentCard(Defaults())
 	if err != nil {
@@ -215,7 +249,10 @@ func TestGetParentCard(t *testing.T) {
 
 func TestGetAncestorCards(t *testing.T) {
 	c := testCard(t)
-	c.client.BaseURL = mockDynamicPathResponse().URL
+
+	server := mockDynamicPathResponse()
+	defer server.Close()
+	c.client.BaseURL = server.URL
 
 	ancestors, err := c.GetAncestorCards(Defaults())
 	if err != nil {
@@ -228,7 +265,10 @@ func TestGetAncestorCards(t *testing.T) {
 
 func TestAddMemberIdToCard(t *testing.T) {
 	c := testCard(t)
-	c.client.BaseURL = mockResponse("cards", "card-add-member-response.json").URL
+	server := mockResponse("cards", "card-add-member-response.json")
+	defer server.Close()
+
+	c.client.BaseURL = server.URL
 	member, err := c.AddMemberID("testmemberid")
 	if err != nil {
 		t.Error(err)
@@ -243,7 +283,10 @@ func TestAddMemberIdToCard(t *testing.T) {
 
 func TestAddURLAttachmentToCard(t *testing.T) {
 	c := testCard(t)
-	c.client.BaseURL = mockResponse("cards", "url-attachments.json").URL
+	server := mockResponse("cards", "url-attachments.json")
+	defer server.Close()
+
+	c.client.BaseURL = server.URL
 	attachment := Attachment{
 		Name: "Test",
 		URL:  "https://github.com/test",
@@ -261,7 +304,10 @@ func TestAddURLAttachmentToCard(t *testing.T) {
 //
 func testCard(t *testing.T) *Card {
 	c := testClient()
-	c.BaseURL = mockResponse("cards", "card-api-example.json").URL
+	server := mockResponse("cards", "card-api-example.json")
+	defer server.Close()
+
+	c.BaseURL = server.URL
 	card, err := c.GetCard("4eea503", Defaults())
 	if err != nil {
 		t.Fatal(err)
