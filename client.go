@@ -30,6 +30,8 @@ type Client struct {
 	throttle <-chan time.Time
 	testMode bool
 	ctx      context.Context
+
+	ticker *time.Ticker
 }
 
 type logger interface {
@@ -39,12 +41,15 @@ type logger interface {
 // NewClient is a constructor for the Client. It takes the key and token credentials
 // of a Trello member to authenticate and authorise requests with.
 func NewClient(key, token string) *Client {
+	ticker := time.NewTicker(time.Second / 8)
+
 	return &Client{
 		Client:   http.DefaultClient,
 		BaseURL:  DefaultBaseURL,
 		Key:      key,
 		Token:    token,
-		throttle: time.Tick(time.Second / 8), // Actually 10/second, but we're extra cautious
+		throttle: ticker.C, // Actually 10/second, but we're extra cautious
+		ticker:   ticker,
 		testMode: false,
 		ctx:      context.Background(),
 	}
@@ -63,6 +68,11 @@ func (c *Client) Throttle() {
 	if !c.testMode {
 		<-c.throttle
 	}
+}
+
+// Cleanup stops the throttling ticker
+func (c *Client) Cleanup() {
+	c.ticker.Stop()
 }
 
 // Get takes a path, Arguments, and a target interface (e.g. Board or Card).
