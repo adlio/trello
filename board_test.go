@@ -165,13 +165,13 @@ func testBoard(t *testing.T) *Board {
 
 func TestBoardUpdate(t *testing.T) {
 	expected := map[string]map[string]string{
-		"created": map[string]string{
+		"created": {
 			"id":          "5d2ccd3015468d3df508f10d",
 			"name":        "test-board-for-update",
 			"description": "Some description",
 			"cardAging":   "regular",
 		},
-		"updated": map[string]string{
+		"updated": {
 			"id":          "5d2ccd3015468d3df508f10d",
 			"name":        "test-board-for-update plus",
 			"description": "Some other description",

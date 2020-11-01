@@ -36,10 +36,8 @@ func (c *Client) GetList(listID string, extraArgs ...Arguments) (list *List, err
 	path := fmt.Sprintf("lists/%s", listID)
 	err = c.Get(path, args, &list)
 	if list != nil {
-		list.client = c
-		for i := range list.Cards {
-			list.Cards[i].client = c
-		}
+		list.setClient(c)
+		// list.Board, err = c.GetBoard(list.IDBoard, Defaults()) // Set Parent
 	}
 	return
 }
@@ -49,11 +47,9 @@ func (b *Board) GetLists(extraArgs ...Arguments) (lists []*List, err error) {
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/lists", b.ID)
 	err = b.client.Get(path, args, &lists)
-	for i := range lists {
-		lists[i].client = b.client
-		for j := range lists[i].Cards {
-			lists[i].Cards[j].client = b.client
-		}
+	for _, list := range lists {
+		list.setClient(b.client)
+		list.Board = b // Set Parent
 	}
 	return
 }
@@ -76,7 +72,8 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs ...Arguments)
 	list = &List{}
 	err = c.Post(path, args, &list)
 	if err == nil {
-		list.client = c
+		list.setClient(c)
+		list.Board = onBoard
 	}
 	return
 }
@@ -97,4 +94,13 @@ func (l *List) Update(extraArgs ...Arguments) error {
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s", l.ID)
 	return l.client.Put(path, args, l)
+}
+
+// setClient on List and sub-objects
+func (l *List) setClient(client *Client) {
+	l.client = client
+	for _, card := range l.Cards {
+		card.setClient(client)
+		card.List = l // Set Parent
+	}
 }

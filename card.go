@@ -237,7 +237,7 @@ func (c *Client) CreateCard(card *Card, extraArgs ...Arguments) error {
 	args.flatten(extraArgs)
 	err := c.Post(path, args, &card)
 	if err == nil {
-		card.client = c
+		card.setClient(c)
 	}
 	return err
 }
@@ -259,7 +259,8 @@ func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 
 	err := l.client.Post(path, args, &card)
 	if err == nil {
-		card.client = l.client
+		card.setClient(l.client)
+		card.List = l
 	} else {
 		err = errors.Wrapf(err, "Error adding card to list %s", l.ID)
 	}
@@ -282,7 +283,8 @@ func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) 
 	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &newCard)
 	if err == nil {
-		newCard.client = c.client
+		newCard.setClient(c.client)
+		//newCard.List =
 	} else {
 		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
 	}
@@ -460,7 +462,8 @@ func (c *Client) GetCard(cardID string, extraArgs ...Arguments) (card *Card, err
 	path := fmt.Sprintf("cards/%s", cardID)
 	err = c.Get(path, args, &card)
 	if card != nil {
-		card.client = c
+		card.setClient(c)
+		//card.List = getListById(card.IDList)? // Set Parent
 	}
 	return card, err
 }
@@ -488,8 +491,9 @@ func (b *Board) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 		}
 	}
 
-	for i := range cards {
-		cards[i].client = b.client
+	for _, card := range cards {
+		card.setClient(b.client)
+		//card.List = getListById(card.IDList)? // Set Parent
 	}
 
 	return
@@ -500,8 +504,9 @@ func (l *List) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
-	for i := range cards {
-		cards[i].client = l.client
+	for _, card := range cards {
+		card.setClient(l.client)
+		card.List = l // Set Parent
 	}
 	return
 }
@@ -517,4 +522,28 @@ func earliestCardID(cards []*Card) string {
 		}
 	}
 	return earliest
+}
+
+// setClient on card and sub-objects
+func (c *Card) setClient(client *Client) {
+	c.client = client
+	for _, action := range c.Actions {
+		action.setClient(client)
+	}
+	for _, attachment := range c.Attachments {
+		attachment.setClient(client)
+		attachment.Card = c // Set Parent
+	}
+	for _, checklist := range c.Checklists {
+		checklist.setClient(client)
+		checklist.Card = c // Set Parent
+	}
+	for _, label := range c.Labels {
+		label.setClient(client)
+		label.Board = c.Board // Set Parent
+	}
+	for _, member := range c.Members {
+		member.setClient(client)
+	}
+
 }

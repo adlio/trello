@@ -124,7 +124,7 @@ func (c *Client) CreateBoard(board *Board, extraArgs ...Arguments) error {
 
 	err := c.Post(path, args, &board)
 	if err == nil {
-		board.client = c
+		board.setClient(c)
 	}
 	return err
 }
@@ -170,7 +170,7 @@ func (c *Client) GetBoard(boardID string, extraArgs ...Arguments) (board *Board,
 	path := fmt.Sprintf("boards/%s", boardID)
 	err = c.Get(path, args, &board)
 	if board != nil {
-		board.client = c
+		board.setClient(c)
 	}
 	return
 }
@@ -180,8 +180,8 @@ func (c *Client) GetMyBoards(extraArgs ...Arguments) (boards []*Board, err error
 	args := flattenArguments(extraArgs)
 	path := "members/me/boards"
 	err = c.Get(path, args, &boards)
-	for i := range boards {
-		boards[i].client = c
+	for _, board := range boards {
+		board.setClient(c)
 	}
 	return
 }
@@ -191,12 +191,8 @@ func (m *Member) GetBoards(extraArgs ...Arguments) (boards []*Board, err error) 
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("members/%s/boards", m.ID)
 	err = m.client.Get(path, args, &boards)
-	for i := range boards {
-		boards[i].client = m.client
-
-		for j := range boards[i].Lists {
-			boards[i].Lists[j].client = m.client
-		}
+	for _, board := range boards {
+		board.setClient(m.client)
 	}
 	return
 }
@@ -237,7 +233,16 @@ func (c *Client) PutBoard(board *Board, extraArgs ...Arguments) error {
 
 	err := c.Put(path, args, &board)
 	if err == nil {
-		board.client = c
+		board.setClient(c)
 	}
 	return err
+}
+
+// setclient on board and any sub-objects
+func (b *Board) setClient(client *Client) {
+	b.client = client
+	for _, list := range b.Lists {
+		list.setClient(client)
+		list.Board = b // Set Parent
+	}
 }
