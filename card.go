@@ -284,7 +284,6 @@ func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) 
 	err := c.client.Post(path, args, &newCard)
 	if err == nil {
 		newCard.setClient(c.client)
-		//newCard.List =
 	} else {
 		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
 	}
@@ -344,6 +343,7 @@ func (c *Card) GetParentCard(extraArgs ...Arguments) (*Card, error) {
 
 	if action != nil && action.Data != nil && action.Data.CardSource != nil {
 		card, err := c.client.GetCard(action.Data.CardSource.ID, args)
+		card.setClient(c.client)
 		return card, err
 	}
 
@@ -463,7 +463,6 @@ func (c *Client) GetCard(cardID string, extraArgs ...Arguments) (card *Card, err
 	err = c.Get(path, args, &card)
 	if card != nil {
 		card.setClient(c)
-		//card.List = getListById(card.IDList)? // Set Parent
 	}
 	return card, err
 }
@@ -492,8 +491,8 @@ func (b *Board) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	}
 
 	for _, card := range cards {
+		card.Board = b // Set this hear to avoid the lookup
 		card.setClient(b.client)
-		//card.List = getListById(card.IDList)? // Set Parent
 	}
 
 	return
@@ -505,8 +504,10 @@ func (l *List) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
 	for _, card := range cards {
+		// Set these here before setClient to avoid lookup
+		card.Board = l.Board
+		card.List = l
 		card.setClient(l.client)
-		card.List = l // Set Parent
 	}
 	return
 }
@@ -527,6 +528,19 @@ func earliestCardID(cards []*Card) string {
 // setClient on card and sub-objects
 func (c *Card) setClient(client *Client) {
 	c.client = client
+	if c.Board == nil { // Retrieve and Set Board
+		board, err := c.client.GetBoard(c.IDBoard, Defaults())
+		if err == nil {
+			c.Board = board
+		}
+	}
+	if c.List == nil { // Retrieve and Set List
+		// NOTE: Board.GetCards will destroy this, need some sort of "cache.GetList" capability
+		list, err := c.client.GetList(c.IDList, Defaults())
+		if err == nil {
+			c.List = list
+		}
+	}
 	for _, action := range c.Actions {
 		action.setClient(client)
 	}
