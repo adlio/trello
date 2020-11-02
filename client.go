@@ -31,6 +31,7 @@ type Client struct {
 	throttle *rate.Limiter
 	testMode bool
 	ctx      context.Context
+	cache    *queryCache
 }
 
 type logger interface {
@@ -50,6 +51,7 @@ func NewClient(key, token string) *Client {
 		throttle: rate.NewLimiter(limit, 1),
 		testMode: false,
 		ctx:      context.Background(),
+		cache:    &queryCache{},
 	}
 }
 

@@ -7,6 +7,7 @@ package trello
 
 import (
 	"net/url"
+	"strconv"
 )
 
 // Arguments are used for passing URL parameters to the client for making API calls.
@@ -15,6 +16,21 @@ type Arguments map[string]string
 // Defaults is a constructor for default Arguments.
 func Defaults() Arguments {
 	return make(Arguments)
+}
+
+// DefaultsWithCache is just like Defaults() but with cache enabled
+func DefaultsWithCache() (args Arguments) {
+	args = make(Arguments)
+	args["EnableCache"] = "true"
+	return
+}
+
+// IsCacheEnabled returns a boolean true if EnableCache is set to something truthy
+func (args Arguments) IsCacheEnabled() (cacheEnabled bool) {
+	if arg, ok := args["EnableCache"]; ok { // if "EnableCache" arg is not present cacheEnabled will be false anyhow
+		cacheEnabled, _ = strconv.ParseBool(arg) // if parsing err's cacheEnabled will be false anyhow
+	}
+	return
 }
 
 // ToURLValues returns the argument's URL value representation.

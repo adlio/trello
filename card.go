@@ -529,14 +529,13 @@ func earliestCardID(cards []*Card) string {
 func (c *Card) setClient(client *Client) {
 	c.client = client
 	if c.Board == nil { // Retrieve and Set Board
-		board, err := c.client.GetBoard(c.IDBoard, Defaults())
+		board, err := c.client.GetBoard(c.IDBoard, DefaultsWithCache())
 		if err == nil {
 			c.Board = board
 		}
 	}
 	if c.List == nil { // Retrieve and Set List
-		// NOTE: Board.GetCards will destroy this, need some sort of "cache.GetList" capability
-		list, err := c.client.GetList(c.IDList, Defaults())
+		list, err := c.client.GetList(c.IDList, DefaultsWithCache())
 		if err == nil {
 			c.List = list
 		}

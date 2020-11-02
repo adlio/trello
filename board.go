@@ -131,16 +131,24 @@ func (c *Client) CreateBoard(board *Board, extraArgs ...Arguments) error {
 
 // Update PUTs the supported board attributes remote and updates
 // the struct from the returned values.
-func (b *Board) Update(extraArgs ...Arguments) error {
+func (b *Board) Update(extraArgs ...Arguments) (err error) {
 	args := flattenArguments(extraArgs)
-	return b.client.PutBoard(b, args)
+	err = b.client.PutBoard(b, args)
+	if args.IsCacheEnabled() {
+		b.client.cache.SetBoard(b.ID, b)
+	}
+	return
 }
 
 // Delete makes a DELETE call for the receiver Board.
-func (b *Board) Delete(extraArgs ...Arguments) error {
+func (b *Board) Delete(extraArgs ...Arguments) (err error) {
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s", b.ID)
-	return b.client.Delete(path, args, b)
+	err = b.client.Delete(path, Arguments{}, b)
+	if args.IsCacheEnabled() {
+		b.client.cache.RemoveBoard(b.ID)
+	}
+	return
 }
 
 // AddedMembersResponse represents a response after adding a new member.
@@ -167,8 +175,17 @@ func (b *Board) AddMember(member *Member, extraArgs ...Arguments) (response *Add
 // GetBoard retrieves a Trello board by its ID.
 func (c *Client) GetBoard(boardID string, extraArgs ...Arguments) (board *Board, err error) {
 	args := flattenArguments(extraArgs)
-	path := fmt.Sprintf("boards/%s", boardID)
-	err = c.Get(path, args, &board)
+	if args.IsCacheEnabled() {
+		var found bool
+		if board, found = c.cache.GetBoard(boardID); !found { // Not Found, Query without cache
+			args["CacheEnabled"] = "false"
+			board, err = c.GetBoard(boardID, args)
+			c.cache.SetBoard(boardID, board)
+		}
+	} else {
+		path := fmt.Sprintf("boards/%s", boardID)
+		err = c.Get(path, args, &board)
+	}
 	if board != nil {
 		board.setClient(c)
 	}
