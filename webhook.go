@@ -62,13 +62,14 @@ func (c *Client) CreateWebhook(webhook *Webhook) error {
 }
 
 // Delete takes a webhook and deletes it
-func (w *Webhook) Delete(args Arguments) error {
+func (w *Webhook) Delete(extraArgs ...Arguments) error {
 	path := fmt.Sprintf("webhooks/%s", w.ID)
 	return w.client.Delete(path, Arguments{}, w)
 }
 
 // GetWebhook takes a webhook id and Arguments, GETs the matching Webhook and returns it or an error.
-func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook, err error) {
+func (c *Client) GetWebhook(webhookID string, extraArgs ...Arguments) (webhook *Webhook, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("webhooks/%s", webhookID)
 	err = c.Get(path, args, &webhook)
 	if webhook != nil {
@@ -78,7 +79,8 @@ func (c *Client) GetWebhook(webhookID string, args Arguments) (webhook *Webhook,
 }
 
 // GetWebhooks takes Arguments and returns a list of all Webhooks for the receiver Token or an error.
-func (t *Token) GetWebhooks(args Arguments) (webhooks []*Webhook, err error) {
+func (t *Token) GetWebhooks(extraArgs ...Arguments) (webhooks []*Webhook, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("tokens/%s/webhooks", t.client.Token)
 	err = t.client.Get(path, args, &webhooks)
 	if err == nil {
