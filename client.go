@@ -79,6 +79,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	// Trello prohibits more than 10 seconds/second per token
 	c.Throttle()
 
+	delete(args, "EnableCache")
 	params := args.ToURLValues()
 	c.log("[trello] GET %s?%s", path, params.Encode())
 
@@ -111,6 +112,7 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 	// Trello prohibits more than 10 seconds/second per token
 	c.Throttle()
 
+	delete(args, "EnableCache")
 	params := args.ToURLValues()
 	c.log("[trello] PUT %s?%s", path, params.Encode())
 
@@ -142,6 +144,7 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 	// Trello prohibits more than 10 seconds/second per token
 	c.Throttle()
 
+	delete(args, "EnableCache")
 	params := args.ToURLValues()
 	c.log("[trello] POST %s?%s", path, params.Encode())
 
@@ -172,6 +175,7 @@ func (c *Client) Delete(path string, args Arguments, target interface{}) error {
 
 	c.Throttle()
 
+	delete(args, "EnableCache")
 	params := args.ToURLValues()
 	c.log("[trello] DELETE %s?%s", path, params.Encode())
 
