@@ -91,7 +91,7 @@ func (b *Board) CreatedAt() time.Time {
 // Attributes currently known to be unsupported: idBoardSource, keepFromSource.
 //
 // API Docs: https://developers.trello.com/reference/#boardsid
-func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
+func (c *Client) CreateBoard(board *Board, extraArgs ...Arguments) error {
 	path := "boards"
 	args := Arguments{
 		"desc":             board.Desc,
@@ -120,14 +120,7 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 		args["prefs_cardAging"] = board.Prefs.CardAging
 	}
 
-	// Expects "true" or "false"
-	if defaultLists, ok := extraArgs["defaultLists"]; ok {
-		args["defaultLists"] = defaultLists
-	}
-	// Expects one of "all", "calendar", "cardAging", "recap", or "voting".
-	if powerUps, ok := extraArgs["powerUps"]; ok {
-		args["powerUps"] = powerUps
-	}
+	args.flatten(extraArgs)
 
 	err := c.Post(path, args, &board)
 	if err == nil {
@@ -138,14 +131,16 @@ func (c *Client) CreateBoard(board *Board, extraArgs Arguments) error {
 
 // Update PUTs the supported board attributes remote and updates
 // the struct from the returned values.
-func (b *Board) Update(extraArgs Arguments) error {
-	return b.client.PutBoard(b, extraArgs)
+func (b *Board) Update(extraArgs ...Arguments) error {
+	args := flattenArguments(extraArgs)
+	return b.client.PutBoard(b, args)
 }
 
 // Delete makes a DELETE call for the receiver Board.
-func (b *Board) Delete(extraArgs Arguments) error {
+func (b *Board) Delete(extraArgs ...Arguments) error {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s", b.ID)
-	return b.client.Delete(path, Arguments{}, b)
+	return b.client.Delete(path, args, b)
 }
 
 // AddedMembersResponse represents a response after adding a new member.
@@ -157,18 +152,12 @@ type AddedMembersResponse struct {
 
 // AddMember adds a new member to the board.
 // https://developers.trello.com/reference#boardsidlabelnamesmembers
-func (b *Board) AddMember(member *Member, extraArgs Arguments) (response *AddedMembersResponse, err error) {
+func (b *Board) AddMember(member *Member, extraArgs ...Arguments) (response *AddedMembersResponse, err error) {
 	args := Arguments{
 		"email": member.Email,
 	}
 
-	// "normal" is the default type, so we can omit it.
-	if memberType, ok := extraArgs["type"]; ok {
-		switch memberType {
-		case "admin", "observer":
-			args["type"] = memberType
-		}
-	}
+	args.flatten(extraArgs)
 
 	path := fmt.Sprintf("boards/%s/members", b.ID)
 	err = b.client.Put(path, args, &response)
@@ -176,7 +165,8 @@ func (b *Board) AddMember(member *Member, extraArgs Arguments) (response *AddedM
 }
 
 // GetBoard retrieves a Trello board by its ID.
-func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err error) {
+func (c *Client) GetBoard(boardID string, extraArgs ...Arguments) (board *Board, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s", boardID)
 	err = c.Get(path, args, &board)
 	if board != nil {
@@ -186,7 +176,8 @@ func (c *Client) GetBoard(boardID string, args Arguments) (board *Board, err err
 }
 
 // GetMyBoards returns a slice of all boards associated with the credentials set on the client.
-func (c *Client) GetMyBoards(args Arguments) (boards []*Board, err error) {
+func (c *Client) GetMyBoards(extraArgs ...Arguments) (boards []*Board, err error) {
+	args := flattenArguments(extraArgs)
 	path := "members/me/boards"
 	err = c.Get(path, args, &boards)
 	for i := range boards {
@@ -196,7 +187,8 @@ func (c *Client) GetMyBoards(args Arguments) (boards []*Board, err error) {
 }
 
 // GetBoards returns a slice of all public boards of the receiver Member.
-func (m *Member) GetBoards(args Arguments) (boards []*Board, err error) {
+func (m *Member) GetBoards(extraArgs ...Arguments) (boards []*Board, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("members/%s/boards", m.ID)
 	err = m.client.Get(path, args, &boards)
 	for i := range boards {
@@ -212,7 +204,7 @@ func (m *Member) GetBoards(args Arguments) (boards []*Board, err error) {
 // PutBoard PUTs a board remote. Extra arguments are currently unsupported.
 //
 // API Docs: https://developers.trello.com/reference#idnext
-func (c *Client) PutBoard(board *Board, extraArgs Arguments) error {
+func (c *Client) PutBoard(board *Board, extraArgs ...Arguments) error {
 	path := fmt.Sprintf("boards/%s", board.ID)
 	args := Arguments{
 		"desc":             board.Desc,
@@ -240,6 +232,8 @@ func (c *Client) PutBoard(board *Board, extraArgs Arguments) error {
 	if board.Prefs.CardAging != "" {
 		args["prefs/cardAging"] = board.Prefs.CardAging
 	}
+
+	args.flatten(extraArgs)
 
 	err := c.Put(path, args, &board)
 	if err == nil {

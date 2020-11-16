@@ -43,7 +43,8 @@ type NotificationDataCard struct {
 }
 
 // GetMyNotifications returns the notifications of the authenticated user
-func (c *Client) GetMyNotifications(args Arguments) (notifications []*Notification, err error) {
+func (c *Client) GetMyNotifications(extraArgs ...Arguments) (notifications []*Notification, err error) {
+	args := flattenArguments(extraArgs)
 	path := "members/me/notifications"
 	err = c.Get(path, args, &notifications)
 	for i := range notifications {

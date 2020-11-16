@@ -40,16 +40,14 @@ type CheckItemState struct {
 // Attributes currently known to be unsupported: idChecklistSource.
 //
 // API Docs: https://developers.trello.com/reference#cardsidchecklists-1
-func (c *Client) CreateChecklist(card *Card, name string, extraArgs Arguments) (checklist *Checklist, err error) {
+func (c *Client) CreateChecklist(card *Card, name string, extraArgs ...Arguments) (checklist *Checklist, err error) {
 	path := "cards/" + card.ID + "/checklists"
 	args := Arguments{
 		"name": name,
 		"pos":  "bottom",
 	}
 
-	if pos, ok := extraArgs["pos"]; ok {
-		args["pos"] = pos
-	}
+	args.flatten(extraArgs)
 
 	checklist = &Checklist{}
 	err = c.Post(path, args, &checklist)
@@ -66,8 +64,9 @@ func (c *Client) CreateChecklist(card *Card, name string, extraArgs Arguments) (
 // Attributes currently known to be unsupported: checked.
 //
 // API Docs: https://developers.trello.com/reference#checklistsidcheckitems
-func (cl *Checklist) CreateCheckItem(name string, extraArgs Arguments) (item *CheckItem, err error) {
-	return cl.client.CreateCheckItem(cl, name, extraArgs)
+func (cl *Checklist) CreateCheckItem(name string, extraArgs ...Arguments) (item *CheckItem, err error) {
+	args := flattenArguments(extraArgs)
+	return cl.client.CreateCheckItem(cl, name, args)
 }
 
 // CreateCheckItem creates a checkitem inside the given checklist.
@@ -75,7 +74,7 @@ func (cl *Checklist) CreateCheckItem(name string, extraArgs Arguments) (item *Ch
 // Attributes currently known to be unsupported: checked.
 //
 // API Docs: https://developers.trello.com/reference#checklistsidcheckitems
-func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs Arguments) (item *CheckItem, err error) {
+func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs ...Arguments) (item *CheckItem, err error) {
 	path := "checklists/" + checklist.ID + "/checkItems"
 	args := Arguments{
 		"name":    name,
@@ -83,12 +82,7 @@ func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs Ar
 		"checked": "false",
 	}
 
-	if pos, ok := extraArgs["pos"]; ok {
-		args["pos"] = pos
-	}
-	if checked, ok := extraArgs["checked"]; ok {
-		args["checked"] = checked
-	}
+	args.flatten(extraArgs)
 
 	item = &CheckItem{}
 	err = c.Post(path, args, item)

@@ -144,7 +144,8 @@ func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interfa
 }
 
 // MoveToList moves a card to a list given by listID.
-func (c *Card) MoveToList(listID string, args Arguments) error {
+func (c *Card) MoveToList(listID string, extraArgs ...Arguments) error {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s", c.ID)
 	args["idList"] = listID
 	return c.client.Put(path, args, &c)
@@ -196,7 +197,8 @@ func (c *Card) MoveToBottomOfList() error {
 }
 
 // Update UPDATEs the card's attributes.
-func (c *Card) Update(args Arguments) error {
+func (c *Card) Update(extraArgs ...Arguments) error {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s", c.ID)
 	return c.client.Put(path, args, c)
 }
@@ -218,7 +220,7 @@ func (c *Card) Delete() error {
 }
 
 // CreateCard takes a Card and Arguments and POSTs the card.
-func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
+func (c *Client) CreateCard(card *Card, extraArgs ...Arguments) error {
 	path := "cards"
 	args := Arguments{
 		"name":      card.Name,
@@ -231,10 +233,8 @@ func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)
 	}
-	// Allow overriding the creation position with 'top' or 'botttom'
-	if pos, ok := extraArgs["pos"]; ok {
-		args["pos"] = pos
-	}
+
+	args.flatten(extraArgs)
 	err := c.Post(path, args, &card)
 	if err == nil {
 		card.client = c
@@ -243,7 +243,7 @@ func (c *Client) CreateCard(card *Card, extraArgs Arguments) error {
 }
 
 // AddCard takes a Card and Arguments and adds the card to the receiver list.
-func (l *List) AddCard(card *Card, extraArgs Arguments) error {
+func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	args := Arguments{
 		"name":      card.Name,
@@ -254,10 +254,9 @@ func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)
 	}
-	// Allow overwriting the creation position with 'top' or 'bottom'
-	if pos, ok := extraArgs["pos"]; ok {
-		args["pos"] = pos
-	}
+
+	args.flatten(extraArgs)
+
 	err := l.client.Post(path, args, &card)
 	if err == nil {
 		card.client = l.client
@@ -273,11 +272,14 @@ func (l *List) AddCard(card *Card, extraArgs Arguments) error {
 //	Arguments["keepFromSource"] = "all"
 //  Arguments["keepFromSource"] = "none"
 //	Arguments["keepFromSource"] = "attachments,checklists,comments"
-func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
+func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) {
+	args := Arguments{
+		"idList":       listID,
+		"idCardSource": c.ID,
+	}
 	path := "cards"
-	args["idList"] = listID
-	args["idCardSource"] = c.ID
 	newCard := Card{}
+	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &newCard)
 	if err == nil {
 		newCard.client = c.client
@@ -288,9 +290,12 @@ func (c *Card) CopyToList(listID string, args Arguments) (*Card, error) {
 }
 
 // AddComment takes a comment string and Arguments and adds the comment to the card.
-func (c *Card) AddComment(comment string, args Arguments) (*Action, error) {
+func (c *Card) AddComment(comment string, extraArgs ...Arguments) (*Action, error) {
+	args := Arguments{
+		"text": comment,
+	}
+	args.flatten(extraArgs)
 	path := fmt.Sprintf("cards/%s/actions/comments", c.ID)
-	args["text"] = comment
 	action := Action{}
 	err := c.client.Post(path, args, &action)
 	if err != nil {
@@ -300,12 +305,13 @@ func (c *Card) AddComment(comment string, args Arguments) (*Action, error) {
 }
 
 // AddURLAttachment takes an Attachment and adds it to the card.
-func (c *Card) AddURLAttachment(attachment *Attachment) error {
+func (c *Card) AddURLAttachment(attachment *Attachment, extraArgs ...Arguments) error {
 	path := fmt.Sprintf("cards/%s/attachments", c.ID)
 	args := Arguments{
 		"url":  attachment.URL,
 		"name": attachment.Name,
 	}
+	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &attachment)
 	if err != nil {
 		err = errors.Wrapf(err, "Error adding attachment to card %s", c.ID)
@@ -318,8 +324,8 @@ func (c *Card) AddURLAttachment(attachment *Attachment) error {
 // from a copy of another Card. Returns an error only when a low-level failure occurred.
 // If this Card has no parent, a nil card and nil error are returned. In other words, the
 // non-existence of a parent is not treated as an error.
-func (c *Card) GetParentCard(args Arguments) (*Card, error) {
-
+func (c *Card) GetParentCard(extraArgs ...Arguments) (*Card, error) {
+	args := flattenArguments(extraArgs)
 	// Hopefully the card came pre-loaded with Actions including the card creation
 	action := c.Actions.FirstCardCreateAction()
 
@@ -343,8 +349,8 @@ func (c *Card) GetParentCard(args Arguments) (*Card, error) {
 }
 
 // GetAncestorCards takes Arguments, GETs the card's ancestors and returns them as a slice.
-func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
-
+func (c *Card) GetAncestorCards(extraArgs ...Arguments) (ancestors []*Card, err error) {
+	args := flattenArguments(extraArgs)
 	// Get the first parent
 	parent, err := c.GetParentCard(args)
 	if IsNotFound(err) || IsPermissionDenied(err) {
@@ -367,7 +373,8 @@ func (c *Card) GetAncestorCards(args Arguments) (ancestors []*Card, err error) {
 }
 
 // GetOriginatingCard takes Arguments, GETs ancestors and returns most recent ancestor card of the Card.
-func (c *Card) GetOriginatingCard(args Arguments) (*Card, error) {
+func (c *Card) GetOriginatingCard(extraArgs ...Arguments) (*Card, error) {
+	args := flattenArguments(extraArgs)
 	ancestors, err := c.GetAncestorCards(args)
 	if err != nil {
 		return c, err
@@ -427,8 +434,11 @@ func (c *Card) CreatorMemberID() (string, error) {
 
 // ContainsCopyOfCard accepts a card id and Arguments and returns true
 // if the receiver Board contains a Card with the id.
-func (b *Board) ContainsCopyOfCard(cardID string, args Arguments) (bool, error) {
-	args["filter"] = "copyCard"
+func (b *Board) ContainsCopyOfCard(cardID string, extraArgs ...Arguments) (bool, error) {
+	args := Arguments{
+		"filter": "copyCard",
+	}
+	args.flatten(extraArgs)
 	actions, err := b.GetActions(args)
 	if err != nil {
 		err := errors.Wrapf(err, "GetCards() failed inside ContainsCopyOf() for board '%s' and card '%s'.", b.ID, cardID)
@@ -445,7 +455,8 @@ func (b *Board) ContainsCopyOfCard(cardID string, args Arguments) (bool, error) 
 // GetCard receives a card id and Arguments and returns the card if found
 // with the credentials given for the receiver Client. Returns an error
 // otherwise.
-func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) {
+func (c *Client) GetCard(cardID string, extraArgs ...Arguments) (card *Card, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s", cardID)
 	err = c.Get(path, args, &card)
 	if card != nil {
@@ -455,7 +466,8 @@ func (c *Client) GetCard(cardID string, args Arguments) (card *Card, err error) 
 }
 
 // GetCards takes Arguments and retrieves all Cards on a Board as slice or returns error.
-func (b *Board) GetCards(args Arguments) (cards []*Card, err error) {
+func (b *Board) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/cards", b.ID)
 
 	err = b.client.Get(path, args, &cards)
@@ -484,7 +496,8 @@ func (b *Board) GetCards(args Arguments) (cards []*Card, err error) {
 }
 
 // GetCards retrieves all Cards in a List or an error if something goes wrong.
-func (l *List) GetCards(args Arguments) (cards []*Card, err error) {
+func (l *List) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
 	for i := range cards {

@@ -31,7 +31,8 @@ func (l *List) CreatedAt() time.Time {
 }
 
 // GetList takes a list's id and Arguments and returns the matching list.
-func (c *Client) GetList(listID string, args Arguments) (list *List, err error) {
+func (c *Client) GetList(listID string, extraArgs ...Arguments) (list *List, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s", listID)
 	err = c.Get(path, args, &list)
 	if list != nil {
@@ -44,7 +45,8 @@ func (c *Client) GetList(listID string, args Arguments) (list *List, err error) 
 }
 
 // GetLists takes Arguments and returns the lists of the receiver Board.
-func (b *Board) GetLists(args Arguments) (lists []*List, err error) {
+func (b *Board) GetLists(extraArgs ...Arguments) (lists []*List, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/lists", b.ID)
 	err = b.client.Get(path, args, &lists)
 	for i := range lists {
@@ -61,7 +63,7 @@ func (b *Board) GetLists(args Arguments) (lists []*List, err error) {
 // Attributes currently known to be unsupported: idListSource.
 //
 // API Docs: https://developers.trello.com/reference/#lists-1
-func (c *Client) CreateList(onBoard *Board, name string, extraArgs Arguments) (list *List, err error) {
+func (c *Client) CreateList(onBoard *Board, name string, extraArgs ...Arguments) (list *List, err error) {
 	path := "lists"
 	args := Arguments{
 		"name":    name,
@@ -69,9 +71,7 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs Arguments) (l
 		"idBoard": onBoard.ID,
 	}
 
-	if pos, ok := extraArgs["pos"]; ok {
-		args["pos"] = pos
-	}
+	args.flatten(extraArgs)
 
 	list = &List{}
 	err = c.Post(path, args, &list)
@@ -86,13 +86,15 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs Arguments) (l
 // Attributes currently known to be unsupported: idListSource.
 //
 // API Docs: https://developers.trello.com/reference/#lists-1
-func (b *Board) CreateList(name string, extraArgs Arguments) (list *List, err error) {
-	return b.client.CreateList(b, name, extraArgs)
+func (b *Board) CreateList(name string, extraArgs ...Arguments) (list *List, err error) {
+	args := flattenArguments(extraArgs)
+	return b.client.CreateList(b, name, args)
 }
 
 // Update UPDATEs the list's attributes.
 // API Docs: https://developers.trello.com/reference/#listsid-1
-func (l *List) Update(args Arguments) error {
+func (l *List) Update(extraArgs ...Arguments) error {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s", l.ID)
 	return l.client.Put(path, args, l)
 }
