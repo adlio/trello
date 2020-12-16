@@ -320,6 +320,13 @@ func (c *Card) AddURLAttachment(attachment *Attachment, extraArgs ...Arguments) 
 
 }
 
+// GetAttachments returns all attachments a card has
+func (c *Card) GetAttachments(args Arguments) (attachments []*Attachment, err error) {
+	path := fmt.Sprintf("cards/%s/attachments", c.ID)
+	c.client.Get(path, args, &attachments)
+	return
+}
+
 // GetParentCard retrieves the originating Card if the Card was created
 // from a copy of another Card. Returns an error only when a low-level failure occurred.
 // If this Card has no parent, a nil card and nil error are returned. In other words, the
