@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"golang.org/x/time/rate"
 )
 
 // DefaultBaseURL is the default API base url used by Client to send requests to Trello.
@@ -27,7 +28,7 @@ type Client struct {
 	BaseURL  string
 	Key      string
 	Token    string
-	throttle <-chan time.Time
+	throttle *rate.Limiter
 	testMode bool
 	ctx      context.Context
 }
@@ -39,12 +40,14 @@ type logger interface {
 // NewClient is a constructor for the Client. It takes the key and token credentials
 // of a Trello member to authenticate and authorise requests with.
 func NewClient(key, token string) *Client {
+	limit := rate.Every(time.Second / 8) // Actually 10/second, but we're extra cautious
+
 	return &Client{
 		Client:   http.DefaultClient,
 		BaseURL:  DefaultBaseURL,
 		Key:      key,
 		Token:    token,
-		throttle: time.Tick(time.Second / 8), // Actually 10/second, but we're extra cautious
+		throttle: rate.NewLimiter(limit, 1),
 		testMode: false,
 		ctx:      context.Background(),
 	}
@@ -61,7 +64,7 @@ func (c *Client) WithContext(ctx context.Context) *Client {
 // Throttle starts receiving throttles from throttle channel each ticker period.
 func (c *Client) Throttle() {
 	if !c.testMode {
-		<-c.throttle
+		c.throttle.Wait(c.ctx)
 	}
 }
 

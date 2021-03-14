@@ -20,14 +20,16 @@ type Label struct {
 
 // GetLabel takes a label id and Arguments and returns the matching label (per Trello member)
 // or an error.
-func (c *Client) GetLabel(labelID string, args Arguments) (label *Label, err error) {
+func (c *Client) GetLabel(labelID string, extraArgs ...Arguments) (label *Label, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("labels/%s", labelID)
 	err = c.Get(path, args, &label)
 	return
 }
 
 // GetLabels takes Arguments and returns a slice containing all labels of the receiver board or an error.
-func (b *Board) GetLabels(args Arguments) (labels []*Label, err error) {
+func (b *Board) GetLabels(extraArgs ...Arguments) (labels []*Label, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/labels", b.ID)
 	err = b.client.Get(path, args, &labels)
 	return

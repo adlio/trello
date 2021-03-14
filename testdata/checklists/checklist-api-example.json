@@ -1,0 +1,21 @@
+{
+    "id": "333333333333333333333333",
+    "name": "Example checklist",
+    "idCard": "222222222222222222222222",
+    "pos": 1,
+    "idBoard": "111111111111111111111111",
+    "checkItems": [
+        {
+            "idChecklist": "444444444444444444444444",
+            "state": "complete",
+            "idMember": null,
+            "id": "555555555555555555555555",
+            "name": "Example checkItem",
+            "nameData": {
+                "emoji": {}
+            },
+            "pos": 2,
+            "due": null
+        }
+    ]
+}

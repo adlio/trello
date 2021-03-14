@@ -50,21 +50,24 @@ type ActionDataCard struct {
 }
 
 // GetActions make a GET call for a board's actions
-func (b *Board) GetActions(args Arguments) (actions ActionCollection, err error) {
+func (b *Board) GetActions(extraArgs ...Arguments) (actions ActionCollection, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/actions", b.ID)
 	err = b.client.Get(path, args, &actions)
 	return
 }
 
 // GetActions makes a GET call for a list's actions
-func (l *List) GetActions(args Arguments) (actions ActionCollection, err error) {
+func (l *List) GetActions(extraArgs ...Arguments) (actions ActionCollection, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s/actions", l.ID)
 	err = l.client.Get(path, args, &actions)
 	return
 }
 
 // GetActions makes a GET for a card's actions
-func (c *Card) GetActions(args Arguments) (actions ActionCollection, err error) {
+func (c *Card) GetActions(extraArgs ...Arguments) (actions ActionCollection, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s/actions", c.ID)
 	err = c.client.Get(path, args, &actions)
 	return

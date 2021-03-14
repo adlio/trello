@@ -144,14 +144,16 @@ type CustomFieldOption struct {
 }
 
 // GetCustomField takes a field id string and Arguments and returns the matching custom Field.
-func (c *Client) GetCustomField(fieldID string, args Arguments) (customField *CustomField, err error) {
+func (c *Client) GetCustomField(fieldID string, extraArgs ...Arguments) (customField *CustomField, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("customFields/%s", fieldID)
 	err = c.Get(path, args, &customField)
 	return
 }
 
 // GetCustomFields returns a slice of all receiver board's custom fields.
-func (b *Board) GetCustomFields(args Arguments) (customFields []*CustomField, err error) {
+func (b *Board) GetCustomFields(extraArgs ...Arguments) (customFields []*CustomField, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/customFields", b.ID)
 	err = b.client.Get(path, args, &customFields)
 	return

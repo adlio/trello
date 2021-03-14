@@ -25,7 +25,8 @@ type Organization struct {
 
 // GetOrganization takes an organization id and Arguments and either
 // GETs returns an Organization, or an error.
-func (c *Client) GetOrganization(orgID string, args Arguments) (organization *Organization, err error) {
+func (c *Client) GetOrganization(orgID string, extraArgs ...Arguments) (organization *Organization, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("organizations/%s", orgID)
 	err = c.Get(path, args, &organization)
 	if organization != nil {

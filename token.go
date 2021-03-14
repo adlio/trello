@@ -31,7 +31,8 @@ type Permission struct {
 }
 
 // GetToken takes a token id and Arguments and GETs and returns the Token or an error.
-func (c *Client) GetToken(tokenID string, args Arguments) (token *Token, err error) {
+func (c *Client) GetToken(tokenID string, extraArgs ...Arguments) (token *Token, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("tokens/%s", tokenID)
 	err = c.Get(path, args, &token)
 	if token != nil {
