@@ -92,20 +92,12 @@ type Card struct {
 // weren't created from a Client in the first place.
 func (c *Card) SetClient(newClient *Client) {
 	c.client = newClient
-	/*
-		if c.Board == nil { // Retrieve and Set Board
-			board, err := c.client.GetBoard(c.IDBoard, DefaultsWithCache())
-			if err == nil {
-				c.Board = board
-			}
-		}
-		if c.List == nil { // Retrieve and Set List
-			list, err := c.client.GetList(c.IDList, DefaultsWithCache())
-			if err == nil {
-				c.List = list
-			}
-		}
-	*/
+	if c.Board != nil {
+		c.Board.client = newClient
+	}
+	if c.List != nil {
+		c.List.client = newClient
+	}
 	for _, action := range c.Actions {
 		action.SetClient(newClient)
 	}

@@ -87,6 +87,10 @@ type BackgroundImage struct {
 // weren't created from a Client in the first place.
 func (b *Board) SetClient(newClient *Client) {
 	b.client = newClient
+	for _, list := range b.Lists {
+		list.SetClient(newClient)
+		list.Board = b // Set Parent
+	}
 }
 
 // CreatedAt returns a board's created-at attribute as time.Time.
