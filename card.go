@@ -550,7 +550,7 @@ func (c *Card) setClient(client *Client) {
 		}
 	}
 	for _, action := range c.Actions {
-		action.setClient(client)
+		action.SetClient(client)
 	}
 	for _, attachment := range c.Attachments {
 		attachment.setClient(client)

@@ -196,7 +196,7 @@ func ListAfterAction(a *Action) *List {
 	return nil
 }
 
-// setClient on Action for interface consistency
-func (a *Action) setClient(client *Client) {
-	a.client = client
+// SetClient on Action for interface consistency
+func (a *Action) SetClient(newClient *Client) {
+	a.client = newClient
 }
