@@ -33,8 +33,8 @@ type AttachmentPreview struct {
 	Scaled bool   `json:"scaled"`
 }
 
-// SetClient can be used to override this Actions's internal connection to the
-// Trello API. Normally, this is set automatically after other API calls.
+// SetClient can be used to override this Attachment's internal connection to
+// the Trello API. Normally, this is set automatically after other API calls.
 func (a *Attachment) SetClient(newClient *Client) {
 	a.client = newClient
 }

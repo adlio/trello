@@ -23,3 +23,12 @@ func TestGetMyNotifications(t *testing.T) {
 		t.Errorf("Name of second notification incorrect. Got: '%s'", notifications[1].Data.Board.Name)
 	}
 }
+
+func TestNotificationSetClient(t *testing.T) {
+	n := Notification{}
+	client := testClient()
+	n.SetClient(client)
+	if n.client == nil {
+		t.Error("Expected non-nil Notification.client")
+	}
+}

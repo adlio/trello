@@ -142,3 +142,12 @@ func TestAction_DidCommentCard(t *testing.T) {
 		})
 	}
 }
+
+func TestActionSetClient(t *testing.T) {
+	a := Action{}
+	client := testClient()
+	a.SetClient(client)
+	if a.client == nil {
+		t.Error("Expected non-nil Action.client")
+	}
+}
