@@ -294,3 +294,12 @@ func TestBoardAddMember(t *testing.T) {
 		t.Errorf("Status membership incorrect, got %v", response.Memberships[1].Unconfirmed)
 	}
 }
+
+func TestBoardSetClient(t *testing.T) {
+	board := testBoard(t)
+	client := testClient()
+	board.SetClient(client)
+	if board.client == nil {
+		t.Error("Expected non-nil board.client")
+	}
+}

@@ -85,6 +85,15 @@ type Card struct {
 	customFieldMap *map[string]interface{}
 }
 
+// SetClient can be used to override this Card's internal connection to the
+// Trello API. Normally, this is set automatically after calls to GetCard()
+// from the Client or a List. This method exists for special cases where
+// functions which need a Client need to be called on Card structs which
+// weren't created from a Client in the first place.
+func (c *Card) SetClient(newClient *Client) {
+	c.client = newClient
+}
+
 // CreatedAt returns the receiver card's created-at attribute as time.Time.
 func (c *Card) CreatedAt() time.Time {
 	t, _ := IDToTime(c.ID)

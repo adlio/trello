@@ -300,6 +300,15 @@ func TestAddURLAttachmentToCard(t *testing.T) {
 	}
 }
 
+func TestCardSetClient(t *testing.T) {
+	card := Card{}
+	client := testClient()
+	card.SetClient(client)
+	if card.client == nil {
+		t.Error("Expected non-nil card.client")
+	}
+}
+
 // Utility function to get a simple response from Client.GetCard()
 //
 func testCard(t *testing.T) *Card {

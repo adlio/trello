@@ -80,6 +80,15 @@ type BackgroundImage struct {
 	URL    string `json:"url"`
 }
 
+// SetClient can be used to override this Board's internal connection to the
+// Trello API. Normally, this is set automatically after calls to GetBoard()
+// from the Client. This method exists for special cases where
+// functions which need a Client need to be called on Board structs which
+// weren't created from a Client in the first place.
+func (b *Board) SetClient(newClient *Client) {
+	b.client = newClient
+}
+
 // CreatedAt returns a board's created-at attribute as time.Time.
 func (b *Board) CreatedAt() time.Time {
 	t, _ := IDToTime(b.ID)
