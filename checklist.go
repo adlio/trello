@@ -55,7 +55,7 @@ func (c *Client) CreateChecklist(card *Card, name string, extraArgs ...Arguments
 	checklist = &Checklist{}
 	err = c.Post(path, args, &checklist)
 	if err == nil {
-		checklist.setClient(c)
+		checklist.SetClient(c)
 		checklist.Card = card
 		checklist.IDCard = card.ID
 		card.Checklists = append(card.Checklists, checklist)
@@ -92,7 +92,7 @@ func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs ..
 	err = c.Post(path, args, item)
 	if err == nil {
 		checklist.CheckItems = append(checklist.CheckItems, item)
-		item.setClient(c)
+		item.SetClient(c)
 		item.Checklist = checklist
 	}
 	return
@@ -110,16 +110,20 @@ func (c *Client) GetChecklist(checklistID string, args Arguments) (checklist *Ch
 	return checklist, err
 }
 
-// setClient on checkList and sub-objects
-func (cl *Checklist) setClient(client *Client) {
-	cl.client = client
+// SetClient can be used to override this Checklist's internal connection
+// to the Trello API. Normally, this is set automatically after other
+// API calls.
+func (cl *Checklist) SetClient(newClient *Client) {
+	cl.client = newClient
 	for _, checkitem := range cl.CheckItems {
-		checkitem.setClient(client)
+		checkitem.SetClient(newClient)
 		checkitem.Checklist = cl // Set Parent
 	}
 }
 
-// setClient on checkItem (for interface consistency)
-func (ci *CheckItem) setClient(client *Client) {
-	ci.client = client
+// SetClient can be used to override this CheckItems's internal connection
+// to the Trello API. Normally, this is set automatically after other
+// API calls.
+func (ci *CheckItem) SetClient(newClient *Client) {
+	ci.client = newClient
 }

@@ -45,7 +45,7 @@ func (c *Client) SearchCards(query string, extraArgs ...Arguments) (cards []*Car
 	err = c.Get("search", args, &res)
 	cards = res.Cards
 	for _, card := range cards {
-		card.setClient(c)
+		card.SetClient(c)
 	}
 	return
 }

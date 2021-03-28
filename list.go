@@ -130,7 +130,7 @@ func (l *List) Update(extraArgs ...Arguments) (err error) {
 func (l *List) setClient(client *Client) {
 	l.client = client
 	for _, card := range l.Cards {
-		card.setClient(client)
+		card.SetClient(client)
 		card.List = l // Set Parent
 	}
 }
