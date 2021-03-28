@@ -119,6 +119,24 @@ func TestGetChecklist(t *testing.T) {
 	}
 }
 
+func TestChecklistSetClient(t *testing.T) {
+	cl := Checklist{}
+	client := testClient()
+	cl.SetClient(client)
+	if cl.client == nil {
+		t.Error("Expected non-nil CheckList.client")
+	}
+}
+
+func TestCheckItemSetClient(t *testing.T) {
+	ci := CheckItem{}
+	client := testClient()
+	ci.SetClient(client)
+	if ci.client == nil {
+		t.Error("Expected non-nil CheckItem.client")
+	}
+}
+
 // Utility function to get a simple response from Client.GetChecklist()
 //
 func testChecklist(t *testing.T) *Checklist {
