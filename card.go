@@ -553,7 +553,7 @@ func (c *Card) setClient(client *Client) {
 		action.SetClient(client)
 	}
 	for _, attachment := range c.Attachments {
-		attachment.setClient(client)
+		attachment.SetClient(client)
 		attachment.Card = c // Set Parent
 	}
 	for _, checklist := range c.Checklists {

@@ -61,7 +61,7 @@ func (c *Client) SearchBoards(query string, extraArgs ...Arguments) (boards []*B
 	err = c.Get("search", args, &res)
 	boards = res.Boards
 	for _, board := range boards {
-		board.setClient(c)
+		board.SetClient(c)
 	}
 	return
 }
