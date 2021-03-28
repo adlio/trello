@@ -47,8 +47,13 @@ func (c *Client) GetMyNotifications(extraArgs ...Arguments) (notifications []*No
 	args := flattenArguments(extraArgs)
 	path := "members/me/notifications"
 	err = c.Get(path, args, &notifications)
-	for i := range notifications {
-		notifications[i].client = c
+	for _, notification := range notifications {
+		notification.setClient(c)
 	}
 	return
+}
+
+// setClient on Notification for interface consistency
+func (n *Notification) setClient(client *Client) {
+	n.client = client
 }

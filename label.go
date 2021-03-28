@@ -11,6 +11,8 @@ import "fmt"
 // Labels are defined per board, and can be applied to the cards on that board.
 // https://developers.trello.com/reference/#label-object
 type Label struct {
+	client  *Client
+	Board   *Board
 	ID      string `json:"id"`
 	IDBoard string `json:"idBoard"`
 	Name    string `json:"name"`
@@ -33,4 +35,9 @@ func (b *Board) GetLabels(extraArgs ...Arguments) (labels []*Label, err error) {
 	path := fmt.Sprintf("boards/%s/labels", b.ID)
 	err = b.client.Get(path, args, &labels)
 	return
+}
+
+// setClient on Label (for interface consistency)
+func (l *Label) setClient(client *Client) {
+	l.client = client
 }

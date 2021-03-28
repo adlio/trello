@@ -29,7 +29,7 @@ func (c *Client) GetMember(memberID string, extraArgs ...Arguments) (member *Mem
 	path := fmt.Sprintf("members/%s", memberID)
 	err = c.Get(path, args, &member)
 	if err == nil {
-		member.client = c
+		member.setClient(c)
 	}
 	return
 }
@@ -49,8 +49,8 @@ func (o *Organization) GetMembers(extraArgs ...Arguments) (members []*Member, er
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("organizations/%s/members", o.ID)
 	err = o.client.Get(path, args, &members)
-	for i := range members {
-		members[i].client = o.client
+	for _, member := range members {
+		member.setClient(o.client)
 	}
 	return
 }
@@ -60,8 +60,8 @@ func (b *Board) GetMembers(extraArgs ...Arguments) (members []*Member, err error
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/members", b.ID)
 	err = b.client.Get(path, args, &members)
-	for i := range members {
-		members[i].client = b.client
+	for _, member := range members {
+		member.setClient(b.client)
 	}
 	return
 }
@@ -71,8 +71,13 @@ func (c *Card) GetMembers(extraArgs ...Arguments) (members []*Member, err error)
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s/members", c.ID)
 	err = c.client.Get(path, args, &members)
-	for i := range members {
-		members[i].client = c.client
+	for _, member := range members {
+		member.setClient(c.client)
 	}
 	return
+}
+
+//setClient on member (for interface consistency)
+func (m *Member) setClient(client *Client) {
+	m.client = client
 }

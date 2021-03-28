@@ -42,13 +42,20 @@ func (l *List) CreatedAt() time.Time {
 // GetList takes a list's id and Arguments and returns the matching list.
 func (c *Client) GetList(listID string, extraArgs ...Arguments) (list *List, err error) {
 	args := flattenArguments(extraArgs)
-	path := fmt.Sprintf("lists/%s", listID)
-	err = c.Get(path, args, &list)
-	if list != nil {
-		list.client = c
-		for i := range list.Cards {
-			list.Cards[i].client = c
+	if args.IsCacheEnabled() {
+		var found bool
+		if list, found = c.cache.GetList(listID); !found { // Not Found, Query without cache
+			args["CacheEnabled"] = "false"
+			list, err = c.GetList(listID, args)
+			c.cache.SetList(listID, list)
 		}
+	} else {
+		path := fmt.Sprintf("lists/%s", listID)
+		err = c.Get(path, args, &list)
+	}
+	if list != nil {
+		list.setClient(c)
+		// list.Board, err = c.GetBoard(list.IDBoard, Defaults()) // Set Parent
 	}
 	return
 }
@@ -58,10 +65,11 @@ func (b *Board) GetLists(extraArgs ...Arguments) (lists []*List, err error) {
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/lists", b.ID)
 	err = b.client.Get(path, args, &lists)
-	for i := range lists {
-		lists[i].client = b.client
-		for j := range lists[i].Cards {
-			lists[i].Cards[j].client = b.client
+	for _, list := range lists {
+		list.setClient(b.client)
+		list.Board = b // Set Parent
+		if args.IsCacheEnabled() {
+			b.client.cache.SetList(list.ID, list)
 		}
 	}
 	return
@@ -85,7 +93,8 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs ...Arguments)
 	list = &List{}
 	err = c.Post(path, args, &list)
 	if err == nil {
-		list.client = c
+		list.setClient(c)
+		list.Board = onBoard
 	}
 	return
 }
@@ -97,13 +106,31 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs ...Arguments)
 // API Docs: https://developers.trello.com/reference/#lists-1
 func (b *Board) CreateList(name string, extraArgs ...Arguments) (list *List, err error) {
 	args := flattenArguments(extraArgs)
-	return b.client.CreateList(b, name, args)
+	list, err = b.client.CreateList(b, name, args)
+	list.setClient(b.client)
+	if args.IsCacheEnabled() {
+		b.client.cache.SetList(list.ID, list)
+	}
+	return
 }
 
 // Update UPDATEs the list's attributes.
 // API Docs: https://developers.trello.com/reference/#listsid-1
-func (l *List) Update(extraArgs ...Arguments) error {
+func (l *List) Update(extraArgs ...Arguments) (err error) {
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s", l.ID)
-	return l.client.Put(path, args, l)
+	err = l.client.Put(path, args, l)
+	if args.IsCacheEnabled() {
+		l.client.cache.SetList(l.ID, l)
+	}
+	return
+}
+
+// setClient on List and sub-objects
+func (l *List) setClient(client *Client) {
+	l.client = client
+	for _, card := range l.Cards {
+		card.setClient(client)
+		card.List = l // Set Parent
+	}
 }

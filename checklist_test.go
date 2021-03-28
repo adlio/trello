@@ -81,8 +81,8 @@ func TestCreateCheckItem(t *testing.T) {
 		t.Errorf("Expected checklist to pick up the created checkitem. Instead got '%v'.", len(cl.CheckItems))
 	}
 
-	if cl.CheckItems[0] != *item {
-		t.Errorf("Expected the returned item and the checkitem inside the checklist to be equal.\n got: %#v\nwant: %#v", cl.CheckItems[0], *item)
+	if cl.CheckItems[0] != item {
+		t.Errorf("Expected the returned item and the checkitem inside the checklist to be equal.\n got: %#v\nwant: %#v", cl.CheckItems[0], item)
 	}
 	if item.Pos != 35 {
 		t.Errorf("Expected the returned item to pick up a position. Instead got '%v'.", item.Pos)

@@ -11,17 +11,20 @@ import "fmt"
 // A card can have one zero or more checklists.
 // https://developers.trello.com/reference/#checklist-object
 type Checklist struct {
-	ID         string      `json:"id"`
-	Name       string      `json:"name"`
-	IDBoard    string      `json:"idBoard,omitempty"`
-	IDCard     string      `json:"idCard,omitempty"`
-	Pos        float64     `json:"pos,omitempty"`
-	CheckItems []CheckItem `json:"checkItems,omitempty"`
 	client     *Client
+	Card       *Card
+	ID         string       `json:"id"`
+	Name       string       `json:"name"`
+	IDBoard    string       `json:"idBoard,omitempty"`
+	IDCard     string       `json:"idCard,omitempty"`
+	Pos        float64      `json:"pos,omitempty"`
+	CheckItems []*CheckItem `json:"checkItems,omitempty"`
 }
 
 // CheckItem is a nested resource representing an item in Checklist.
 type CheckItem struct {
+	client      *Client
+	Checklist   *Checklist
 	ID          string  `json:"id"`
 	Name        string  `json:"name"`
 	State       string  `json:"state"`
@@ -52,7 +55,8 @@ func (c *Client) CreateChecklist(card *Card, name string, extraArgs ...Arguments
 	checklist = &Checklist{}
 	err = c.Post(path, args, &checklist)
 	if err == nil {
-		checklist.client = c
+		checklist.setClient(c)
+		checklist.Card = card
 		checklist.IDCard = card.ID
 		card.Checklists = append(card.Checklists, checklist)
 	}
@@ -87,7 +91,9 @@ func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs ..
 	item = &CheckItem{}
 	err = c.Post(path, args, item)
 	if err == nil {
-		checklist.CheckItems = append(checklist.CheckItems, *item)
+		checklist.CheckItems = append(checklist.CheckItems, item)
+		item.setClient(c)
+		item.Checklist = checklist
 	}
 	return
 }
@@ -102,4 +108,18 @@ func (c *Client) GetChecklist(checklistID string, args Arguments) (checklist *Ch
 		checklist.client = c
 	}
 	return checklist, err
+}
+
+// setClient on checkList and sub-objects
+func (cl *Checklist) setClient(client *Client) {
+	cl.client = client
+	for _, checkitem := range cl.CheckItems {
+		checkitem.setClient(client)
+		checkitem.Checklist = cl // Set Parent
+	}
+}
+
+// setClient on checkItem (for interface consistency)
+func (ci *CheckItem) setClient(client *Client) {
+	ci.client = client
 }
