@@ -196,7 +196,8 @@ func ListAfterAction(a *Action) *List {
 	return nil
 }
 
-// SetClient on Action for interface consistency
+// SetClient can be used to override this Actions's internal connection to the
+// Trello API. Normally, this is set automatically after other API calls.
 func (a *Action) SetClient(newClient *Client) {
 	a.client = newClient
 }
