@@ -74,7 +74,7 @@ func (c *Client) SearchMembers(query string, extraArgs ...Arguments) (members []
 	args.flatten(extraArgs)
 	err = c.Get("search/members", args, &members)
 	for _, member := range members {
-		member.setClient(c)
+		member.SetClient(c)
 	}
 	return
 }

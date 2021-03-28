@@ -118,11 +118,11 @@ func (c *Card) SetClient(newClient *Client) {
 		checklist.Card = c // Set Parent
 	}
 	for _, label := range c.Labels {
-		label.setClient(newClient)
+		label.SetClient(newClient)
 		label.Board = c.Board // Set Parent
 	}
 	for _, member := range c.Members {
-		member.setClient(newClient)
+		member.SetClient(newClient)
 	}
 }
 
@@ -545,7 +545,6 @@ func (l *List) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
 	for _, card := range cards {
-		// Set these here before setClient to avoid lookup
 		card.Board = l.Board
 		card.List = l
 		card.SetClient(l.client)

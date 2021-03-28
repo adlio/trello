@@ -31,6 +31,10 @@ type List struct {
 // weren't created from a Client in the first place.
 func (l *List) SetClient(newClient *Client) {
 	l.client = newClient
+	for _, card := range l.Cards {
+		card.SetClient(newClient)
+		card.List = l // Set Parent
+	}
 }
 
 // CreatedAt returns the time.Time from the list's id.
@@ -54,7 +58,7 @@ func (c *Client) GetList(listID string, extraArgs ...Arguments) (list *List, err
 		err = c.Get(path, args, &list)
 	}
 	if list != nil {
-		list.setClient(c)
+		list.SetClient(c)
 		// list.Board, err = c.GetBoard(list.IDBoard, Defaults()) // Set Parent
 	}
 	return
@@ -66,7 +70,7 @@ func (b *Board) GetLists(extraArgs ...Arguments) (lists []*List, err error) {
 	path := fmt.Sprintf("boards/%s/lists", b.ID)
 	err = b.client.Get(path, args, &lists)
 	for _, list := range lists {
-		list.setClient(b.client)
+		list.SetClient(b.client)
 		list.Board = b // Set Parent
 		if args.IsCacheEnabled() {
 			b.client.cache.SetList(list.ID, list)
@@ -93,7 +97,7 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs ...Arguments)
 	list = &List{}
 	err = c.Post(path, args, &list)
 	if err == nil {
-		list.setClient(c)
+		list.SetClient(c)
 		list.Board = onBoard
 	}
 	return
@@ -107,7 +111,7 @@ func (c *Client) CreateList(onBoard *Board, name string, extraArgs ...Arguments)
 func (b *Board) CreateList(name string, extraArgs ...Arguments) (list *List, err error) {
 	args := flattenArguments(extraArgs)
 	list, err = b.client.CreateList(b, name, args)
-	list.setClient(b.client)
+	list.SetClient(b.client)
 	if args.IsCacheEnabled() {
 		b.client.cache.SetList(list.ID, list)
 	}
@@ -124,13 +128,4 @@ func (l *List) Update(extraArgs ...Arguments) (err error) {
 		l.client.cache.SetList(l.ID, l)
 	}
 	return
-}
-
-// setClient on List and sub-objects
-func (l *List) setClient(client *Client) {
-	l.client = client
-	for _, card := range l.Cards {
-		card.SetClient(client)
-		card.List = l // Set Parent
-	}
 }

@@ -56,7 +56,7 @@ func (c *Client) CreateWebhook(webhook *Webhook) error {
 	args := Arguments{"idModel": webhook.IDModel, "description": webhook.Description, "callbackURL": webhook.CallbackURL}
 	err := c.Post(path, args, webhook)
 	if err == nil {
-		webhook.setClient(c)
+		webhook.SetClient(c)
 	}
 	return err
 }
@@ -73,7 +73,7 @@ func (c *Client) GetWebhook(webhookID string, extraArgs ...Arguments) (webhook *
 	path := fmt.Sprintf("webhooks/%s", webhookID)
 	err = c.Get(path, args, &webhook)
 	if webhook != nil {
-		webhook.setClient(c)
+		webhook.SetClient(c)
 	}
 	return
 }
@@ -85,7 +85,7 @@ func (t *Token) GetWebhooks(extraArgs ...Arguments) (webhooks []*Webhook, err er
 	err = t.client.Get(path, args, &webhooks)
 	if err == nil {
 		for _, webhook := range webhooks {
-			webhook.setClient(t.client)
+			webhook.SetClient(t.client)
 		}
 	}
 	return
@@ -130,7 +130,9 @@ func GetCardWebhookRequest(r *http.Request) (whr *CardWebhookRequest, err error)
 	return
 }
 
-// setClient on Organization for interface consistency
-func (w *Webhook) setClient(client *Client) {
-	w.client = client
+// SetClient can be used to override this Label's internal connection
+// to the Trello API. Normally, this is set automatically after other
+// API calls.
+func (w *Webhook) SetClient(newClient *Client) {
+	w.client = newClient
 }

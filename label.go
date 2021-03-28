@@ -37,7 +37,9 @@ func (b *Board) GetLabels(extraArgs ...Arguments) (labels []*Label, err error) {
 	return
 }
 
-// setClient on Label (for interface consistency)
-func (l *Label) setClient(client *Client) {
-	l.client = client
+// SetClient can be used to override this Label's internal connection
+// to the Trello API. Normally, this is set automatically after other
+// API calls.
+func (l *Label) SetClient(newClient *Client) {
+	l.client = newClient
 }

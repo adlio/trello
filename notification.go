@@ -48,12 +48,14 @@ func (c *Client) GetMyNotifications(extraArgs ...Arguments) (notifications []*No
 	path := "members/me/notifications"
 	err = c.Get(path, args, &notifications)
 	for _, notification := range notifications {
-		notification.setClient(c)
+		notification.SetClient(c)
 	}
 	return
 }
 
-// setClient on Notification for interface consistency
-func (n *Notification) setClient(client *Client) {
-	n.client = client
+// SetClient can be used to override this Label's internal connection
+// to the Trello API. Normally, this is set automatically after other
+// API calls.
+func (n *Notification) SetClient(newClient *Client) {
+	n.client = newClient
 }
