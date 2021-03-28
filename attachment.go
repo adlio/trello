@@ -33,7 +33,8 @@ type AttachmentPreview struct {
 	Scaled bool   `json:"scaled"`
 }
 
-// setClient on Attachment for interface consistency
-func (a *Attachment) setClient(client *Client) {
-	a.client = client
+// SetClient can be used to override this Actions's internal connection to the
+// Trello API. Normally, this is set automatically after other API calls.
+func (a *Attachment) SetClient(newClient *Client) {
+	a.client = newClient
 }
