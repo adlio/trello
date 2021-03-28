@@ -14,6 +14,7 @@ import (
 // Actions are immutable event traces generated whenever an action occurs in Trello.
 // See https://developers.trello.com/reference/#actions.
 type Action struct {
+	client          *Client
 	ID              string      `json:"id"`
 	IDMemberCreator string      `json:"idMemberCreator"`
 	Type            string      `json:"type"`
@@ -193,4 +194,9 @@ func ListAfterAction(a *Action) *List {
 		}
 	}
 	return nil
+}
+
+// setClient on Action for interface consistency
+func (a *Action) setClient(client *Client) {
+	a.client = client
 }

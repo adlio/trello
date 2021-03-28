@@ -56,7 +56,7 @@ func (c *Client) CreateWebhook(webhook *Webhook) error {
 	args := Arguments{"idModel": webhook.IDModel, "description": webhook.Description, "callbackURL": webhook.CallbackURL}
 	err := c.Post(path, args, webhook)
 	if err == nil {
-		webhook.client = c
+		webhook.setClient(c)
 	}
 	return err
 }
@@ -73,7 +73,7 @@ func (c *Client) GetWebhook(webhookID string, extraArgs ...Arguments) (webhook *
 	path := fmt.Sprintf("webhooks/%s", webhookID)
 	err = c.Get(path, args, &webhook)
 	if webhook != nil {
-		webhook.client = c
+		webhook.setClient(c)
 	}
 	return
 }
@@ -85,7 +85,7 @@ func (t *Token) GetWebhooks(extraArgs ...Arguments) (webhooks []*Webhook, err er
 	err = t.client.Get(path, args, &webhooks)
 	if err == nil {
 		for _, webhook := range webhooks {
-			webhook.client = t.client
+			webhook.setClient(t.client)
 		}
 	}
 	return
@@ -128,4 +128,9 @@ func GetCardWebhookRequest(r *http.Request) (whr *CardWebhookRequest, err error)
 		err = errors.Wrapf(err, "GetCardWebhookRequest() failed to decode '%s'.", r.URL)
 	}
 	return
+}
+
+// setClient on Organization for interface consistency
+func (w *Webhook) setClient(client *Client) {
+	w.client = client
 }

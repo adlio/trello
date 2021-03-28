@@ -30,7 +30,12 @@ func (c *Client) GetOrganization(orgID string, extraArgs ...Arguments) (organiza
 	path := fmt.Sprintf("organizations/%s", orgID)
 	err = c.Get(path, args, &organization)
 	if organization != nil {
-		organization.client = c
+		organization.setClient(c)
 	}
 	return
+}
+
+// setClient on Organization for interface consistency
+func (o *Organization) setClient(client *Client) {
+	o.client = client
 }

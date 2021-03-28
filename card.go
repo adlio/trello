@@ -246,7 +246,7 @@ func (c *Client) CreateCard(card *Card, extraArgs ...Arguments) error {
 	args.flatten(extraArgs)
 	err := c.Post(path, args, &card)
 	if err == nil {
-		card.client = c
+		card.setClient(c)
 	}
 	return err
 }
@@ -268,7 +268,8 @@ func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 
 	err := l.client.Post(path, args, &card)
 	if err == nil {
-		card.client = l.client
+		card.setClient(l.client)
+		card.List = l
 	} else {
 		err = errors.Wrapf(err, "Error adding card to list %s", l.ID)
 	}
@@ -291,7 +292,7 @@ func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) 
 	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &newCard)
 	if err == nil {
-		newCard.client = c.client
+		newCard.setClient(c.client)
 	} else {
 		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
 	}
@@ -351,6 +352,7 @@ func (c *Card) GetParentCard(extraArgs ...Arguments) (*Card, error) {
 
 	if action != nil && action.Data != nil && action.Data.CardSource != nil {
 		card, err := c.client.GetCard(action.Data.CardSource.ID, args)
+		card.setClient(c.client)
 		return card, err
 	}
 
@@ -469,7 +471,7 @@ func (c *Client) GetCard(cardID string, extraArgs ...Arguments) (card *Card, err
 	path := fmt.Sprintf("cards/%s", cardID)
 	err = c.Get(path, args, &card)
 	if card != nil {
-		card.client = c
+		card.setClient(c)
 	}
 	return card, err
 }
@@ -497,8 +499,9 @@ func (b *Board) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 		}
 	}
 
-	for i := range cards {
-		cards[i].client = b.client
+	for _, card := range cards {
+		card.Board = b // Set this hear to avoid the lookup
+		card.setClient(b.client)
 	}
 
 	return
@@ -509,8 +512,11 @@ func (l *List) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
-	for i := range cards {
-		cards[i].client = l.client
+	for _, card := range cards {
+		// Set these here before setClient to avoid lookup
+		card.Board = l.Board
+		card.List = l
+		card.setClient(l.client)
 	}
 	return
 }
@@ -526,4 +532,40 @@ func earliestCardID(cards []*Card) string {
 		}
 	}
 	return earliest
+}
+
+// setClient on card and sub-objects
+func (c *Card) setClient(client *Client) {
+	c.client = client
+	if c.Board == nil { // Retrieve and Set Board
+		board, err := c.client.GetBoard(c.IDBoard, DefaultsWithCache())
+		if err == nil {
+			c.Board = board
+		}
+	}
+	if c.List == nil { // Retrieve and Set List
+		list, err := c.client.GetList(c.IDList, DefaultsWithCache())
+		if err == nil {
+			c.List = list
+		}
+	}
+	for _, action := range c.Actions {
+		action.setClient(client)
+	}
+	for _, attachment := range c.Attachments {
+		attachment.setClient(client)
+		attachment.Card = c // Set Parent
+	}
+	for _, checklist := range c.Checklists {
+		checklist.setClient(client)
+		checklist.Card = c // Set Parent
+	}
+	for _, label := range c.Labels {
+		label.setClient(client)
+		label.Board = c.Board // Set Parent
+	}
+	for _, member := range c.Members {
+		member.setClient(client)
+	}
+
 }

@@ -8,6 +8,8 @@ package trello
 // Attachment represent the attachments of cards. This is a nested resource of Card.
 // https://developers.trello.com/reference/#attachments
 type Attachment struct {
+	client    *Client
+	Card      *Card
 	ID        string              `json:"id"`
 	Name      string              `json:"name"`
 	Pos       float32             `json:"pos"`
@@ -29,4 +31,9 @@ type AttachmentPreview struct {
 	Height int    `json:"height"`
 	Bytes  int    `json:"bytes"`
 	Scaled bool   `json:"scaled"`
+}
+
+// setClient on Attachment for interface consistency
+func (a *Attachment) setClient(client *Client) {
+	a.client = client
 }

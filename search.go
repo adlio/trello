@@ -45,7 +45,7 @@ func (c *Client) SearchCards(query string, extraArgs ...Arguments) (cards []*Car
 	err = c.Get("search", args, &res)
 	cards = res.Cards
 	for _, card := range cards {
-		card.client = c
+		card.setClient(c)
 	}
 	return
 }
@@ -61,7 +61,7 @@ func (c *Client) SearchBoards(query string, extraArgs ...Arguments) (boards []*B
 	err = c.Get("search", args, &res)
 	boards = res.Boards
 	for _, board := range boards {
-		board.client = c
+		board.setClient(c)
 	}
 	return
 }
@@ -73,5 +73,8 @@ func (c *Client) SearchMembers(query string, extraArgs ...Arguments) (members []
 	}
 	args.flatten(extraArgs)
 	err = c.Get("search/members", args, &members)
+	for _, member := range members {
+		member.setClient(c)
+	}
 	return
 }
