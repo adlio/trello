@@ -35,9 +35,9 @@ func makeHTTPClientError(url string, resp *http.Response) error {
 }
 
 func (e *httpClientError) Error() string            { return e.msg }
-func (e *httpClientError) IsRateLimit() bool        { return e.code == 429 }
-func (e *httpClientError) IsNotFound() bool         { return e.code == 404 }
-func (e *httpClientError) IsPermissionDenied() bool { return e.code == 401 }
+func (e *httpClientError) IsRateLimit() bool        { return e.code == http.StatusTooManyRequests }
+func (e *httpClientError) IsNotFound() bool         { return e.code == http.StatusNotFound }
+func (e *httpClientError) IsPermissionDenied() bool { return e.code == http.StatusUnauthorized }
 
 // IsRateLimit takes an error and returns true exactly if the error is a rate-limit error.
 func IsRateLimit(err error) bool {
