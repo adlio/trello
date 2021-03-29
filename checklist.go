@@ -11,22 +11,25 @@ import "fmt"
 // A card can have one zero or more checklists.
 // https://developers.trello.com/reference/#checklist-object
 type Checklist struct {
+	client     *Client
 	ID         string      `json:"id"`
 	Name       string      `json:"name"`
 	IDBoard    string      `json:"idBoard,omitempty"`
 	IDCard     string      `json:"idCard,omitempty"`
+	Card       *Card       `json:"-"`
 	Pos        float64     `json:"pos,omitempty"`
 	CheckItems []CheckItem `json:"checkItems,omitempty"`
-	client     *Client
 }
 
 // CheckItem is a nested resource representing an item in Checklist.
 type CheckItem struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	State       string  `json:"state"`
-	IDChecklist string  `json:"idChecklist,omitempty"`
-	Pos         float64 `json:"pos,omitempty"`
+	client      *Client
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	State       string     `json:"state"`
+	IDChecklist string     `json:"idChecklist,omitempty"`
+	Checklist   *Checklist `json:"-"`
+	Pos         float64    `json:"pos,omitempty"`
 }
 
 // CheckItemState represents a CheckItem when it appears in CheckItemStates on a Card.
@@ -102,4 +105,20 @@ func (c *Client) GetChecklist(checklistID string, args Arguments) (checklist *Ch
 		checklist.client = c
 	}
 	return checklist, err
+}
+
+// SetClient can be used to override this Checklist's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (cl *Checklist) SetClient(newClient *Client) {
+	cl.client = newClient
+	for _, checkitem := range cl.CheckItems {
+		checkitem.SetClient(newClient)
+		checkitem.Checklist = cl
+	}
+}
+
+// SetClient can be used to override this CheckItem's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (ci *CheckItem) SetClient(client *Client) {
+	ci.client = client
 }

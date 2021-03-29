@@ -76,3 +76,9 @@ func (c *Card) GetMembers(extraArgs ...Arguments) (members []*Member, err error)
 	}
 	return
 }
+
+// SetClient can be used to override this Member's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (m *Member) SetClient(newClient *Client) {
+	m.client = newClient
+}

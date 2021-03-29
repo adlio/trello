@@ -48,7 +48,13 @@ func (c *Client) GetMyNotifications(extraArgs ...Arguments) (notifications []*No
 	path := "members/me/notifications"
 	err = c.Get(path, args, &notifications)
 	for i := range notifications {
-		notifications[i].client = c
+		notifications[i].SetClient(c)
 	}
 	return
+}
+
+// SetClient can be used to override this Notification's internal connection to
+// the Trello API. Normally, this is set automatically after API calls.
+func (n *Notification) SetClient(newClient *Client) {
+	n.client = newClient
 }

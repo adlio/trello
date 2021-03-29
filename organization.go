@@ -34,3 +34,9 @@ func (c *Client) GetOrganization(orgID string, extraArgs ...Arguments) (organiza
 	}
 	return
 }
+
+// SetClient can be used to override this Organization's internal connection
+// to the Trello API. Normally, this is set automatically after API calls.
+func (o *Organization) SetClient(newClient *Client) {
+	o.client = newClient
+}

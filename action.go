@@ -14,6 +14,7 @@ import (
 // Actions are immutable event traces generated whenever an action occurs in Trello.
 // See https://developers.trello.com/reference/#actions.
 type Action struct {
+	client          *Client
 	ID              string      `json:"id"`
 	IDMemberCreator string      `json:"idMemberCreator"`
 	Type            string      `json:"type"`
@@ -171,6 +172,12 @@ func (a *Action) DidCommentCard() bool {
 	default:
 		return false
 	}
+}
+
+// SetClient can be used to override this Action's internal connection to
+// the Trello API. Normally, this is set automatically after API calls.
+func (a *Action) SetClient(newClient *Client) {
+	a.client = newClient
 }
 
 // ListAfterAction calculates which List the card ended up in after this action

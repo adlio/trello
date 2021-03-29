@@ -16,6 +16,15 @@ func TestGetOrganization(t *testing.T) {
 	}
 }
 
+func TestOrganizationSetClient(t *testing.T) {
+	o := Organization{}
+	client := testClient()
+	o.SetClient(client)
+	if o.client == nil {
+		t.Error("Expected non-nil Organization.client")
+	}
+}
+
 func testOrganization(t *testing.T) *Organization {
 	client := testClient()
 	client.BaseURL = mockResponse("organizations", "culturefoundry.json").URL
