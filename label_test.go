@@ -29,6 +29,23 @@ func TestGetLabelsOnBoard(t *testing.T) {
 	}
 }
 
+func TestCreateLabel(t *testing.T) {
+	board := testBoard(t)
+	label := Label{Name: "Visited", Color: "green"}
+	board.client.BaseURL = mockResponse("labels", "labels-api-example.json").URL
+	err := board.CreateLabel(&label)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if label.Name != "Visited" {
+		t.Errorf("Expected name 'Visited', got '%s'", label.Name)
+	}
+	if label.Color != "green" {
+		t.Errorf("Expected 'green', got '%s'", label.Color)
+	}
+}
+
 func TestLabelSetClient(t *testing.T) {
 	l := Label{}
 	client := testClient()
