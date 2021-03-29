@@ -55,6 +55,9 @@ func (b *Board) GetActions(extraArgs ...Arguments) (actions ActionCollection, er
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/actions", b.ID)
 	err = b.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(b.client)
+	}
 	return
 }
 
@@ -63,6 +66,9 @@ func (l *List) GetActions(extraArgs ...Arguments) (actions ActionCollection, err
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s/actions", l.ID)
 	err = l.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(l.client)
+	}
 	return
 }
 
@@ -71,6 +77,9 @@ func (c *Card) GetActions(extraArgs ...Arguments) (actions ActionCollection, err
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s/actions", c.ID)
 	err = c.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(c.client)
+	}
 	return
 }
 
