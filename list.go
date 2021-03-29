@@ -31,6 +31,11 @@ type List struct {
 // weren't created from a Client in the first place.
 func (l *List) SetClient(newClient *Client) {
 	l.client = newClient
+	for _, card := range l.Cards {
+		if card.client == nil {
+			card.SetClient(newClient)
+		}
+	}
 }
 
 // CreatedAt returns the time.Time from the list's id.
@@ -45,10 +50,7 @@ func (c *Client) GetList(listID string, extraArgs ...Arguments) (list *List, err
 	path := fmt.Sprintf("lists/%s", listID)
 	err = c.Get(path, args, &list)
 	if list != nil {
-		list.client = c
-		for i := range list.Cards {
-			list.Cards[i].client = c
-		}
+		list.SetClient(c)
 	}
 	return
 }
@@ -59,10 +61,7 @@ func (b *Board) GetLists(extraArgs ...Arguments) (lists []*List, err error) {
 	path := fmt.Sprintf("boards/%s/lists", b.ID)
 	err = b.client.Get(path, args, &lists)
 	for i := range lists {
-		lists[i].client = b.client
-		for j := range lists[i].Cards {
-			lists[i].Cards[j].client = b.client
-		}
+		lists[i].SetClient(b.client)
 	}
 	return
 }

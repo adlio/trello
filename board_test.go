@@ -36,7 +36,7 @@ func TestDeleteBoard(t *testing.T) {
 		ID:   "5c602cf77061a8169a69deb5",
 		Name: "Test Board Create",
 	}
-	board.client = c
+	board.SetClient(c)
 
 	err := board.Delete(Defaults())
 	if err != nil {
@@ -187,7 +187,7 @@ func TestBoardUpdate(t *testing.T) {
 	board.Prefs.CardAging = "regular"
 
 	client := testClient()
-	board.client = client
+	board.SetClient(client)
 	boardResponse := mockResponse("boards", "5d2ccd3015468d3df508f10d", "create.json")
 	client.BaseURL = boardResponse.URL
 
@@ -232,8 +232,6 @@ func TestBoardUpdate(t *testing.T) {
 	if board.Prefs.CardAging != expected["updated"]["cardAging"] {
 		t.Errorf("Expected board's card aging. Instead got '%s'.", board.Prefs.CardAging)
 	}
-
-	return
 }
 
 func testBoardWithListsAndActions(t *testing.T) *Board {
@@ -254,7 +252,7 @@ func TestBoardAddMember(t *testing.T) {
 	}
 
 	client := testClient()
-	board.client = client
+	board.SetClient(client)
 
 	boardResponse := mockResponse("boards/5d2ccd3015468d3df508f10d", "added_members.json")
 	client.BaseURL = boardResponse.URL

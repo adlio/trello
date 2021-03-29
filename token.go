@@ -36,7 +36,13 @@ func (c *Client) GetToken(tokenID string, extraArgs ...Arguments) (token *Token,
 	path := fmt.Sprintf("tokens/%s", tokenID)
 	err = c.Get(path, args, &token)
 	if token != nil {
-		token.client = c
+		token.SetClient(c)
 	}
 	return
+}
+
+// SetClient can be used to override this Token's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (t *Token) SetClient(newClient *Client) {
+	t.client = newClient
 }

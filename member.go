@@ -29,17 +29,17 @@ func (c *Client) GetMember(memberID string, extraArgs ...Arguments) (member *Mem
 	path := fmt.Sprintf("members/%s", memberID)
 	err = c.Get(path, args, &member)
 	if err == nil {
-		member.client = c
+		member.SetClient(c)
 	}
 	return
 }
 
 // GetMyMember returns Member for the user authenticating the API call
 func (c *Client) GetMyMember(args Arguments) (member *Member, err error) {
-	path := fmt.Sprintf("members/me")
+	path := "members/me"
 	err = c.Get(path, args, &member)
 	if err == nil {
-		member.client = c
+		member.SetClient(c)
 	}
 	return
 }
@@ -50,7 +50,7 @@ func (o *Organization) GetMembers(extraArgs ...Arguments) (members []*Member, er
 	path := fmt.Sprintf("organizations/%s/members", o.ID)
 	err = o.client.Get(path, args, &members)
 	for i := range members {
-		members[i].client = o.client
+		members[i].SetClient(o.client)
 	}
 	return
 }
@@ -61,7 +61,7 @@ func (b *Board) GetMembers(extraArgs ...Arguments) (members []*Member, err error
 	path := fmt.Sprintf("boards/%s/members", b.ID)
 	err = b.client.Get(path, args, &members)
 	for i := range members {
-		members[i].client = b.client
+		members[i].SetClient(b.client)
 	}
 	return
 }
@@ -72,7 +72,13 @@ func (c *Card) GetMembers(extraArgs ...Arguments) (members []*Member, err error)
 	path := fmt.Sprintf("cards/%s/members", c.ID)
 	err = c.client.Get(path, args, &members)
 	for i := range members {
-		members[i].client = c.client
+		members[i].SetClient(c.client)
 	}
 	return
+}
+
+// SetClient can be used to override this Member's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (m *Member) SetClient(newClient *Client) {
+	m.client = newClient
 }

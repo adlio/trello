@@ -87,11 +87,41 @@ type Card struct {
 
 // SetClient can be used to override this Card's internal connection to the
 // Trello API. Normally, this is set automatically after calls to GetCard()
-// from the Client or a List. This method exists for special cases where
-// functions which need a Client need to be called on Card structs which
-// weren't created from a Client in the first place.
+// from the Client or a List. This method is public to allow for situations
+// where a Card which wasn't created from an API call to be used as the basis
+// for other API calls. All nested structs (Actions, Attachments, Checklists,
+// etc) also have their client properties updated.
+//
 func (c *Card) SetClient(newClient *Client) {
 	c.client = newClient
+
+	if c.Board != nil && c.Board.client == nil {
+		c.Board.SetClient(newClient)
+	}
+
+	if c.List != nil && c.List.client == nil {
+		c.List.SetClient(newClient)
+	}
+
+	for _, action := range c.Actions {
+		action.SetClient(newClient)
+	}
+
+	for _, attachment := range c.Attachments {
+		attachment.SetClient(newClient)
+	}
+
+	for _, checklist := range c.Checklists {
+		checklist.SetClient(newClient)
+	}
+
+	for _, label := range c.Labels {
+		label.SetClient(newClient)
+	}
+
+	for _, member := range c.Members {
+		member.SetClient(newClient)
+	}
 }
 
 // CreatedAt returns the receiver card's created-at attribute as time.Time.
@@ -246,7 +276,7 @@ func (c *Client) CreateCard(card *Card, extraArgs ...Arguments) error {
 	args.flatten(extraArgs)
 	err := c.Post(path, args, &card)
 	if err == nil {
-		card.client = c
+		card.SetClient(c)
 	}
 	return err
 }
@@ -268,7 +298,7 @@ func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 
 	err := l.client.Post(path, args, &card)
 	if err == nil {
-		card.client = l.client
+		card.SetClient(l.client)
 	} else {
 		err = errors.Wrapf(err, "Error adding card to list %s", l.ID)
 	}
@@ -291,7 +321,7 @@ func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) 
 	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &newCard)
 	if err == nil {
-		newCard.client = c.client
+		newCard.SetClient(c.client)
 	} else {
 		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
 	}
@@ -485,7 +515,7 @@ func (b *Board) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	// cards, we begin
 	if len(cards) > 0 {
 		moreCards := true
-		for moreCards == true {
+		for moreCards {
 			nextCardBatch := make([]*Card, 0)
 			args["before"] = earliestCardID(cards)
 			err = b.client.Get(path, args, &nextCardBatch)
@@ -498,7 +528,7 @@ func (b *Board) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	}
 
 	for i := range cards {
-		cards[i].client = b.client
+		cards[i].SetClient(b.client)
 	}
 
 	return
@@ -510,7 +540,7 @@ func (l *List) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
 	for i := range cards {
-		cards[i].client = l.client
+		cards[i].SetClient(l.client)
 	}
 	return
 }

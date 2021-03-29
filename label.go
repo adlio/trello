@@ -11,6 +11,7 @@ import "fmt"
 // Labels are defined per board, and can be applied to the cards on that board.
 // https://developers.trello.com/reference/#label-object
 type Label struct {
+	client  *Client
 	ID      string `json:"id"`
 	IDBoard string `json:"idBoard"`
 	Name    string `json:"name"`
@@ -33,4 +34,10 @@ func (b *Board) GetLabels(extraArgs ...Arguments) (labels []*Label, err error) {
 	path := fmt.Sprintf("boards/%s/labels", b.ID)
 	err = b.client.Get(path, args, &labels)
 	return
+}
+
+// SetClient can be used to override this Label's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (l *Label) SetClient(newClient *Client) {
+	l.client = newClient
 }

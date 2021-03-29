@@ -29,6 +29,15 @@ func TestGetLabelsOnBoard(t *testing.T) {
 	}
 }
 
+func TestLabelSetClient(t *testing.T) {
+	l := Label{}
+	client := testClient()
+	l.SetClient(client)
+	if l.client == nil {
+		t.Error("Expected non-nil Label.client")
+	}
+}
+
 // Utility function to get the standard case Client.GetList() response
 //
 func testLabel(t *testing.T) *Label {

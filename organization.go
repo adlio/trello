@@ -30,7 +30,13 @@ func (c *Client) GetOrganization(orgID string, extraArgs ...Arguments) (organiza
 	path := fmt.Sprintf("organizations/%s", orgID)
 	err = c.Get(path, args, &organization)
 	if organization != nil {
-		organization.client = c
+		organization.SetClient(c)
 	}
 	return
+}
+
+// SetClient can be used to override this Organization's internal connection
+// to the Trello API. Normally, this is set automatically after API calls.
+func (o *Organization) SetClient(newClient *Client) {
+	o.client = newClient
 }

@@ -67,6 +67,12 @@ func (w *Webhook) Delete(extraArgs ...Arguments) error {
 	return w.client.Delete(path, Arguments{}, w)
 }
 
+// SetClient can be used to override this Webhook's internal connection
+// to the Trello API. Normally, this is set automatically after API calls.
+func (w *Webhook) SetClient(newClient *Client) {
+	w.client = newClient
+}
+
 // GetWebhook takes a webhook id and Arguments, GETs the matching Webhook and returns it or an error.
 func (c *Client) GetWebhook(webhookID string, extraArgs ...Arguments) (webhook *Webhook, err error) {
 	args := flattenArguments(extraArgs)

@@ -14,6 +14,7 @@ import (
 // Actions are immutable event traces generated whenever an action occurs in Trello.
 // See https://developers.trello.com/reference/#actions.
 type Action struct {
+	client          *Client
 	ID              string      `json:"id"`
 	IDMemberCreator string      `json:"idMemberCreator"`
 	Type            string      `json:"type"`
@@ -54,6 +55,9 @@ func (b *Board) GetActions(extraArgs ...Arguments) (actions ActionCollection, er
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/actions", b.ID)
 	err = b.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(b.client)
+	}
 	return
 }
 
@@ -62,6 +66,9 @@ func (l *List) GetActions(extraArgs ...Arguments) (actions ActionCollection, err
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s/actions", l.ID)
 	err = l.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(l.client)
+	}
 	return
 }
 
@@ -70,6 +77,9 @@ func (c *Card) GetActions(extraArgs ...Arguments) (actions ActionCollection, err
 	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s/actions", c.ID)
 	err = c.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(c.client)
+	}
 	return
 }
 
@@ -171,6 +181,12 @@ func (a *Action) DidCommentCard() bool {
 	default:
 		return false
 	}
+}
+
+// SetClient can be used to override this Action's internal connection to
+// the Trello API. Normally, this is set automatically after API calls.
+func (a *Action) SetClient(newClient *Client) {
+	a.client = newClient
 }
 
 // ListAfterAction calculates which List the card ended up in after this action

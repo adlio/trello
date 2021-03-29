@@ -113,7 +113,7 @@ func TestListAfterActionOnCopyCard(t *testing.T) {
 	}
 }
 
-func TestAction_DidCommentCard(t *testing.T) {
+func TestActionDidCommentCard(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields *Action
@@ -140,5 +140,14 @@ func TestAction_DidCommentCard(t *testing.T) {
 				t.Errorf("Action.DidCommentCard() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestActionSetClient(t *testing.T) {
+	a := Action{}
+	client := testClient()
+	a.SetClient(client)
+	if a.client == nil {
+		t.Error("Expected non-nil Action.client")
 	}
 }

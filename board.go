@@ -87,6 +87,20 @@ type BackgroundImage struct {
 // weren't created from a Client in the first place.
 func (b *Board) SetClient(newClient *Client) {
 	b.client = newClient
+
+	if b.Organization.client == nil {
+		b.Organization.SetClient(newClient)
+	}
+
+	for _, action := range b.Actions {
+		action.SetClient(newClient)
+	}
+
+	for _, list := range b.Lists {
+		if list.client == nil {
+			list.SetClient(newClient)
+		}
+	}
 }
 
 // CreatedAt returns a board's created-at attribute as time.Time.
@@ -133,7 +147,7 @@ func (c *Client) CreateBoard(board *Board, extraArgs ...Arguments) error {
 
 	err := c.Post(path, args, &board)
 	if err == nil {
-		board.client = c
+		board.SetClient(c)
 	}
 	return err
 }
@@ -179,7 +193,7 @@ func (c *Client) GetBoard(boardID string, extraArgs ...Arguments) (board *Board,
 	path := fmt.Sprintf("boards/%s", boardID)
 	err = c.Get(path, args, &board)
 	if board != nil {
-		board.client = c
+		board.SetClient(c)
 	}
 	return
 }
@@ -190,7 +204,7 @@ func (c *Client) GetMyBoards(extraArgs ...Arguments) (boards []*Board, err error
 	path := "members/me/boards"
 	err = c.Get(path, args, &boards)
 	for i := range boards {
-		boards[i].client = c
+		boards[i].SetClient(c)
 	}
 	return
 }
@@ -201,11 +215,7 @@ func (m *Member) GetBoards(extraArgs ...Arguments) (boards []*Board, err error) 
 	path := fmt.Sprintf("members/%s/boards", m.ID)
 	err = m.client.Get(path, args, &boards)
 	for i := range boards {
-		boards[i].client = m.client
-
-		for j := range boards[i].Lists {
-			boards[i].Lists[j].client = m.client
-		}
+		boards[i].SetClient(m.client)
 	}
 	return
 }
@@ -246,7 +256,7 @@ func (c *Client) PutBoard(board *Board, extraArgs ...Arguments) error {
 
 	err := c.Put(path, args, &board)
 	if err == nil {
-		board.client = c
+		board.SetClient(c)
 	}
 	return err
 }

@@ -47,3 +47,12 @@ func TestGetMembersOnCard(t *testing.T) {
 		t.Errorf("Expected 1 member, got %d", len(members))
 	}
 }
+
+func TestMemberSetClient(t *testing.T) {
+	m := Member{}
+	client := testClient()
+	m.SetClient(client)
+	if m.client == nil {
+		t.Error("Expected non-nil Member.client")
+	}
+}

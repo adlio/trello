@@ -49,6 +49,15 @@ func TestGetExpiringToken(t *testing.T) {
 	}
 }
 
+func TestTokenSetClient(t *testing.T) {
+	tok := Token{}
+	client := testClient()
+	tok.SetClient(client)
+	if tok.client == nil {
+		t.Error("Expected non-nil Member.client")
+	}
+}
+
 func testToken(t *testing.T) *Token {
 	client := testClient()
 	client.BaseURL = mockResponse("tokens", "token.json").URL
