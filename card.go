@@ -95,6 +95,14 @@ type Card struct {
 func (c *Card) SetClient(newClient *Client) {
 	c.client = newClient
 
+	if c.Board != nil && c.Board.client == nil {
+		c.Board.SetClient(newClient)
+	}
+
+	if c.List != nil && c.List.client == nil {
+		c.List.SetClient(newClient)
+	}
+
 	for _, action := range c.Actions {
 		action.SetClient(newClient)
 	}
@@ -268,7 +276,7 @@ func (c *Client) CreateCard(card *Card, extraArgs ...Arguments) error {
 	args.flatten(extraArgs)
 	err := c.Post(path, args, &card)
 	if err == nil {
-		card.client = c
+		card.SetClient(c)
 	}
 	return err
 }
@@ -290,7 +298,7 @@ func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 
 	err := l.client.Post(path, args, &card)
 	if err == nil {
-		card.client = l.client
+		card.SetClient(l.client)
 	} else {
 		err = errors.Wrapf(err, "Error adding card to list %s", l.ID)
 	}
@@ -313,7 +321,7 @@ func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) 
 	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &newCard)
 	if err == nil {
-		newCard.client = c.client
+		newCard.SetClient(c.client)
 	} else {
 		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
 	}
@@ -520,7 +528,7 @@ func (b *Board) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	}
 
 	for i := range cards {
-		cards[i].client = b.client
+		cards[i].SetClient(b.client)
 	}
 
 	return
@@ -532,7 +540,7 @@ func (l *List) GetCards(extraArgs ...Arguments) (cards []*Card, err error) {
 	path := fmt.Sprintf("lists/%s/cards", l.ID)
 	err = l.client.Get(path, args, &cards)
 	for i := range cards {
-		cards[i].client = l.client
+		cards[i].SetClient(l.client)
 	}
 	return
 }

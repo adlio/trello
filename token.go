@@ -36,7 +36,7 @@ func (c *Client) GetToken(tokenID string, extraArgs ...Arguments) (token *Token,
 	path := fmt.Sprintf("tokens/%s", tokenID)
 	err = c.Get(path, args, &token)
 	if token != nil {
-		token.client = c
+		token.SetClient(c)
 	}
 	return
 }

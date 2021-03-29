@@ -87,7 +87,7 @@ func TestDeleteWebhook(t *testing.T) {
 		CallbackURL: "http://example.com/uvbhswuv",
 		Active:      true,
 	}
-	webhook.client = c
+	webhook.SetClient(c)
 
 	err := webhook.Delete(Defaults())
 	if err != nil {
