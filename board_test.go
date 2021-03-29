@@ -232,8 +232,6 @@ func TestBoardUpdate(t *testing.T) {
 	if board.Prefs.CardAging != expected["updated"]["cardAging"] {
 		t.Errorf("Expected board's card aging. Instead got '%s'.", board.Prefs.CardAging)
 	}
-
-	return
 }
 
 func testBoardWithListsAndActions(t *testing.T) *Board {
