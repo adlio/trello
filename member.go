@@ -36,7 +36,7 @@ func (c *Client) GetMember(memberID string, extraArgs ...Arguments) (member *Mem
 
 // GetMyMember returns Member for the user authenticating the API call
 func (c *Client) GetMyMember(args Arguments) (member *Member, err error) {
-	path := fmt.Sprintf("members/me")
+	path := "members/me"
 	err = c.Get(path, args, &member)
 	if err == nil {
 		member.SetClient(c)
