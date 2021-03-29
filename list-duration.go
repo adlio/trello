@@ -68,7 +68,7 @@ func (actions ActionCollection) GetListDurations() (durations []*ListDuration, e
 	}
 
 	if prevList != nil {
-		duration := time.Now().Sub(prevTime)
+		duration := time.Since(prevTime)
 		_, durExists := durs[prevList.ID]
 		if !durExists {
 			durs[prevList.ID] = &ListDuration{ListID: prevList.ID, ListName: prevList.Name, Duration: duration, TimesInList: 1, FirstEntered: prevTime}
