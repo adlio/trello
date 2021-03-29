@@ -36,6 +36,23 @@ func (b *Board) GetLabels(extraArgs ...Arguments) (labels []*Label, err error) {
 	return
 }
 
+// CreateLabel takes a Label and Arguments and POSTs the label to the Board
+// API. Returns an error if the operation fails.
+func (b *Board) CreateLabel(label *Label, extraArgs ...Arguments) error {
+	path := fmt.Sprintf("boards/%s/labels/", b.ID)
+	args := Arguments{
+		"name":    label.Name,
+		"color":   label.Color,
+		"idBoard": b.ID,
+	}
+	args.flatten(extraArgs)
+	err := b.client.Post(path, args, &label)
+	if err == nil {
+		label.SetClient(b.client)
+	}
+	return err
+}
+
 // SetClient can be used to override this Label's internal connection to the
 // Trello API. Normally, this is set automatically after API calls.
 func (l *Label) SetClient(newClient *Client) {
