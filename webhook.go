@@ -50,6 +50,14 @@ type CardWebhookRequest struct {
 	Action *Action
 }
 
+// MemberWebhookRequest is the object sent by Trello to a Webhook for Member-triggered
+// webhooks.
+//
+type MemberWebhookRequest struct {
+	Model  *Member
+	Action *Action
+}
+
 // CreateWebhook takes a Webhook, POSTs it and returns an error object.
 func (c *Client) CreateWebhook(webhook *Webhook) error {
 	path := "webhooks"
@@ -132,6 +140,19 @@ func GetCardWebhookRequest(r *http.Request) (whr *CardWebhookRequest, err error)
 	err = decoder.Decode(&whr)
 	if err != nil {
 		err = errors.Wrapf(err, "GetCardWebhookRequest() failed to decode '%s'.", r.URL)
+	}
+	return
+}
+
+// GetMemberWebhookRequest takes a http.Request and returns the decoded body as BoardWebhookRequest or an error.
+func GetMemberWebhookRequest(r *http.Request) (whr *MemberWebhookRequest, err error) {
+	if r.Method == "HEAD" {
+		return &MemberWebhookRequest{}, nil
+	}
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&whr)
+	if err != nil {
+		err = errors.Wrapf(err, "GetMemberWebhookRequest() failed to decode '%s'.", r.URL)
 	}
 	return
 }
