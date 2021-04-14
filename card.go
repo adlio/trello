@@ -29,6 +29,7 @@ type Card struct {
 	ShortURL         string     `json:"shortUrl"`
 	URL              string     `json:"url"`
 	Desc             string     `json:"desc"`
+	Start            *time.Time `json:"start"`
 	Due              *time.Time `json:"due"`
 	DueComplete      bool       `json:"dueComplete"`
 	Closed           bool       `json:"closed"`
@@ -272,6 +273,9 @@ func (c *Client) CreateCard(card *Card, extraArgs ...Arguments) error {
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)
 	}
+	if card.Start != nil {
+		args["start"] = card.Start.Format(time.RFC3339)
+	}
 
 	args.flatten(extraArgs)
 	err := c.Post(path, args, &card)
@@ -292,6 +296,9 @@ func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 	}
 	if card.Due != nil {
 		args["due"] = card.Due.Format(time.RFC3339)
+	}
+	if card.Start != nil {
+		args["start"] = card.Start.Format(time.RFC3339)
 	}
 
 	args.flatten(extraArgs)
