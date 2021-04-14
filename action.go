@@ -14,6 +14,7 @@ import (
 // Actions are immutable event traces generated whenever an action occurs in Trello.
 // See https://developers.trello.com/reference/#actions.
 type Action struct {
+	client          *Client
 	ID              string      `json:"id"`
 	IDMemberCreator string      `json:"idMemberCreator"`
 	Type            string      `json:"type"`
@@ -50,23 +51,35 @@ type ActionDataCard struct {
 }
 
 // GetActions make a GET call for a board's actions
-func (b *Board) GetActions(args Arguments) (actions ActionCollection, err error) {
+func (b *Board) GetActions(extraArgs ...Arguments) (actions ActionCollection, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("boards/%s/actions", b.ID)
 	err = b.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(b.client)
+	}
 	return
 }
 
 // GetActions makes a GET call for a list's actions
-func (l *List) GetActions(args Arguments) (actions ActionCollection, err error) {
+func (l *List) GetActions(extraArgs ...Arguments) (actions ActionCollection, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("lists/%s/actions", l.ID)
 	err = l.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(l.client)
+	}
 	return
 }
 
 // GetActions makes a GET for a card's actions
-func (c *Card) GetActions(args Arguments) (actions ActionCollection, err error) {
+func (c *Card) GetActions(extraArgs ...Arguments) (actions ActionCollection, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("cards/%s/actions", c.ID)
 	err = c.client.Get(path, args, &actions)
+	for _, action := range actions {
+		action.SetClient(c.client)
+	}
 	return
 }
 
@@ -168,6 +181,12 @@ func (a *Action) DidCommentCard() bool {
 	default:
 		return false
 	}
+}
+
+// SetClient can be used to override this Action's internal connection to
+// the Trello API. Normally, this is set automatically after API calls.
+func (a *Action) SetClient(newClient *Client) {
+	a.client = newClient
 }
 
 // ListAfterAction calculates which List the card ended up in after this action

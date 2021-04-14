@@ -5,26 +5,31 @@
 
 package trello
 
+import "fmt"
+
 // Checklist represents Trello card's checklists.
 // A card can have one zero or more checklists.
 // https://developers.trello.com/reference/#checklist-object
 type Checklist struct {
+	client     *Client
 	ID         string      `json:"id"`
 	Name       string      `json:"name"`
 	IDBoard    string      `json:"idBoard,omitempty"`
 	IDCard     string      `json:"idCard,omitempty"`
+	Card       *Card       `json:"-"`
 	Pos        float64     `json:"pos,omitempty"`
 	CheckItems []CheckItem `json:"checkItems,omitempty"`
-	client     *Client
 }
 
 // CheckItem is a nested resource representing an item in Checklist.
 type CheckItem struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	State       string  `json:"state"`
-	IDChecklist string  `json:"idChecklist,omitempty"`
-	Pos         float64 `json:"pos,omitempty"`
+	client      *Client
+	ID          string     `json:"id"`
+	Name        string     `json:"name"`
+	State       string     `json:"state"`
+	IDChecklist string     `json:"idChecklist,omitempty"`
+	Checklist   *Checklist `json:"-"`
+	Pos         float64    `json:"pos,omitempty"`
 }
 
 // CheckItemState represents a CheckItem when it appears in CheckItemStates on a Card.
@@ -38,22 +43,21 @@ type CheckItemState struct {
 // Attributes currently known to be unsupported: idChecklistSource.
 //
 // API Docs: https://developers.trello.com/reference#cardsidchecklists-1
-func (c *Client) CreateChecklist(card *Card, name string, extraArgs Arguments) (checklist *Checklist, err error) {
+func (c *Client) CreateChecklist(card *Card, name string, extraArgs ...Arguments) (checklist *Checklist, err error) {
 	path := "cards/" + card.ID + "/checklists"
 	args := Arguments{
 		"name": name,
 		"pos":  "bottom",
 	}
 
-	if pos, ok := extraArgs["pos"]; ok {
-		args["pos"] = pos
-	}
+	args.flatten(extraArgs)
 
 	checklist = &Checklist{}
 	err = c.Post(path, args, &checklist)
 	if err == nil {
-		checklist.client = c
+		checklist.SetClient(c)
 		checklist.IDCard = card.ID
+		checklist.Card = card
 		card.Checklists = append(card.Checklists, checklist)
 	}
 	return
@@ -64,8 +68,9 @@ func (c *Client) CreateChecklist(card *Card, name string, extraArgs Arguments) (
 // Attributes currently known to be unsupported: checked.
 //
 // API Docs: https://developers.trello.com/reference#checklistsidcheckitems
-func (cl *Checklist) CreateCheckItem(name string, extraArgs Arguments) (item *CheckItem, err error) {
-	return cl.client.CreateCheckItem(cl, name, extraArgs)
+func (cl *Checklist) CreateCheckItem(name string, extraArgs ...Arguments) (item *CheckItem, err error) {
+	args := flattenArguments(extraArgs)
+	return cl.client.CreateCheckItem(cl, name, args)
 }
 
 // CreateCheckItem creates a checkitem inside the given checklist.
@@ -73,7 +78,7 @@ func (cl *Checklist) CreateCheckItem(name string, extraArgs Arguments) (item *Ch
 // Attributes currently known to be unsupported: checked.
 //
 // API Docs: https://developers.trello.com/reference#checklistsidcheckitems
-func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs Arguments) (item *CheckItem, err error) {
+func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs ...Arguments) (item *CheckItem, err error) {
 	path := "checklists/" + checklist.ID + "/checkItems"
 	args := Arguments{
 		"name":    name,
@@ -81,12 +86,7 @@ func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs Ar
 		"checked": "false",
 	}
 
-	if pos, ok := extraArgs["pos"]; ok {
-		args["pos"] = pos
-	}
-	if checked, ok := extraArgs["checked"]; ok {
-		args["checked"] = checked
-	}
+	args.flatten(extraArgs)
 
 	item = &CheckItem{}
 	err = c.Post(path, args, item)
@@ -94,4 +94,32 @@ func (c *Client) CreateCheckItem(checklist *Checklist, name string, extraArgs Ar
 		checklist.CheckItems = append(checklist.CheckItems, *item)
 	}
 	return
+}
+
+// GetChecklist receives a checklist id and Arguments and returns the checklist if found
+// with the credentials given for the receiver Client. Returns an error
+// otherwise.
+func (c *Client) GetChecklist(checklistID string, args Arguments) (checklist *Checklist, err error) {
+	path := fmt.Sprintf("checklists/%s", checklistID)
+	err = c.Get(path, args, &checklist)
+	if checklist != nil {
+		checklist.SetClient(c)
+	}
+	return checklist, err
+}
+
+// SetClient can be used to override this Checklist's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (cl *Checklist) SetClient(newClient *Client) {
+	cl.client = newClient
+	for _, checkitem := range cl.CheckItems {
+		checkitem.SetClient(newClient)
+		checkitem.Checklist = cl
+	}
+}
+
+// SetClient can be used to override this CheckItem's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (ci *CheckItem) SetClient(newClient *Client) {
+	ci.client = newClient
 }

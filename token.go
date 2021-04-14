@@ -31,11 +31,18 @@ type Permission struct {
 }
 
 // GetToken takes a token id and Arguments and GETs and returns the Token or an error.
-func (c *Client) GetToken(tokenID string, args Arguments) (token *Token, err error) {
+func (c *Client) GetToken(tokenID string, extraArgs ...Arguments) (token *Token, err error) {
+	args := flattenArguments(extraArgs)
 	path := fmt.Sprintf("tokens/%s", tokenID)
 	err = c.Get(path, args, &token)
 	if token != nil {
-		token.client = c
+		token.SetClient(c)
 	}
 	return
+}
+
+// SetClient can be used to override this Token's internal connection to the
+// Trello API. Normally, this is set automatically after API calls.
+func (t *Token) SetClient(newClient *Client) {
+	t.client = newClient
 }

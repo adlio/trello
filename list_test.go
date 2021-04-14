@@ -173,3 +173,12 @@ func TestUpdateList(t *testing.T) {
 		t.Errorf("Expected the returned list to pick up a position. Instead got '%v'.", list.Pos)
 	}
 }
+
+func TestListSetClient(t *testing.T) {
+	list := List{}
+	client := testClient()
+	list.SetClient(client)
+	if list.client == nil {
+		t.Error("Expected non-nil list.client")
+	}
+}

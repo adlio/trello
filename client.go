@@ -40,7 +40,8 @@ type logger interface {
 // NewClient is a constructor for the Client. It takes the key and token credentials
 // of a Trello member to authenticate and authorise requests with.
 func NewClient(key, token string) *Client {
-	limit := rate.Every(time.Second / 8)
+	limit := rate.Every(time.Second / 8) // Actually 10/second, but we're extra cautious
+
 	return &Client{
 		Client:   http.DefaultClient,
 		BaseURL:  DefaultBaseURL,
