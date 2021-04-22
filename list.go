@@ -106,3 +106,13 @@ func (l *List) Update(extraArgs ...Arguments) error {
 	path := fmt.Sprintf("lists/%s", l.ID)
 	return l.client.Put(path, args, l)
 }
+
+// Archive archives the list.
+func (l *List) Archive() error {
+	return l.Update(Arguments{"closed": "true"})
+}
+
+// Unarchive unarchives the list.
+func (l *List) Unarchive() error {
+	return l.Update(Arguments{"closed": "false"})
+}
