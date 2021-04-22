@@ -6,6 +6,8 @@
 package trello
 
 import (
+	"fmt"
+	"net/http"
 	"testing"
 	"time"
 )
@@ -117,16 +119,31 @@ func TestBoardContainsCopyOfCard(t *testing.T) {
 
 func TestCreateCard(t *testing.T) {
 	c := testClient()
-	server := mockResponse("cards", "card-create.json")
+	server := mockResponseWithRequestValidator(t, func(r *http.Request) error {
+		due := r.URL.Query().Get("due")
+
+		if _, err := time.Parse(time.RFC3339, due); err != nil {
+			return fmt.Errorf("Expected due to be in RFC3339 format, but value was '%v'", due)
+		}
+
+		start := r.URL.Query().Get("start")
+
+		if _, err := time.Parse(time.RFC3339, start); err != nil {
+			return fmt.Errorf("Expected start to be in RFC3339 format, but value was '%v'", start)
+		}
+		return nil
+	}, "cards", "card-create.json")
 	defer server.Close()
 
 	c.BaseURL = server.URL
 	dueDate := time.Now().AddDate(0, 0, 3)
+	startDate := time.Now().AddDate(0, 0, 2)
 
 	card := Card{
 		Name:     "Test Card Create",
 		Desc:     "What its about",
 		Due:      &dueDate,
+		Start:    &startDate,
 		IDList:   "57f03a06b5ff33a63c8be316",
 		IDLabels: []string{"label1", "label2"},
 	}
@@ -156,15 +173,30 @@ func TestCreateCard(t *testing.T) {
 func TestAddCardToList(t *testing.T) {
 	l := testList(t)
 
-	server := mockResponse("cards", "card-posted-to-bottom-of-list.json")
+	server := mockResponseWithRequestValidator(t, func(r *http.Request) error {
+		due := r.URL.Query().Get("due")
+
+		if _, err := time.Parse(time.RFC3339, due); err != nil {
+			return fmt.Errorf("Expected due to be in RFC3339 format, but value was '%v'", due)
+		}
+
+		start := r.URL.Query().Get("start")
+
+		if _, err := time.Parse(time.RFC3339, start); err != nil {
+			return fmt.Errorf("Expected start to be in RFC3339 format, but value was '%v'", start)
+		}
+		return nil
+	}, "cards", "card-posted-to-bottom-of-list.json")
 	defer server.Close()
 	l.client.BaseURL = server.URL
-	dueDate := time.Now().AddDate(0, 0, 1)
+	dueDate := time.Now().AddDate(0, 0, 2)
+	startDate := time.Now().AddDate(0, 0, 1)
 
 	card := Card{
 		Name:     "Test Card POSTed to List",
 		Desc:     "This is its description.",
 		Due:      &dueDate,
+		Start:    &startDate,
 		IDLabels: []string{"label1", "label2"},
 	}
 

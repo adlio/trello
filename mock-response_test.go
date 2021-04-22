@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"testing"
 )
 
 func mockResponse(paths ...string) *httptest.Server {
@@ -26,6 +27,25 @@ func mockResponse(paths ...string) *httptest.Server {
 		log.Fatal(err)
 	}
 	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		rw.Write(mockData)
+	}))
+}
+
+func mockResponseWithRequestValidator(t *testing.T, validatorFn func(r *http.Request) error, paths ...string) *httptest.Server {
+	parts := []string{".", "testdata"}
+	filename := filepath.Join(append(parts, paths...)...)
+
+	mockData, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if err := validatorFn(r); err != nil {
+			t.Errorf("Request validation failed: %v", err)
+			t.FailNow()
+			return
+		}
+
 		rw.Write(mockData)
 	}))
 }
