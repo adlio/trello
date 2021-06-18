@@ -6,10 +6,13 @@
 package trello
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"time"
 
@@ -159,6 +162,53 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 		return errors.Wrapf(err, "Invalid POST request %s", url)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	return c.do(req, url, target)
+}
+
+// PostWithBody takes a path, Arguments, and a target interface (e.g. Board or Card).
+// It runs a POST request on the Trello API endpoint with the path and uses
+// the Arguments as URL parameters, takes file io.Reader and put to multipart body.
+// Then it returns either the target interface
+// updated from the response or an error.
+func (c *Client) PostWithBody(path string, args Arguments, target interface{}, filename string, file io.Reader) error {
+
+	// Trello prohibits more than 10 seconds/second per token
+	c.Throttle()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", filename)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(part, file)
+	if err != nil {
+		return err
+	}
+	err = writer.Close()
+	if err != nil {
+		return err
+	}
+
+	params := args.ToURLValues()
+	c.log("[trello] POST %s?%s", path, params.Encode())
+
+	if c.Key != "" {
+		params.Set("key", c.Key)
+	}
+
+	if c.Token != "" {
+		params.Set("token", c.Token)
+	}
+
+	url := fmt.Sprintf("%s/%s", c.BaseURL, path)
+	urlWithParams := fmt.Sprintf("%s?%s", url, params.Encode())
+
+	req, err := http.NewRequest("POST", urlWithParams, body)
+	if err != nil {
+		return errors.Wrapf(err, "Invalid POST request %s", url)
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return c.do(req, url, target)
 }
 
