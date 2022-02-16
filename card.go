@@ -14,6 +14,19 @@ import (
 	"github.com/pkg/errors"
 )
 
+type CardBadges struct {
+	Votes              int        `json:"votes"`
+	ViewingMemberVoted bool       `json:"viewingMemberVoted"`
+	Subscribed         bool       `json:"subscribed"`
+	Fogbugz            string     `json:"fogbugz,omitempty"`
+	CheckItems         int        `json:"checkItems"`
+	CheckItemsChecked  int        `json:"checkItemsChecked"`
+	Comments           int        `json:"comments"`
+	Attachments        int        `json:"attachments"`
+	Description        bool       `json:"description"`
+	Due                *time.Time `json:"due,omitempty"`
+}
+
 // Card represents the card resource.
 // https://developers.trello.com/reference/#card-object
 type Card struct {
@@ -44,18 +57,7 @@ type Card struct {
 	IDList string `json:"idList"`
 
 	// Badges
-	Badges struct {
-		Votes              int        `json:"votes"`
-		ViewingMemberVoted bool       `json:"viewingMemberVoted"`
-		Subscribed         bool       `json:"subscribed"`
-		Fogbugz            string     `json:"fogbugz,omitempty"`
-		CheckItems         int        `json:"checkItems"`
-		CheckItemsChecked  int        `json:"checkItemsChecked"`
-		Comments           int        `json:"comments"`
-		Attachments        int        `json:"attachments"`
-		Description        bool       `json:"description"`
-		Due                *time.Time `json:"due,omitempty"`
-	} `json:"badges"`
+	Badges CardBadges `json:"badges"`
 
 	// Actions
 	Actions ActionCollection `json:"actions,omitempty"`
