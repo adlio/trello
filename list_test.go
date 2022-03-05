@@ -174,6 +174,26 @@ func TestUpdateList(t *testing.T) {
 	}
 }
 
+func TestArchiveUnarchiveList(t *testing.T) {
+	l := testList(t)
+
+	server := mockResponse("lists", "list-archived.json")
+	l.client.BaseURL = server.URL
+	l.Archive()
+	if l.Closed == false {
+		t.Errorf("List should have been archived.")
+	}
+	server.Close()
+
+	server = mockResponse("lists", "list-unarchived.json")
+	l.client.BaseURL = server.URL
+	l.Unarchive()
+	if l.Closed == true {
+		t.Errorf("List should have been unarchived.")
+	}
+	server.Close()
+}
+
 func TestListSetClient(t *testing.T) {
 	list := List{}
 	client := testClient()
