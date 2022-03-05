@@ -1,118 +1,25 @@
 package trello
 
 import (
-	"database/sql/driver"
-	"encoding/json"
 	"fmt"
-	"strconv"
-	"time"
 )
 
 // CustomFieldItem represents the custom field items of Trello a trello card.
 type CustomFieldItem struct {
-	ID            string           `json:"id,omitempty"`
-	Value         CustomFieldValue `json:"value,omitempty"`
-	IDValue       string           `json:"idValue,omitempty"`
-	IDCustomField string           `json:"idCustomField,omitempty"`
-	IDModel       string           `json:"idModel,omitempty"`
-	IDModelType   string           `json:"modelType,omitempty"`
+	ID            string            `json:"id,omitempty"`
+	Value         *CustomFieldValue `json:"value,omitempty"`
+	IDValue       string            `json:"idValue,omitempty"`
+	IDCustomField string            `json:"idCustomField,omitempty"`
+	IDModel       string            `json:"idModel,omitempty"`
+	IDModelType   string            `json:"modelType,omitempty"`
 }
 
-// CustomFieldValue represents the custom field value struct
+// CustomFieldValue represents value of the custom field
 type CustomFieldValue struct {
-	val interface{}
-}
-
-type cfval struct {
 	Text    string `json:"text,omitempty"`
 	Number  string `json:"number,omitempty"`
 	Date    string `json:"date,omitempty"`
 	Checked string `json:"checked,omitempty"`
-}
-
-// NewCustomFieldValue the custom field constructor
-func NewCustomFieldValue(val interface{}) CustomFieldValue {
-	return CustomFieldValue{val: val}
-}
-
-const timeFmt = "2006-01-02T15:04:05Z"
-
-// Get the custom field value getter
-func (v CustomFieldValue) Get() interface{} {
-	return v.val
-}
-
-// String the custom field String method
-func (v CustomFieldValue) String() string {
-	return fmt.Sprintf("%s", v.val)
-}
-
-// MarshalJSON the custom field marchaller
-func (v CustomFieldValue) MarshalJSON() ([]byte, error) {
-	val := v.val
-
-switchVal:
-	switch v := val.(type) {
-	case driver.Valuer:
-		var err error
-		val, err = v.Value()
-		if err != nil {
-			return nil, err
-		}
-		goto switchVal
-	case string:
-		return json.Marshal(cfval{Text: v})
-	case int, int64:
-		return json.Marshal(cfval{Number: fmt.Sprintf("%d", v)})
-	case float64:
-		return json.Marshal(cfval{Number: fmt.Sprintf("%f", v)})
-	case bool:
-		if v {
-			return json.Marshal(cfval{Checked: "true"})
-		}
-		return json.Marshal(cfval{Checked: "false"})
-	case time.Time:
-		return json.Marshal(cfval{Date: v.Format(timeFmt)})
-	default:
-		return nil, fmt.Errorf("unsupported type")
-	}
-}
-
-// UnmarshalJSON the custom field umarshaller
-func (v *CustomFieldValue) UnmarshalJSON(b []byte) error {
-	cfval := cfval{}
-	err := json.Unmarshal(b, &cfval)
-	if err != nil {
-		return err
-	}
-	if cfval.Text != "" {
-		v.val = cfval.Text
-	}
-	if cfval.Date != "" {
-		v.val, err = time.Parse(timeFmt, cfval.Date)
-		if err != nil {
-			return err
-		}
-	}
-	if cfval.Checked != "" {
-		v.val = cfval.Checked == "true"
-	}
-	if cfval.Number != "" {
-		v.val, err = strconv.Atoi(cfval.Number)
-		if err != nil {
-			v.val, err = strconv.ParseFloat(cfval.Number, 64)
-			if err != nil {
-				v.val, err = strconv.ParseFloat(cfval.Number, 32)
-				if err != nil {
-					v.val, err = strconv.ParseInt(cfval.Number, 10, 64)
-					if err != nil {
-						return fmt.Errorf("cannot convert %s to number", cfval.Number)
-					}
-				}
-			}
-		}
-	}
-	return nil
 }
 
 // CustomField represents Trello's custom fields: "extra bits of structured data

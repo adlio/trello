@@ -6,6 +6,7 @@
 package trello
 
 import (
+	"reflect"
 	"testing"
 	"time"
 )
@@ -81,13 +82,33 @@ func TestCardsCustomFields(t *testing.T) {
 	}
 
 	vf1, ok := fields["Field1"]
-	if !ok || vf1 != "F1 1st opt" {
-		t.Errorf("Expected Field1 to be 'F1 1st opt' but it was %v", vf1)
+	expected1 := &CustomFieldValue{Text: "F1 1st opt"}
+	if !ok || !reflect.DeepEqual(vf1, expected1) {
+		t.Errorf("\nExpected Field1:\n%#v\nbut it was:\n%#v", vf1, expected1)
 	}
 
 	vf2, ok := fields["Field2"]
-	if !ok || vf2 != "F2 2nd opt" {
-		t.Errorf("Expected Field1 to be 'F2 2nd opt' but it was %v", vf2)
+	expected2 := &CustomFieldValue{Text: "F2 2nd opt"}
+	if !ok || !reflect.DeepEqual(vf2.Text, expected2.Text) {
+		t.Errorf("\nExpected Field2:\n%#v\nbut it was:\n%#v", vf2, expected2)
+	}
+
+}
+
+func TestRemoveIDCustomField(t *testing.T) {
+	card := testCard(t)
+	card.client.BaseURL = mockResponse("customFields", "custom-fields-remove.json").URL
+	customFieldItem := &CustomFieldItem{
+		Value: &CustomFieldValue{
+			Text: "Text that should be deleted",
+		},
+	}
+	err := card.RemoveIDCustomField("customFieldDummyID", customFieldItem)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if customFieldItem.Value != nil {
+		t.Fatalf("Custom field value should be nil, but %+v", customFieldItem)
 	}
 }
 
