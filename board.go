@@ -10,55 +10,59 @@ import (
 	"time"
 )
 
+type BoardPrefs struct {
+	PermissionLevel       string            `json:"permissionLevel"`
+	Voting                string            `json:"voting"`
+	Comments              string            `json:"comments"`
+	Invitations           string            `json:"invitations"`
+	SelfJoin              bool              `json:"selfjoin"`
+	CardCovers            bool              `json:"cardCovers"`
+	CardAging             string            `json:"cardAging"`
+	CalendarFeedEnabled   bool              `json:"calendarFeedEnabled"`
+	Background            string            `json:"background"`
+	BackgroundColor       string            `json:"backgroundColor"`
+	BackgroundImage       string            `json:"backgroundImage"`
+	BackgroundImageScaled []BackgroundImage `json:"backgroundImageScaled"`
+	BackgroundTile        bool              `json:"backgroundTile"`
+	BackgroundBrightness  string            `json:"backgroundBrightness"`
+	CanBePublic           bool              `json:"canBePublic"`
+	CanBeOrg              bool              `json:"canBeOrg"`
+	CanBePrivate          bool              `json:"canBePrivate"`
+	CanInvite             bool              `json:"canInvite"`
+}
+
+type BoardLabelNames struct {
+	Black  string `json:"black,omitempty"`
+	Blue   string `json:"blue,omitempty"`
+	Green  string `json:"green,omitempty"`
+	Lime   string `json:"lime,omitempty"`
+	Orange string `json:"orange,omitempty"`
+	Pink   string `json:"pink,omitempty"`
+	Purple string `json:"purple,omitempty"`
+	Red    string `json:"red,omitempty"`
+	Sky    string `json:"sky,omitempty"`
+	Yellow string `json:"yellow,omitempty"`
+}
+
 // Board represents a Trello Board.
 // https://developers.trello.com/reference/#boardsid
 type Board struct {
 	client         *Client
-	ID             string `json:"id"`
-	Name           string `json:"name"`
-	Desc           string `json:"desc"`
-	Closed         bool   `json:"closed"`
-	IDOrganization string `json:"idOrganization"`
-	Pinned         bool   `json:"pinned"`
-	Starred        bool   `json:"starred"`
-	URL            string `json:"url"`
-	ShortURL       string `json:"shortUrl"`
-	Prefs          struct {
-		PermissionLevel       string            `json:"permissionLevel"`
-		Voting                string            `json:"voting"`
-		Comments              string            `json:"comments"`
-		Invitations           string            `json:"invitations"`
-		SelfJoin              bool              `json:"selfjoin"`
-		CardCovers            bool              `json:"cardCovers"`
-		CardAging             string            `json:"cardAging"`
-		CalendarFeedEnabled   bool              `json:"calendarFeedEnabled"`
-		Background            string            `json:"background"`
-		BackgroundColor       string            `json:"backgroundColor"`
-		BackgroundImage       string            `json:"backgroundImage"`
-		BackgroundImageScaled []BackgroundImage `json:"backgroundImageScaled"`
-		BackgroundTile        bool              `json:"backgroundTile"`
-		BackgroundBrightness  string            `json:"backgroundBrightness"`
-		CanBePublic           bool              `json:"canBePublic"`
-		CanBeOrg              bool              `json:"canBeOrg"`
-		CanBePrivate          bool              `json:"canBePrivate"`
-		CanInvite             bool              `json:"canInvite"`
-	} `json:"prefs"`
-	Subscribed bool `json:"subscribed"`
-	LabelNames struct {
-		Black  string `json:"black,omitempty"`
-		Blue   string `json:"blue,omitempty"`
-		Green  string `json:"green,omitempty"`
-		Lime   string `json:"lime,omitempty"`
-		Orange string `json:"orange,omitempty"`
-		Pink   string `json:"pink,omitempty"`
-		Purple string `json:"purple,omitempty"`
-		Red    string `json:"red,omitempty"`
-		Sky    string `json:"sky,omitempty"`
-		Yellow string `json:"yellow,omitempty"`
-	} `json:"labelNames"`
-	Lists        []*List      `json:"lists"`
-	Actions      []*Action    `json:"actions"`
-	Organization Organization `json:"organization"`
+	ID             string          `json:"id"`
+	Name           string          `json:"name"`
+	Desc           string          `json:"desc"`
+	Closed         bool            `json:"closed"`
+	IDOrganization string          `json:"idOrganization"`
+	Pinned         bool            `json:"pinned"`
+	Starred        bool            `json:"starred"`
+	URL            string          `json:"url"`
+	ShortURL       string          `json:"shortUrl"`
+	Prefs          BoardPrefs      `json:"prefs"`
+	Subscribed     bool            `json:"subscribed"`
+	LabelNames     BoardLabelNames `json:"labelNames"`
+	Lists          []*List         `json:"lists"`
+	Actions        []*Action       `json:"actions"`
+	Organization   Organization    `json:"organization"`
 }
 
 // NewBoard is a constructor that sets the default values
