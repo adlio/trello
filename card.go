@@ -7,6 +7,7 @@ package trello
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 	"time"
@@ -354,6 +355,21 @@ func (c *Card) AddURLAttachment(attachment *Attachment, extraArgs ...Arguments) 
 	}
 	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &attachment)
+	if err != nil {
+		err = errors.Wrapf(err, "Error adding attachment to card %s", c.ID)
+	}
+	return err
+
+}
+
+// AddFileAttachment takes an Attachment, filename with io.Reader and adds it to the card.
+func (c *Card) AddFileAttachment(attachment *Attachment, filename string, file io.Reader, extraArgs ...Arguments) error {
+	path := fmt.Sprintf("cards/%s/attachments", c.ID)
+	args := Arguments{
+		"name": attachment.Name,
+	}
+	args.flatten(extraArgs)
+	err := c.client.PostWithBody(path, args, &attachment, filename, file)
 	if err != nil {
 		err = errors.Wrapf(err, "Error adding attachment to card %s", c.ID)
 	}
