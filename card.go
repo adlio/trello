@@ -369,6 +369,13 @@ func (c *Card) AddURLAttachment(attachment *Attachment, extraArgs ...Arguments) 
 
 }
 
+// GetAttachments returns all attachments for a card
+func (c *Card) GetAttachments(args Arguments) (attachments []*Attachment, err error) {
+	path := fmt.Sprintf("cards/%s/attachments", c.ID)
+	c.client.Get(path, args, &attachments)
+	return
+}
+
 // AddFileAttachment takes an Attachment, filename with io.Reader and adds it to the card.
 func (c *Card) AddFileAttachment(attachment *Attachment, filename string, file io.Reader, extraArgs ...Arguments) error {
 	path := fmt.Sprintf("cards/%s/attachments", c.ID)
@@ -381,7 +388,6 @@ func (c *Card) AddFileAttachment(attachment *Attachment, filename string, file i
 		err = errors.Wrapf(err, "Error adding attachment to card %s", c.ID)
 	}
 	return err
-
 }
 
 // GetParentCard retrieves the originating Card if the Card was created
