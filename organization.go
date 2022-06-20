@@ -35,6 +35,18 @@ func (c *Client) GetOrganization(orgID string, extraArgs ...Arguments) (organiza
 	return
 }
 
+// GetBoardsInOrganization takes an organization id and Arguments and either GET returns
+// a slice of boards within that organization, or an error.
+func (c *Client) GetBoardsInOrganization(orgID string, extraArgs ...Arguments) (boards []*Board, err error) {
+	args := flattenArguments(extraArgs)
+	path := fmt.Sprintf("organizations/%s/boards", orgID)
+	err = c.Get(path, args, &boards)
+	if err != nil {
+		return nil, err
+	}
+	return
+}
+
 // SetClient can be used to override this Organization's internal connection
 // to the Trello API. Normally, this is set automatically after API calls.
 func (o *Organization) SetClient(newClient *Client) {
