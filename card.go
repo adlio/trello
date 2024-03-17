@@ -28,6 +28,26 @@ type CardBadges struct {
 	Due                *time.Time `json:"due,omitempty"`
 }
 
+type CardCoverScaledVariant struct {
+	ID     string `json:"id"`
+	Scaled bool   `json:"scaled"`
+	URL    string `json:"url"`
+	Bytes  int    `json:"bytes"`
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+}
+
+type CardCover struct {
+	IDAttachment         string                    `json:"idAttachment"`
+	Color                string                    `json:"color"`
+	IDUploadedBackground string                    `json:"idUploadedBackground"`
+	Size                 string                    `json:"size"`
+	Brightness           string                    `json:"brightness"`
+	Scaled               []*CardCoverScaledVariant `json:"scaled"`
+	EdgeColor            string                    `json:"edgeColor"`
+	SharedSourceURL      string                    `json:"sharedSourceUrl"`
+}
+
 // Card represents the card resource.
 // https://developers.trello.com/reference/#card-object
 type Card struct {
@@ -79,6 +99,8 @@ type Card struct {
 	ManualCoverAttachment bool          `json:"manualCoverAttachment"`
 	Attachments           []*Attachment `json:"attachments,omitempty"`
 
+	Cover *CardCover `json:"cover"`
+
 	// Labels
 	IDLabels []string `json:"idLabels,omitempty"`
 	Labels   []*Label `json:"labels,omitempty"`
@@ -95,7 +117,6 @@ type Card struct {
 // where a Card which wasn't created from an API call to be used as the basis
 // for other API calls. All nested structs (Actions, Attachments, Checklists,
 // etc) also have their client properties updated.
-//
 func (c *Card) SetClient(newClient *Client) {
 	c.client = newClient
 
@@ -318,9 +339,9 @@ func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 // CopyToList takes a list id and Arguments and returns the matching Card.
 // The following Arguments are supported.
 //
-//	Arguments["keepFromSource"] = "all"
-//  Arguments["keepFromSource"] = "none"
-//	Arguments["keepFromSource"] = "attachments,checklists,comments"
+// Arguments["keepFromSource"] = "all"
+// Arguments["keepFromSource"] = "none"
+// Arguments["keepFromSource"] = "attachments,checklists,comments"
 func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) {
 	args := Arguments{
 		"idList":       listID,
