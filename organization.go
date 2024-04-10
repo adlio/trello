@@ -13,14 +13,14 @@ import (
 // https://developers.trello.com/reference/#organizations
 type Organization struct {
 	client      *Client
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	DisplayName string   `json:"displayName"`
-	Desc        string   `json:"desc"`
-	URL         string   `json:"url"`
-	Website     string   `json:"website"`
-	Products    []string `json:"products"`
-	PowerUps    []string `json:"powerUps"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
+	Desc        string `json:"desc"`
+	URL         string `json:"url"`
+	Website     string `json:"website"`
+	Products    []int  `json:"products"`
+	PowerUps    []int  `json:"powerUps"`
 }
 
 // GetOrganization takes an organization id and Arguments and either
