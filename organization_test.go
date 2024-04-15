@@ -14,6 +14,18 @@ func TestGetOrganization(t *testing.T) {
 	if organization.DisplayName != "Culture Foundry" {
 		t.Errorf("Expected name 'Culture Foundry'. Got '%s'.", organization.DisplayName)
 	}
+	if len(organization.PowerUps) != 1 {
+		t.Errorf("Expected PowerUps to have length of 1 but was %d", len(organization.PowerUps))
+	}
+	if organization.PowerUps[0] != 42 {
+		t.Errorf("Expected first PowerUp to be %d but was %d", 42, organization.PowerUps[0])
+	}
+	if len(organization.Products) != 1 {
+		t.Errorf("Expected Products to have length of 1 but was %d", len(organization.Products))
+	}
+	if organization.Products[0] != 110 {
+		t.Errorf("Expected first Product to be %d but was %d", 110, organization.Products[0])
+	}
 }
 
 func TestGetBoardsInOrganization(t *testing.T) {
