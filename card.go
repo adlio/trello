@@ -178,10 +178,10 @@ func (c *Card) CustomFields(boardCustomFields []*CustomField) map[string]interfa
 				map2, ok := bcfOptionsMap[cf.IDCustomField]
 				if !ok {
 					map2 = map[string]interface{}{}
-					bcfOptionsMap[bcf.ID] = map2
+					bcfOptionsMap[cf.IDCustomField] = map2
 				}
 
-				bcfOptionsMap[bcf.ID][cf.ID] = cf.Value.Text
+				bcfOptionsMap[cf.IDCustomField][cf.ID] = cf.Value.Text
 			}
 		}
 
@@ -393,7 +393,7 @@ func (c *Card) AddURLAttachment(attachment *Attachment, extraArgs ...Arguments) 
 // GetAttachments returns all attachments for a card
 func (c *Card) GetAttachments(args Arguments) (attachments []*Attachment, err error) {
 	path := fmt.Sprintf("cards/%s/attachments", c.ID)
-	c.client.Get(path, args, &attachments)
+	err = c.client.Get(path, args, &attachments)
 	return
 }
 

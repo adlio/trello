@@ -81,6 +81,9 @@ func (actions ActionCollection) GetMemberDurations() (durations []*MemberDuratio
 	durs := make(map[string]*MemberDuration)
 	for _, action := range actions {
 		if action.DidChangeCardMembership() {
+			if action.Member == nil {
+				continue
+			}
 			_, durExists := durs[action.Member.ID]
 			if !durExists {
 				switch action.Type {
@@ -90,7 +93,10 @@ func (actions ActionCollection) GetMemberDurations() (durations []*MemberDuratio
 				case "removeMemberFromCard":
 					// Surprisingly, this is possible. If a card was copied, and members were preserved, those
 					// members exist on the card without a corresponding addMemberToCard action.
-					t, _ := IDToTime(action.Data.Card.ID)
+					var t time.Time
+					if action.Data != nil && action.Data.Card != nil {
+						t, _ = IDToTime(action.Data.Card.ID)
+					}
 					durs[action.Member.ID] = &MemberDuration{MemberID: action.Member.ID, MemberName: action.Member.FullName, lastAdded: t}
 					durs[action.Member.ID].removeAsOf(action.Date)
 				}
