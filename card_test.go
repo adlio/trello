@@ -337,7 +337,6 @@ func TestCardSetClient(t *testing.T) {
 }
 
 // Utility function to get a simple response from Client.GetCard()
-//
 func testCard(t *testing.T) *Card {
 	c := testClient()
 	server := NewMockResponder(t, "cards", "card-api-example.json")

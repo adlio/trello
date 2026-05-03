@@ -138,7 +138,6 @@ func TestCheckItemSetClient(t *testing.T) {
 }
 
 // Utility function to get a simple response from Client.GetChecklist()
-//
 func testChecklist(t *testing.T) *Checklist {
 	c := testClient()
 	c.BaseURL = mockResponse("checklists", "checklist-api-example.json").URL

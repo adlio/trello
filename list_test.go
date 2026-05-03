@@ -74,7 +74,6 @@ func TestGetListsOnBoardWithCards(t *testing.T) {
 }
 
 // Utility function to get the standard case Client.GetList() response
-//
 func testList(t *testing.T) *List {
 	c := testClient()
 	c.BaseURL = mockResponse("lists", "list-api-example.json").URL

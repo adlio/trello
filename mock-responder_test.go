@@ -3,7 +3,6 @@ package trello
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +18,6 @@ import (
 // are being made correctly. Just like with httptest.Server, the caller should
 // defer a call to .Close() to shutdown the server when all requests complete.
 // MockResponders should be created via the NewMockResponder() constructor.
-//
 type MockResponder interface {
 	Close()
 	URL() string
@@ -66,7 +64,6 @@ type mockResponder struct {
 // mode from the root of the testdata/ directory.
 //
 // The caller is expected to defer a call .Close() after NewMockResponder().
-//
 func NewMockResponder(t *testing.T, mockPath ...string) MockResponder {
 	r := &mockResponder{t: t}
 
@@ -102,7 +99,6 @@ func (mr *mockResponder) Close() {
 // is responsible for *creating* the *httptest.Server. This function should
 // be called after all customization (including calls to AssertRequest) is
 // complete.
-//
 func (mr *mockResponder) URL() string {
 	if mr.server != nil {
 		mr.t.Error("URL() should only be called once, after completing configuration")
@@ -122,7 +118,6 @@ func (mr *mockResponder) URL() string {
 // path of the mock file to use and returns that if the file is found...
 // otherwise it responds with an error instructing the user where to put their
 // mock file.
-//
 func (mr *mockResponder) mockHandler(rw http.ResponseWriter, r *http.Request) {
 	var filename string
 	if mr.useDynamicPaths {
@@ -145,7 +140,7 @@ func (mr *mockResponder) mockHandler(rw http.ResponseWriter, r *http.Request) {
 		filename = mr.mockPath
 	}
 
-	mockData, err := ioutil.ReadFile(filename)
+	mockData, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}

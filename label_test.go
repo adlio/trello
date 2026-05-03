@@ -56,7 +56,6 @@ func TestLabelSetClient(t *testing.T) {
 }
 
 // Utility function to get the standard case Client.GetList() response
-//
 func testLabel(t *testing.T) *Label {
 	c := testClient()
 	c.BaseURL = mockResponse("labels", "labels-api-example.json").URL

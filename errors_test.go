@@ -2,14 +2,14 @@ package trello
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
 )
 
 func TestRateLimitError(t *testing.T) {
-	rc := ioutil.NopCloser(&bytes.Buffer{})
+	rc := io.NopCloser(&bytes.Buffer{})
 	resp := &http.Response{
 		Body:       rc,
 		StatusCode: http.StatusTooManyRequests,
@@ -24,7 +24,7 @@ func TestRateLimitError(t *testing.T) {
 }
 
 func TestNotFoundError(t *testing.T) {
-	rc := ioutil.NopCloser(&bytes.Buffer{})
+	rc := io.NopCloser(&bytes.Buffer{})
 	resp := &http.Response{
 		Body:       rc,
 		StatusCode: http.StatusNotFound,
@@ -39,7 +39,7 @@ func TestNotFoundError(t *testing.T) {
 }
 
 func TestPermissionDeniedError(t *testing.T) {
-	rc := ioutil.NopCloser(&bytes.Buffer{})
+	rc := io.NopCloser(&bytes.Buffer{})
 	resp := &http.Response{
 		Body:       rc,
 		StatusCode: http.StatusUnauthorized,
