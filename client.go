@@ -11,12 +11,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"time"
 
-	"github.com/pkg/errors"
 	"golang.org/x/time/rate"
 )
 
@@ -96,7 +94,7 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 
 	req, err := http.NewRequest("GET", urlWithParams, nil)
 	if err != nil {
-		return errors.Wrapf(err, "Invalid GET request %s", url)
+		return fmt.Errorf("Invalid GET request %s: %w", url, err)
 	}
 	req = req.WithContext(c.ctx)
 
@@ -128,7 +126,7 @@ func (c *Client) Put(path string, args Arguments, target interface{}) error {
 
 	req, err := http.NewRequest("PUT", urlWithParams, nil)
 	if err != nil {
-		return errors.Wrapf(err, "Invalid PUT request %s", url)
+		return fmt.Errorf("Invalid PUT request %s: %w", url, err)
 	}
 
 	return c.do(req, url, target)
@@ -159,7 +157,7 @@ func (c *Client) Post(path string, args Arguments, target interface{}) error {
 
 	req, err := http.NewRequest("POST", urlWithParams, nil)
 	if err != nil {
-		return errors.Wrapf(err, "Invalid POST request %s", url)
+		return fmt.Errorf("Invalid POST request %s: %w", url, err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	return c.do(req, url, target)
@@ -206,7 +204,7 @@ func (c *Client) PostWithBody(path string, args Arguments, target interface{}, f
 
 	req, err := http.NewRequest("POST", urlWithParams, body)
 	if err != nil {
-		return errors.Wrapf(err, "Invalid POST request %s", url)
+		return fmt.Errorf("Invalid POST request %s: %w", url, err)
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return c.do(req, url, target)
@@ -236,7 +234,7 @@ func (c *Client) Delete(path string, args Arguments, target interface{}) error {
 
 	req, err := http.NewRequest("DELETE", urlWithParams, nil)
 	if err != nil {
-		return errors.Wrapf(err, "Invalid DELETE request %s", url)
+		return fmt.Errorf("Invalid DELETE request %s: %w", url, err)
 	}
 
 	return c.do(req, url, target)
@@ -251,20 +249,20 @@ func (c *Client) log(format string, args ...interface{}) {
 func (c *Client) do(req *http.Request, url string, target interface{}) error {
 	resp, err := c.Client.Do(req)
 	if err != nil {
-		return errors.Wrapf(err, "HTTP request failure on %s", url)
+		return fmt.Errorf("HTTP request failure on %s: %w", url, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return makeHTTPClientError(url, resp)
 	}
 
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return errors.Wrapf(err, "HTTP Read error on response for %s", url)
+		return fmt.Errorf("HTTP Read error on response for %s: %w", url, err)
 	}
 	err = json.Unmarshal(b, target)
 	if err != nil {
-		return errors.Wrapf(err, "JSON decode failed on %s:\n%s", url, string(b))
+		return fmt.Errorf("JSON decode failed on %s:\n%s: %w", url, string(b), err)
 	}
 	return nil
 }

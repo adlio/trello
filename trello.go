@@ -6,10 +6,9 @@
 package trello
 
 import (
+	"fmt"
 	"strconv"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // IDToTime is a convenience function. It takes a Trello ID string and
@@ -21,7 +20,7 @@ func IDToTime(id string) (t time.Time, err error) {
 	// The first 8 characters in the object ID are a Unix timestamp
 	ts, err := strconv.ParseUint(id[:8], 16, 64)
 	if err != nil {
-		err = errors.Wrapf(err, "ID '%s' failed to convert to timestamp.", id)
+		err = fmt.Errorf("ID '%s' failed to convert to timestamp: %w", id, err)
 	} else {
 		t = time.Unix(int64(ts), 0)
 	}

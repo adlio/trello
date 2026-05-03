@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type CardBadges struct {
@@ -331,7 +329,7 @@ func (l *List) AddCard(card *Card, extraArgs ...Arguments) error {
 	if err == nil {
 		card.SetClient(l.client)
 	} else {
-		err = errors.Wrapf(err, "Error adding card to list %s", l.ID)
+		err = fmt.Errorf("Error adding card to list %s: %w", l.ID, err)
 	}
 	return err
 }
@@ -354,7 +352,7 @@ func (c *Card) CopyToList(listID string, extraArgs ...Arguments) (*Card, error) 
 	if err == nil {
 		newCard.SetClient(c.client)
 	} else {
-		err = errors.Wrapf(err, "Error copying card '%s' to list '%s'.", c.ID, listID)
+		err = fmt.Errorf("Error copying card '%s' to list '%s': %w", c.ID, listID, err)
 	}
 	return &newCard, err
 }
@@ -369,7 +367,7 @@ func (c *Card) AddComment(comment string, extraArgs ...Arguments) (*Action, erro
 	action := Action{}
 	err := c.client.Post(path, args, &action)
 	if err != nil {
-		err = errors.Wrapf(err, "Error commenting on card %s", c.ID)
+		err = fmt.Errorf("Error commenting on card %s: %w", c.ID, err)
 	}
 	return &action, err
 }
@@ -384,7 +382,7 @@ func (c *Card) AddURLAttachment(attachment *Attachment, extraArgs ...Arguments) 
 	args.flatten(extraArgs)
 	err := c.client.Post(path, args, &attachment)
 	if err != nil {
-		err = errors.Wrapf(err, "Error adding attachment to card %s", c.ID)
+		err = fmt.Errorf("Error adding attachment to card %s: %w", c.ID, err)
 	}
 	return err
 
@@ -406,7 +404,7 @@ func (c *Card) AddFileAttachment(attachment *Attachment, filename string, file i
 	args.flatten(extraArgs)
 	err := c.client.PostWithBody(path, args, &attachment, filename, file)
 	if err != nil {
-		err = errors.Wrapf(err, "Error adding attachment to card %s", c.ID)
+		err = fmt.Errorf("Error adding attachment to card %s: %w", c.ID, err)
 	}
 	return err
 }
@@ -425,7 +423,7 @@ func (c *Card) GetParentCard(extraArgs ...Arguments) (*Card, error) {
 		c.client.log("Creation action wasn't supplied before GetParentCard() on '%s'. Getting copyCard actions.", c.ID)
 		actions, err := c.GetActions(Arguments{"filter": "copyCard"})
 		if err != nil {
-			err = errors.Wrapf(err, "GetParentCard() failed to GetActions() for card '%s'", c.ID)
+			err = fmt.Errorf("GetParentCard() failed to GetActions() for card '%s': %w", c.ID, err)
 			return nil, err
 		}
 		action = actions.FirstCardCreateAction()
@@ -486,7 +484,7 @@ func (c *Card) CreatorMember() (*Member, error) {
 	if len(c.Actions) == 0 {
 		c.Actions, err = c.GetActions(Arguments{"filter": "all", "limit": "1000", "memberCreator_fields": "all"})
 		if err != nil {
-			err = errors.Wrapf(err, "GetActions() call failed.")
+			err = fmt.Errorf("GetActions() call failed: %w", err)
 			return nil, err
 		}
 	}
@@ -495,7 +493,7 @@ func (c *Card) CreatorMember() (*Member, error) {
 	if len(actions) > 0 {
 		return actions[0].MemberCreator, nil
 	}
-	return nil, errors.Errorf("No card creation actions on Card %s with a .MemberCreator", c.ID)
+	return nil, fmt.Errorf("No card creation actions on Card %s with a .MemberCreator", c.ID)
 }
 
 // CreatorMemberID returns as string the id of the member who created the card or an error.
@@ -509,7 +507,7 @@ func (c *Card) CreatorMemberID() (string, error) {
 		c.client.log("[trello] CreatorMemberID() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
 		c.Actions, err = c.GetActions(Defaults())
 		if err != nil {
-			err = errors.Wrapf(err, "GetActions() call failed.")
+			err = fmt.Errorf("GetActions() call failed: %w", err)
 		}
 	}
 	actions = c.Actions.FilterToCardCreationActions()
@@ -520,7 +518,7 @@ func (c *Card) CreatorMemberID() (string, error) {
 		}
 	}
 
-	return "", errors.Wrapf(err, "No Actions on card '%s' could be used to find its creator.", c.ID)
+	return "", fmt.Errorf("No Actions on card '%s' could be used to find its creator: %w", c.ID, err)
 }
 
 // ContainsCopyOfCard accepts a card id and Arguments and returns true
@@ -532,7 +530,7 @@ func (b *Board) ContainsCopyOfCard(cardID string, extraArgs ...Arguments) (bool,
 	args.flatten(extraArgs)
 	actions, err := b.GetActions(args)
 	if err != nil {
-		err := errors.Wrapf(err, "GetCards() failed inside ContainsCopyOf() for board '%s' and card '%s'.", b.ID, cardID)
+		err := fmt.Errorf("GetCards() failed inside ContainsCopyOf() for board '%s' and card '%s': %w", b.ID, cardID, err)
 		return false, err
 	}
 	for _, action := range actions {

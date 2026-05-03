@@ -8,7 +8,6 @@ package trello
 import (
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -21,7 +20,7 @@ func mockResponse(paths ...string) *httptest.Server {
 	parts := []string{".", "testdata"}
 	filename := filepath.Join(append(parts, paths...)...)
 
-	mockData, err := ioutil.ReadFile(filename)
+	mockData, err := os.ReadFile(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,7 +48,7 @@ func mockDynamicPathResponse() *httptest.Server {
 			return
 		}
 
-		mockData, err := ioutil.ReadFile(filename)
+		mockData, err := os.ReadFile(filename)
 		if err != nil {
 			log.Fatal(err)
 		}

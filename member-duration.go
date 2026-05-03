@@ -1,10 +1,9 @@
 package trello
 
 import (
+	"fmt"
 	"sort"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // MemberDuration is used to track the periods of time which a user (member) is attached to a card.
@@ -61,7 +60,7 @@ func (c *Card) GetMemberDurations() (durations []*MemberDuration, err error) {
 		c.client.log("[trello] GetMemberDurations() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
 		actions, err = c.GetMembershipChangeActions()
 		if err != nil {
-			err = errors.Wrap(err, "GetMembershipChangeActions() call failed.")
+			err = fmt.Errorf("GetMembershipChangeActions() call failed: %w", err)
 			return
 		}
 	} else {
