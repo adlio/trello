@@ -518,7 +518,7 @@ func (c *Card) CreatorMemberID() (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("No Actions on card '%s' could be used to find its creator: %w", c.ID, err)
+	return "", fmt.Errorf("no actions on card '%s' could be used to find its creator", c.ID)
 }
 
 // ContainsCopyOfCard accepts a card id and Arguments and returns true
