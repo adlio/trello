@@ -9,8 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 // Webhook is the Go representation of a webhook registered in Trello's systems.
@@ -105,7 +103,7 @@ func GetBoardWebhookRequest(r *http.Request) (whr *BoardWebhookRequest, err erro
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&whr)
 	if err != nil {
-		err = errors.Wrapf(err, "GetBoardWebhookRequest() failed to decode '%s'.", r.URL)
+		err = fmt.Errorf("GetBoardWebhookRequest() failed to decode '%s': %w", r.URL, err)
 	}
 	return
 }
@@ -118,7 +116,7 @@ func GetListWebhookRequest(r *http.Request) (whr *ListWebhookRequest, err error)
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&whr)
 	if err != nil {
-		err = errors.Wrapf(err, "GetListWebhookRequest() failed to decode '%s'.", r.URL)
+		err = fmt.Errorf("GetListWebhookRequest() failed to decode '%s': %w", r.URL, err)
 	}
 	return
 }
@@ -131,7 +129,7 @@ func GetCardWebhookRequest(r *http.Request) (whr *CardWebhookRequest, err error)
 	decoder := json.NewDecoder(r.Body)
 	err = decoder.Decode(&whr)
 	if err != nil {
-		err = errors.Wrapf(err, "GetCardWebhookRequest() failed to decode '%s'.", r.URL)
+		err = fmt.Errorf("GetCardWebhookRequest() failed to decode '%s': %w", r.URL, err)
 	}
 	return
 }
