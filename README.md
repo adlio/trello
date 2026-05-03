@@ -4,8 +4,8 @@ Go Trello API
 [![Trello Logo](https://raw.githubusercontent.com/adlio/trello/master/trello-logo.png)](https://www.trello.com)
 
 [![GoDoc](https://godoc.org/github.com/adlio/trello?status.svg)](http://godoc.org/github.com/adlio/trello)
-[![Build Status](https://travis-ci.org/adlio/trello.svg)](https://travis-ci.org/adlio/trello)
-[![Coverage Status](https://coveralls.io/repos/github/adlio/trello/badge.svg?branch=master)](https://coveralls.io/github/adlio/trello?branch=master)
+[![CI](https://github.com/adlio/trello/actions/workflows/ci.yml/badge.svg)](https://github.com/adlio/trello/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/adlio/trello/branch/main/graph/badge.svg)](https://codecov.io/gh/adlio/trello)
 
 A #golang package to access the [Trello API](https://developers.trello.com/v1.0/reference). Nearly 100% of the
 read-only surface area of the API is covered, as is creation and modification of Cards.
@@ -19,8 +19,8 @@ example use cases.
 
 ## Installation
 
-The Go Trello API has been Tested compatible with Go 1.7 on up. Its only dependency is
-the `github.com/pkg/errors` package. It otherwise relies only on the Go standard library.
+The Go Trello API has been Tested compatible with Go 1.21 on up. It relies only on the
+Go standard library (plus `golang.org/x/time` for rate limiting).
 
 ```
 go get github.com/adlio/trello
