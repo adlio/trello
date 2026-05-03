@@ -89,8 +89,8 @@ func (c *Card) GetActions(extraArgs ...Arguments) (actions ActionCollection, err
 // from its last list).
 //
 // This function is just an alias for:
-//   card.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed", "limit": "1000"})
 //
+//	card.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed", "limit": "1000"})
 func (c *Card) GetListChangeActions() (actions ActionCollection, err error) {
 	return c.GetActions(Arguments{"filter": "createCard,copyCard,updateCard:idList,updateCard:closed"})
 }
@@ -142,7 +142,6 @@ func (a *Action) DidUnarchiveCard() bool {
 // caused it to enter its first list), archived the card (in which case it caused it to
 // leave its last List), or was an updateCard action involving a change to the list. This
 // is supporting functionality for ListDuration.
-//
 func (a *Action) DidChangeListForCard() bool {
 	if a.DidCreateCard() {
 		return true
@@ -193,7 +192,6 @@ func (a *Action) SetClient(newClient *Client) {
 // completed. Returns nil when the action resulted in the card being archived (in
 // which case we consider it to not be in a list anymore), or when the action isn't
 // related to a list at all (in which case this is a nonsensical question to ask).
-//
 func ListAfterAction(a *Action) *List {
 	switch a.Type {
 	case "createCard", "copyCard", "emailCard", "convertToCardFromCheckItem":

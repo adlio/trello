@@ -14,7 +14,6 @@ import (
 // Webhook is the Go representation of a webhook registered in Trello's systems.
 // Used when creating, modifying or deleting webhooks.
 // https://developers.trello.com/reference/#webhook-object
-//
 type Webhook struct {
 	client      *Client
 	ID          string `json:"id,omitempty"`
@@ -26,7 +25,6 @@ type Webhook struct {
 
 // BoardWebhookRequest is the object sent by Trello to a Webhook for Board-triggered
 // webhooks.
-//
 type BoardWebhookRequest struct {
 	Model  *Board
 	Action *Action
@@ -34,7 +32,6 @@ type BoardWebhookRequest struct {
 
 // ListWebhookRequest is the object sent by Trello to a Webhook for List-triggered
 // webhooks.
-//
 type ListWebhookRequest struct {
 	Model  *List
 	Action *Action
@@ -42,7 +39,6 @@ type ListWebhookRequest struct {
 
 // CardWebhookRequest is the object sent by Trello to a Webhook for Card-triggered
 // webhooks.
-//
 type CardWebhookRequest struct {
 	Model  *Card
 	Action *Action
