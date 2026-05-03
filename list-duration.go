@@ -1,10 +1,9 @@
 package trello
 
 import (
+	"fmt"
 	"sort"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 // ListDuration represents the time a Card has been or was in list.
@@ -33,7 +32,7 @@ func (c *Card) GetListDurations() (durations []*ListDuration, err error) {
 		c.client.log("[trello] GetListDurations() called on card '%s' without any Card.Actions. Fetching fresh.", c.ID)
 		actions, err = c.GetListChangeActions()
 		if err != nil {
-			err = errors.Wrap(err, "GetListChangeActions() call failed.")
+			err = fmt.Errorf("GetListChangeActions() call failed: %w", err)
 			return
 		}
 	} else {
