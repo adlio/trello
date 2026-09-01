@@ -6,55 +6,119 @@ on:
   pull_request:
     branches: [main]
 
+# A new push to the same branch makes older runs pointless. Cancel them so PR
+# feedback is fast and we don't burn queue time on superseded commits.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: nothing in CI needs to write to the repo.
+permissions:
+  contents: read
+
 jobs:
-  fmt:
-    name: Format
+  static:
+    name: Static analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.21'
-      - name: Check formatting
+          go-version: stable
+          check-latest: true
+
+      - name: gofmt
         run: |
           unformatted=$(gofmt -l .)
           if [ -n "$unformatted" ]; then
-            echo "Files not formatted:"
+            echo "::error::These files are not gofmt-clean. Run 'gofmt -w .'"
             echo "$unformatted"
+            gofmt -d .
             exit 1
           fi
 
-  vet:
-    name: Vet
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
-        with:
-          go-version: '1.21'
-      - run: go vet ./...
+      - name: go vet
+        run: go vet ./...
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-go@v6
-        with:
-          go-version: '1.21'
-      - run: go build ./...
+      - name: go.mod and go.sum are tidy
+        run: |
+          go mod tidy
+          if ! git diff --quiet -- go.mod go.sum; then
+            echo "::error::go.mod/go.sum are stale. Run 'go mod tidy' and commit the result."
+            git diff -- go.mod go.sum
+            exit 1
+          fi
+
+      - name: go mod verify
+        run: go mod verify
 
   test:
-    name: Test + Coverage
+    name: Test (Go ${{ matrix.go }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # '1.21' is the minimum declared in go.mod; keep the two in sync so we
+        # never ship a release that silently requires a newer toolchain.
+        go: ['1.21', '1.22', '1.23', '1.24', 'stable']
     steps:
       - uses: actions/checkout@v5
+
       - uses: actions/setup-go@v6
         with:
-          go-version: '1.21'
-      - name: Run tests with coverage
-        run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
-      - uses: codecov/codecov-action@v5
+          go-version: ${{ matrix.go }}
+
+      - name: Build
+        run: go build ./...
+
+      - name: Test (race detector + coverage)
+        run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+
+      - name: Upload coverage to Codecov
+        if: matrix.go == 'stable'
+        uses: codecov/codecov-action@v5
         with:
           files: coverage.txt
           token: ${{ secrets.CODECOV_TOKEN }}
+          # Coverage reporting is informational: a Codecov outage (or a fork PR
+          # with no token) must not turn an otherwise green build red.
+          fail_ci_if_error: false
+
+  test-cross-platform:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      # No -race here; the Linux matrix already covers it, and this job exists
+      # to catch path/filesystem assumptions (e.g. loading testdata fixtures).
+      - name: Test
+        run: go test ./...
+
+  # Single aggregate check so branch protection can require one stable name
+  # ("CI / All checks passed") instead of every individual matrix leg, whose
+  # names change every time the Go version matrix is updated.
+  all-checks-passed:
+    name: All checks passed
+    if: always()
+    needs: [static, test, test-cross-platform]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify all jobs succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::One or more required CI jobs did not succeed."
+          exit 1

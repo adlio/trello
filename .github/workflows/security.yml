@@ -1,0 +1,42 @@
+name: Security
+
+# govulncheck reports vulnerabilities in the Go standard library as well as in
+# dependencies, so a new Go patch release can make it fail on a tree that did
+# not change. That is useful signal, but it must not block unrelated
+# contributor PRs, so it runs on a schedule and on main rather than in CI.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'go.mod'
+      - 'go.sum'
+      - '**/*.go'
+      - '.github/workflows/security.yml'
+  pull_request:
+    branches: [main]
+    # On PRs, only run when the dependency graph actually changes.
+    paths:
+      - 'go.mod'
+      - 'go.sum'
+  schedule:
+    # Mondays at 06:17 UTC (off the hour to avoid GitHub's cron rush).
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  govulncheck:
+    name: govulncheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # This action performs its own checkout and Go setup, so no separate
+      # actions/checkout or actions/setup-go step is needed here.
+      - name: Run govulncheck
+        uses: golang/govulncheck-action@v1
+        with:
+          go-version-input: stable
+          check-latest: true
+          go-package: ./...

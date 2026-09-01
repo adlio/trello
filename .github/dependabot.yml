@@ -1,0 +1,36 @@
+version: 2
+
+updates:
+  # Keep the Go module dependencies current.
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    labels:
+      - dependencies
+
+  # Keep the workflow actions current. Without this, pinned major versions go
+  # stale and eventually break on runner/Node.js deprecations.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(actions)"
+    labels:
+      - dependencies
+      - github-actions
+    groups:
+      # One PR for routine action bumps instead of one per action.
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch

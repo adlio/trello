@@ -4,42 +4,139 @@ on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+*"
+  # Recovery path: if a tag was pushed before CHANGELOG.md was updated, fix the
+  # changelog on main and re-run this workflow against the existing tag.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to publish or re-publish, e.g. v0.3.0"
+        required: true
 
+# Read-only by default; only the publishing job escalates to contents: write.
 permissions:
-  contents: write
+  contents: read
+
+# Never let two runs publish the same tag concurrently, and never cancel a
+# release that is already mid-publish.
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
-  release:
-    name: Release
+  verify:
+    name: Verify
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
 
-      - name: Extract version from tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          check-latest: true
 
-      - name: Extract changelog
-        id: changelog
+      - name: Build
+        run: go build ./...
+
+      - name: Test
+        run: go test -race ./...
+
+  release:
+    name: Publish release
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
+          # Tags are needed for `gh release create --verify-tag`.
+          fetch-depth: 0
+
+      - name: Resolve tag and version
+        id: meta
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
         run: |
-          notes=$(awk '/^## \[${{ steps.version.outputs.version }}\]/{found=1; next} /^## \[/{if(found) exit} found{print}' CHANGELOG.md)
+          set -euo pipefail
+          tag="${INPUT_TAG:-$GITHUB_REF_NAME}"
+
+          if ! printf '%s' "$tag" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+'; then
+            echo "::error::Tag '$tag' is not a vMAJOR.MINOR.PATCH tag."
+            exit 1
+          fi
+
+          version="${tag#v}"
+          # SemVer: anything after a hyphen is a pre-release (e.g. v1.0.0-rc.1).
+          if [ "$version" != "${version%%-*}" ]; then
+            prerelease=true
+          else
+            prerelease=false
+          fi
+
           {
-            echo "notes<<CHANGELOG_EOF"
-            echo "$notes"
-            echo "CHANGELOG_EOF"
+            echo "tag=$tag"
+            echo "version=$version"
+            echo "prerelease=$prerelease"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Create or update GitHub Release
+          echo "Releasing $tag (version $version, prerelease=$prerelease)"
+
+      - name: Extract release notes from CHANGELOG.md
+        env:
+          # Passed through the environment rather than interpolated into the
+          # script, so tag contents can never be evaluated as shell.
+          VERSION: ${{ steps.meta.outputs.version }}
         run: |
-          if gh release view "$GITHUB_REF_NAME" &>/dev/null; then
-            echo "Release $GITHUB_REF_NAME already exists, updating..."
-            gh release edit "$GITHUB_REF_NAME" \
-              --title "$GITHUB_REF_NAME" \
-              --notes "${{ steps.changelog.outputs.notes }}"
-          else
-            gh release create "$GITHUB_REF_NAME" \
-              --title "$GITHUB_REF_NAME" \
-              --notes "${{ steps.changelog.outputs.notes }}"
+          set -euo pipefail
+
+          # Matches '## [1.2.3]' and '## [1.2.3] - 2026-01-01'. index() is a
+          # literal prefix test, so dots in the version aren't regex wildcards.
+          # Stops at the next '## [' heading, or at the trailing block of
+          # link-reference definitions ('[0.2.0]: https://...') that
+          # Keep a Changelog puts at the bottom of the file.
+          awk -v ver="$VERSION" '
+            index($0, "## [" ver "]") == 1              { found = 1; next }
+            /^## \[/                                    { if (found) exit }
+            $0 ~ /^\[/ && $0 ~ /\]:[ \t]/               { if (found) exit }
+            found                                       { print }
+          ' CHANGELOG.md > notes.raw
+
+          # Strip leading and trailing blank lines.
+          awk 'NF {found = 1} found' notes.raw | tac | awk 'NF {found = 1} found' | tac > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::error::CHANGELOG.md has no '## [$VERSION]' section with content. Add the entry, then re-run this workflow with tag input '$VERSION'."
+            exit 1
           fi
+
+          echo "----- release notes -----"
+          cat release-notes.md
+          echo "-------------------------"
+
+      - name: Create or update GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.meta.outputs.tag }}
+          PRERELEASE: ${{ steps.meta.outputs.prerelease }}
+        run: |
+          set -euo pipefail
+
+          # --notes-file keeps the changelog out of the command line entirely,
+          # so backticks, quotes and $(...) in release notes stay literal text.
+          flags=(--title "$TAG" --notes-file release-notes.md)
+          if [ "$PRERELEASE" = "true" ]; then
+            flags+=(--prerelease)
+          fi
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; updating it."
+            gh release edit "$TAG" "${flags[@]}"
+          else
+            echo "Creating release $TAG."
+            gh release create "$TAG" --verify-tag "${flags[@]}"
+          fi
