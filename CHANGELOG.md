@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0]
+## [1.13.0] - 2026-10-23
 
 ### Changed
 
@@ -18,5 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added automated release workflow via GitHub Actions
 - Added Codecov integration for coverage reporting
 
-[Unreleased]: https://github.com/adlio/trello/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/adlio/trello/releases/tag/v0.2.0
+### Fixed
+
+- Client context (cancellation and deadlines) is now honored on all request methods — GET, PUT, POST, multipart POST, and DELETE — not just GET. (#101)
+
+[Unreleased]: https://github.com/adlio/trello/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/adlio/trello/releases/tag/v1.13.0
