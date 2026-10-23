@@ -7,7 +7,10 @@ package trello
 
 import (
 	"context"
+	"errors"
+	"io"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -22,7 +25,9 @@ func TestGetWithBadURL(t *testing.T) {
 }
 
 func TestWithContext(t *testing.T) {
-	c := testClient()
+	c := NewClient("", "")
+	c.testMode = true
+	c.BaseURL = "http://synthetic.invalid"
 	if c.ctx != context.Background() {
 		t.Fatal("NewClient() should use context.Background()")
 	}
@@ -39,23 +44,85 @@ func TestWithContext(t *testing.T) {
 	}
 
 	var calls int
-	mt := &mockTransport{
-		RoundTripFunc: func(req *http.Request) (*http.Response, error) {
-			calls++
-			if req.Context() != ctx {
-				t.Fatal("Get() should be using the new context")
-			}
-			return http.DefaultTransport.RoundTrip(req)
+	newC.Client = &http.Client{
+		Transport: &mockTransport{
+			RoundTripFunc: func(req *http.Request) (*http.Response, error) {
+				calls++
+				if req.Context() != ctx {
+					t.Fatal("request should use the new context")
+				}
+				return syntheticResponse(req)
+			},
 		},
 	}
-	newC.Client = &http.Client{
-		Transport: mt,
+	target := map[string]interface{}{}
+	if err := newC.Get("members", Defaults(), &target); err != nil {
+		t.Fatal(err)
 	}
-	newC.Get("members", nil, nil)
 
 	if calls != 1 {
 		t.Fatal("Get() should have used the mocked transport")
 	}
+}
+
+func TestHTTPMethodsHonorClientContext(t *testing.T) {
+	methods := []struct {
+		name string
+		call func(*Client) error
+	}{
+		{name: "GET", call: func(c *Client) error {
+			target := map[string]interface{}{}
+			return c.Get("synthetic", Defaults(), &target)
+		}},
+		{name: "PUT", call: func(c *Client) error {
+			target := map[string]interface{}{}
+			return c.Put("synthetic", Defaults(), &target)
+		}},
+		{name: "POST", call: func(c *Client) error {
+			target := map[string]interface{}{}
+			return c.Post("synthetic", Defaults(), &target)
+		}},
+		{name: "POST with body", call: func(c *Client) error {
+			target := map[string]interface{}{}
+			return c.PostWithBody("synthetic", Defaults(), &target, "synthetic.txt", strings.NewReader("synthetic body"))
+		}},
+		{name: "DELETE", call: func(c *Client) error {
+			target := map[string]interface{}{}
+			return c.Delete("synthetic", Defaults(), &target)
+		}},
+	}
+
+	for _, method := range methods {
+		t.Run(method.name, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			cancel()
+
+			c := NewClient("", "")
+			c.testMode = true
+			c.BaseURL = "http://synthetic.invalid"
+			c = c.WithContext(ctx)
+			c.Client = &http.Client{
+				Transport: &mockTransport{RoundTripFunc: syntheticResponse},
+			}
+
+			if err := method.call(c); !errors.Is(err, context.Canceled) {
+				t.Fatalf("expected request to honor the canceled client context, got %v", err)
+			}
+		})
+	}
+}
+
+func syntheticResponse(req *http.Request) (*http.Response, error) {
+	if err := req.Context().Err(); err != nil {
+		return nil, err
+	}
+
+	return &http.Response{
+		StatusCode: http.StatusOK,
+		Header:     make(http.Header),
+		Body:       io.NopCloser(strings.NewReader("{}")),
+		Request:    req,
+	}, nil
 }
 
 type mockTransport struct {

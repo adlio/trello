@@ -96,8 +96,6 @@ func (c *Client) Get(path string, args Arguments, target interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Invalid GET request %s: %w", url, err)
 	}
-	req = req.WithContext(c.ctx)
-
 	return c.do(req, url, target)
 }
 
@@ -247,6 +245,7 @@ func (c *Client) log(format string, args ...interface{}) {
 }
 
 func (c *Client) do(req *http.Request, url string, target interface{}) error {
+	req = req.WithContext(c.ctx)
 	resp, err := c.Client.Do(req)
 	if err != nil {
 		return fmt.Errorf("HTTP request failure on %s: %w", url, err)
