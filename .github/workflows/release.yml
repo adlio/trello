@@ -21,13 +21,11 @@ jobs:
 
       - name: Extract changelog
         id: changelog
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          notes=$(awk '/^## \[${{ steps.version.outputs.version }}\]/{found=1; next} /^## \[/{if(found) exit} found{print}' CHANGELOG.md)
-          {
-            echo "notes<<CHANGELOG_EOF"
-            echo "$notes"
-            echo "CHANGELOG_EOF"
-          } >> "$GITHUB_OUTPUT"
+          awk -v ver="$VERSION" '$0 ~ "^## \\[" ver "\\]"{found=1; next} found && /^## \[|^\[[^]]+\]:/{exit} found{print}' CHANGELOG.md > notes.md
+          cat notes.md
 
       - name: Create or update GitHub Release
         run: |
@@ -35,11 +33,11 @@ jobs:
             echo "Release $GITHUB_REF_NAME already exists, updating..."
             gh release edit "$GITHUB_REF_NAME" \
               --title "$GITHUB_REF_NAME" \
-              --notes "${{ steps.changelog.outputs.notes }}"
+              --notes-file notes.md
           else
             gh release create "$GITHUB_REF_NAME" \
               --title "$GITHUB_REF_NAME" \
-              --notes "${{ steps.changelog.outputs.notes }}"
+              --notes-file notes.md
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
