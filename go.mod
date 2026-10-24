@@ -1,5 +1,5 @@
 module github.com/adlio/trello
 
-go 1.21
+go 1.26
 
-require golang.org/x/time v0.10.0
+require golang.org/x/time v0.16.0
